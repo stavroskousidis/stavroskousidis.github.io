@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { profile } from '../data/site';
+---
+
+<BaseLayout title="Code · Stavros Kousidis">
+  <section class="page-intro">
+    <p class="kicker">Repositories & software</p>
+    <h1>Code.</h1>
+    <p class="lede">Code and repositories are published through the profiles below.</p>
+  </section>
+  <section class="link-list">
+    <a href={profile.links.organization}><div><small>Cyber Security Engineering</small><h2>GitHub organization</h2><p>Projects, teaching material and thesis repositories</p></div><span>↗</span></a>
+    <a href={profile.links.github}><div><small>Personal profile</small><h2>GitHub</h2><p>Personal projects and contributions</p></div><span>↗</span></a>
+    <a href={profile.links.gitlab}><div><small>Additional repositories</small><h2>GitLab</h2><p>Projects and repository mirrors</p></div><span>↗</span></a>
+  </section>
+</BaseLayout>

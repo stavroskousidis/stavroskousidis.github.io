@@ -1,0 +1,27 @@
+---
+import { profile } from '../data/site';
+
+const path = Astro.url.pathname;
+const nav = [
+  ['Team', '/team'],
+  ['Teaching', '/teaching'],
+  ['Theses', '/theses'],
+  ['Publications', '/publications'],
+  ['Code', '/code'],
+  ['Notes', '/notes'],
+  ['Certificates', '/keys']
+];
+---
+
+<header class="site-header">
+  <a class="wordmark" href="/" aria-label="Home">
+    <span>{profile.name}</span>
+    <small>Cyber Security Engineering</small>
+  </a>
+  <nav aria-label="Main navigation">
+    {nav.map(([label, href]) => (
+      <a href={href} aria-current={path === href ? 'page' : undefined}>{label}</a>
+    ))}
+  </nav>
+  <a class="external header-link" href={profile.links.organization}>GitHub <span aria-hidden="true">↗</span></a>
+</header>

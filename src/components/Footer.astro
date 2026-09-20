@@ -1,0 +1,31 @@
+---
+import { profile } from '../data/site';
+---
+
+<footer class="site-footer">
+  <div>
+    <strong>{profile.name}</strong>
+    <p>{profile.role}<br />{profile.institution}</p>
+  </div>
+  <div class="footer-links" aria-label="Publications, code and contact links">
+    <div class="footer-group">
+      <a class="footer-label" href="/publications">Publications</a>
+      <span aria-hidden="true">·</span><a href={profile.links.orcid}>ORCID</a>
+      <span aria-hidden="true">·</span><a href={profile.links.arxiv}>arXiv</a>
+      <span aria-hidden="true">·</span><a href={profile.links.eprint}>IACR</a>
+      <span aria-hidden="true">·</span><a href={profile.links.ietf}>IETF</a>
+    </div>
+    <div class="footer-group">
+      <a class="footer-label" href="/code">Code</a>
+      <span aria-hidden="true">·</span><a href={profile.links.organization}>GitHub organization</a>
+      <span aria-hidden="true">·</span><a href={profile.links.github}>GitHub</a>
+      <span aria-hidden="true">·</span><a href={profile.links.gitlab}>GitLab</a>
+    </div>
+    <div class="footer-group">
+      <span class="footer-label">Contact</span>
+      <span aria-hidden="true">·</span><a href={`mailto:${profile.email}`}>Email</a>
+      <span aria-hidden="true">·</span><a href={profile.links.thKoelnProfile}>TH Köln</a>
+    </div>
+  </div>
+  <p class="fineprint">© {new Date().getFullYear()} Stavros Kousidis · Built as a static, accessible site.</p>
+</footer>

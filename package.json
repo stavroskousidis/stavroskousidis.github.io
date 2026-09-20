@@ -1,0 +1,16 @@
+{
+  "name": "stavroskousidis.github.io",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "pdfs": "bash scripts/build-pdfs.sh",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "astro": "^6.0.0"
+  }
+}

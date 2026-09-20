@@ -1,0 +1,19 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NoteCard from '../../components/NoteCard.astro';
+
+const notes = (await getCollection('notes', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.published.localeCompare(a.data.published));
+---
+
+<BaseLayout title="Notes · Stavros Kousidis" description="Technical guides, lab notes and background articles on applied cryptography and secure systems.">
+  <section class="page-intro">
+    <p class="kicker">Guides · Lab notes · Background</p>
+    <h1>Notes from the workbench.</h1>
+    <p class="lede">Reproducible technical notes on cryptography, post-quantum migration and secure systems. Each note is also available as a clean PDF.</p>
+  </section>
+  <section class="note-card-grid notes-index">
+    {notes.map((note) => <NoteCard entry={note} />)}
+  </section>
+</BaseLayout>

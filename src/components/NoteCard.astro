@@ -1,0 +1,19 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  entry: CollectionEntry<'notes'>;
+}
+
+const { entry } = Astro.props;
+---
+
+<article class="note-card">
+  <div class="eyebrow"><span>{entry.data.type}</span><span>{entry.data.status}</span></div>
+  <h3><a href={`/notes/${entry.id}`}>{entry.data.title}</a></h3>
+  <p>{entry.data.description}</p>
+  <ul class="tags" aria-label="Topics">
+    {entry.data.tags.map((tag) => <li>{tag}</li>)}
+  </ul>
+  <a class="text-link" href={`/notes/${entry.id}`}>Read note <span aria-hidden="true">→</span></a>
+</article>

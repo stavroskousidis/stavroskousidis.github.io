@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ThesisCard from '../components/ThesisCard.astro';
+import NoteCard from '../components/NoteCard.astro';
+import { profile, theses } from '../data/site';
+import { getCollection } from 'astro:content';
+
+const notes = (await getCollection('notes', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.published.localeCompare(a.data.published))
+  .slice(0, 2);
+---
+
+<BaseLayout>
+  <section class="hero">
+    <p class="kicker">Research · Teaching · Practice</p>
+    <h1>Building security <em>that works.</em></h1>
+    <p class="koelsch-note">Oder op Kölsch: Sischerheit, die och funktioneet.</p>
+    <p class="lede">{profile.intro}</p>
+  </section>
+
+  <section class="signal-grid" aria-label="Research focus">
+    <div><span>01</span><strong>Applied Cryptography</strong><p>Standards that survive contact with real systems.</p></div>
+    <div><span>02</span><strong>Post-Quantum Security</strong><p>Migration paths, hybrid constructions and deployment.</p></div>
+    <div><span>03</span><strong>Secure Systems</strong><p>Engineering observable and trustworthy infrastructure.</p></div>
+  </section>
+
+  <section class="section">
+    <div class="section-heading">
+      <div><p class="kicker">Current opportunities</p><h2>Thesis topics</h2></div>
+      <a class="text-link" href="/theses">View all topics <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="card-grid">{theses.slice(0, 2).map((thesis) => <ThesisCard {...thesis} />)}</div>
+  </section>
+
+  <section class="section">
+    <div class="section-heading">
+      <div><p class="kicker">From the workbench</p><h2>Latest notes</h2></div>
+      <a class="text-link" href="/notes">View all notes <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="note-card-grid">{notes.map((note) => <NoteCard entry={note} />)}</div>
+  </section>
+
+  <section class="identity-panel">
+    <div><p class="kicker">Cryptographic identity</p><h2>My keys & certificates.</h2></div>
+    <p>My OpenPGP v4, post-quantum OpenPGP v6 and S/MIME certificates are published with fingerprints and download links.</p>
+    <a class="button ghost" href="/keys">Open certificate directory</a>
+  </section>
+</BaseLayout>

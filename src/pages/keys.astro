@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const repo = 'https://github.com/stavroskousidis/public-keys';
+---
+
+<BaseLayout title="Public keys & certificates · Stavros Kousidis" description="Personal OpenPGP and S/MIME public certificates for Stavros Kousidis.">
+  <section class="page-intro"><p class="kicker">Cryptographic identity</p><h1>Public keys & certificates.</h1><p class="lede">These are my personal OpenPGP and S/MIME certificates. Verify fingerprints through an independent channel before relying on a key. The linked repository remains the authoritative download location.</p></section>
+  <section class="key-list">
+    <article>
+      <div class="eyebrow"><span>OpenPGP</span><span>Version 4</span></div>
+      <h2>Governikus-certified</h2>
+      <p class="algorithm">Ed25519 · Curve25519</p>
+      <code>8274 22C9 50AA 8230 021C<br />2416 4069 B017 6EDD 44BE</code>
+      <a class="text-link" href={repo}>Certificate repository ↗</a>
+    </article>
+    <article>
+      <div class="eyebrow"><span>OpenPGP</span><span>Version 6 · Post-Quantum</span></div>
+      <h2>RFC 9580 / RFC 9980</h2>
+      <p class="algorithm">ML-DSA-65 + Ed25519 · ML-KEM-768 + X25519</p>
+      <code>5353 9922 3B32 DDA0 F12E C002 1086 84C5<br />2754 390A EE83 4226 7EB7 A017 CFA3 48DE</code>
+      <a class="text-link" href={repo}>Certificate repository ↗</a>
+    </article>
+    <article>
+      <div class="eyebrow"><span>S/MIME</span><span>X.509</span></div>
+      <h2>HARICA-issued</h2>
+      <p class="algorithm">RSA-4096</p>
+      <p class="muted">Certificate details and PEM/DER files are documented in the repository.</p>
+      <a class="text-link" href={repo}>Certificate repository ↗</a>
+    </article>
+  </section>
+</BaseLayout>

@@ -1,0 +1,24 @@
+---
+interface Props {
+  level: string;
+  title: string;
+  summary: string;
+  tags: string[];
+  repo?: string;
+  status: string;
+}
+
+const { level, title, summary, tags, repo, status } = Astro.props;
+---
+
+<article class="thesis-card">
+  <div class="eyebrow"><span>{level}</span><span class:list={['status', status.toLowerCase()]}>{status}</span></div>
+  <h3>{title}</h3>
+  <p>{summary}</p>
+  <ul class="tags" aria-label="Topics">{tags.map((tag) => <li>{tag}</li>)}</ul>
+  {repo ? (
+    <a class="text-link" href={repo}>View topic repository <span aria-hidden="true">↗</span></a>
+  ) : (
+    <span class="repository-pending">Repository forthcoming</span>
+  )}
+</article>

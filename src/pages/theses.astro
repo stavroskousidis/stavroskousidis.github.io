@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ThesisCard from '../components/ThesisCard.astro';
+import { theses } from '../data/site';
+---
+
+<BaseLayout title="Theses · Stavros Kousidis" description="Open Bachelor and Master thesis topics in Cyber Security Engineering.">
+  <section class="page-intro">
+    <p class="kicker">Work with me</p>
+    <h1>Thesis topics.</h1>
+    <p class="lede">Bachelor and Master thesis topics will be published here. Each topic will have a dedicated repository as the authoritative source for scope, prerequisites, references and current status.</p>
+  </section>
+  <section class="card-grid wide">{theses.map((thesis) => <ThesisCard {...thesis} />)}</section>
+  <aside class="note"><strong>Topics are being prepared.</strong><p>The placeholder above shows the structure future announcements will use. Concrete topics and repositories will be added successively.</p></aside>
+</BaseLayout>

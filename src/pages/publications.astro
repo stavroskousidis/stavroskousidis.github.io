@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { profile } from '../data/site';
+---
+
+<BaseLayout title="Publications · Stavros Kousidis">
+  <section class="page-intro"><p class="kicker">Publications & standards</p><h1>Selected research outputs.</h1><p class="lede">Canonical publication lists and standards activity are maintained by the services below.</p></section>
+  <section class="link-list">
+    <a href={profile.links.orcid}><div><small>Persistent researcher identity</small><h2>ORCID</h2><p>0000-0002-6947-4963</p></div><span>↗</span></a>
+    <a href={profile.links.arxiv}><div><small>Open-access preprints</small><h2>arXiv</h2><p>Author search and freely available manuscripts</p></div><span>↗</span></a>
+    <a href={profile.links.eprint}><div><small>Cryptographic research</small><h2>IACR Cryptology ePrint Archive</h2><p>Author search and freely available preprints</p></div><span>↗</span></a>
+    <a href={profile.links.ietf}><div><small>Internet standards</small><h2>IETF Datatracker</h2><p>RFCs, Internet-Drafts and working-group activity</p></div><span>↗</span></a>
+  </section>
+</BaseLayout>
