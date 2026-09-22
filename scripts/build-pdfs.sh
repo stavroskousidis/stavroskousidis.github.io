@@ -10,6 +10,7 @@ for source in src/content/notes/*.md; do
     --from=gfm+yaml_metadata_block \
     --pdf-engine=typst \
     --standalone \
+    --lua-filter=config/pdf-metadata.lua \
     --metadata-file=config/pdf.yaml \
     --metadata=author:"Stavros Kousidis" \
     --metadata=lang:en \
