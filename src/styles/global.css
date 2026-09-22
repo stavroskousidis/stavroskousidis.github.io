@@ -118,6 +118,8 @@ code { font: .77rem/1.8 ui-monospace, SFMono-Regular, Menlo, monospace; overflow
 .footer-label { color: var(--ink); font-weight: 650; }
 .footer-links a:hover { color: var(--ink); }
 .fineprint { grid-column: 1 / -1; padding-top: 2rem; border-top: 1px solid var(--line); font-size: .72rem; }
+.fineprint a { color: var(--ink); }
+.fineprint a:hover { text-decoration: underline; text-underline-offset: .2em; }
 
 @media (prefers-color-scheme: dark) {
   :root { --paper: #101718; --ink: #edf0ea; --muted: #a0aaa7; --line: #35403f; --panel: #192222; --accent: #b9eb42; --accent-ink: #b9eb42; }
