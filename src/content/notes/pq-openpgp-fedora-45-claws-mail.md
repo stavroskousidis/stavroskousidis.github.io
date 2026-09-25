@@ -15,7 +15,7 @@ tags: [OpenPGP, Post-Quantum, Claws Mail, Sequoia, Fedora, RFC9980]
 draft: false
 ---
 
-This note records the Claws Mail part of the Fedora 45 RFC 9980 proof of concept. Complete the [shared setup](/notes/pq-openpgp-fedora-45-base) first.
+This guide covers the Claws Mail part of the Fedora 45 RFC 9980 proof of concept. Complete the [shared setup](/notes/pq-openpgp-fedora-45-base) first.
 
 Claws Mail uses its PGP plugins through GPGME:
 
@@ -31,7 +31,7 @@ Unlike Evolution, Claws Mail is therefore part of the GPGME-based test path.
 
 ## Install Claws Mail and the PGP plugins
 
-On the tested Fedora 45 KDE VM:
+Install the packages on Fedora 45 KDE:
 
 ```console
 sudo dnf install -y \
@@ -39,7 +39,7 @@ sudo dnf install -y \
   claws-mail-plugins-pgp
 ```
 
-The tested packages were:
+Verify that your package versions match or supersede this tested baseline:
 
 ```text
 claws-mail-4.4.0-8.fc45.x86_64
@@ -58,7 +58,7 @@ Use PGP/MIME for the test identity.
 
 ## Runtime evidence
 
-The running Claws Mail process loaded:
+While Claws Mail is running, confirm that the process loads:
 
 ```text
 /usr/lib64/claws-mail/plugins/pgpcore.so
@@ -66,7 +66,7 @@ The running Claws Mail process loaded:
 /usr/lib64/libgpgme.so.45.0.1
 ```
 
-Together with the Chameleon `gpgconf` mapping, this establishes the tested runtime path:
+Together with the Chameleon `gpgconf` mapping, this confirms the runtime path:
 
 ```text
 Claws Mail
@@ -96,7 +96,7 @@ No working SMTP server is required; the goal is to let Claws construct and queue
 
 Choose PGP/MIME as the privacy system and select the RFC 9980 test certificate.
 
-> **Short configuration note:** make sure the intended Claws Mail account is selected in the compose window. During the test, an initial signing failure was caused by composing with the wrong default account, not by the OpenPGP implementation.
+> **Short configuration note:** Select the intended Claws Mail account in the compose window. Choosing the wrong default account causes signing to fail even when the OpenPGP implementation works correctly.
 
 ## Create the three messages
 
@@ -114,19 +114,19 @@ to:
 rfc9980-poc@example.invalid
 ```
 
-The tested local MH mailbox was:
+Use the default local MH mailbox at:
 
 ```text
 ~/Mail
 ```
 
-and the queued messages were stored in:
+Find the queued messages in:
 
 ```text
 ~/Mail/queue
 ```
 
-In the final successful run:
+For reference, the successful test used these queue files:
 
 ```text
 ~/Mail/queue/1   Unsigned
@@ -136,14 +136,14 @@ In the final successful run:
 
 The exact numeric filenames are local queue state and should not be assumed in another run.
 
-The signed message had:
+Confirm that the signed message contains:
 
 ```text
 X-Claws-Sign:1
 Content-Type: multipart/signed
 ```
 
-The encrypted-and-signed message had:
+Confirm that the encrypted-and-signed message contains:
 
 ```text
 X-Claws-Sign:1
@@ -161,7 +161,7 @@ and parse the remaining message.
 
 ## Independent verification
 
-The signed-only PGP/MIME signature packet was:
+Inspect the signed-only PGP/MIME signature packet and confirm:
 
 ```text
 :signature packet: algo 30
@@ -177,7 +177,7 @@ VALIDSIG ... 30 ...
 SIGNED_VERIFY_RC=0
 ```
 
-The encrypted-and-signed message contained:
+Inspect the encrypted-and-signed message and confirm:
 
 ```text
 :pubkey enc packet: version 6, algo 35
@@ -197,7 +197,7 @@ DECRYPTION_OKAY
 DECRYPT_RC=0
 ```
 
-The decrypted MIME entity was:
+Confirm that the decrypted MIME entity contains:
 
 ```text
 Content-Type: multipart/signed
@@ -209,7 +209,7 @@ Its inner signature again contained:
 :signature packet: algo 30
 ```
 
-and independently verified with:
+Independently verify the inner signature and confirm:
 
 ```text
 GOODSIG
@@ -219,7 +219,7 @@ INNER_VERIFY_RC=0
 
 ## Result
 
-The clean Fedora 45 KDE test demonstrated:
+The procedure exercises this path:
 
 ```text
 Claws Mail
@@ -245,6 +245,6 @@ Encryption:
   inner signature independently valid
 ```
 
-No Claws Mail source patch was required for this proof of concept.
+This proof of concept requires no Claws Mail source patch.
 
-The brief account-selection issue encountered during setup was a user/configuration issue and is not part of the cryptographic result.
+Select the correct account in the compose window; an account-selection error is a configuration issue and does not form part of the cryptographic result.

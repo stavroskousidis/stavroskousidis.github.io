@@ -14,7 +14,7 @@ tags: [OpenPGP, Post-Quantum, KMail, Sequoia, Fedora]
 draft: false
 ---
 
-This is the KMail-specific part of the Fedora 45 proof of concept. Complete the [shared setup](/notes/pq-openpgp-fedora-45-base) first: install the experimental packages, select the compatibility environment, create or import the disposable test certificate, and authorize it. This guide derives from the full KMail walkthrough tested on the clean Fedora 45 VM; the separate base guide collects the steps shared with Claws Mail and Evolution.
+This guide covers the KMail-specific part of the Fedora 45 proof of concept. Complete the [shared setup](/notes/pq-openpgp-fedora-45-base) first: install the experimental packages, select the compatibility environment, create or import the disposable test certificate, and authorize it. Use the separate base guide for the steps shared with Claws Mail and Evolution.
 
 ```text
 KMail → QGpgME → GPGME++ → patched GPGME
@@ -22,7 +22,7 @@ KMail → QGpgME → GPGME++ → patched GPGME
       → Sequoia OpenPGP / Keystore
 ```
 
-The tested signing construction is ML-DSA-65+Ed25519 (algorithm 30); the encryption construction is ML-KEM-768+X25519 (algorithm 35). The application produced PGP/MIME messages and the saved messages were independently checked below.
+Use ML-DSA-65+Ed25519 (algorithm 30) for signing and ML-KEM-768+X25519 (algorithm 35) for encryption. The final sections show how to inspect and independently verify the resulting PGP/MIME messages.
 
 ## Install KMail
 
@@ -47,7 +47,7 @@ rpm -q \
   akonadi-server
 ```
 
-The clean Fedora 45 test used:
+Verify that your package versions match or supersede this tested baseline:
 
 ```text
 kmail-26.08.1-1.fc45.x86_64
@@ -61,7 +61,7 @@ akonadi-server-26.08.1-1.fc45.x86_64
 
 ## Start KMail in the Sequoia environment
 
-Start KMail from the same shell in which the compatibility environment was activated:
+Start KMail from the same shell in which you activated the compatibility environment:
 
 ```console
 kmail
@@ -99,7 +99,7 @@ grep -E \
   | sort -u
 ```
 
-The tested runtime loaded:
+Confirm that the process loads:
 
 ```text
 /usr/lib64/libgpgme.so.45.0.1
@@ -134,7 +134,7 @@ Name:  RFC9980 PoC
 Email: rfc9980-poc@example.invalid
 ```
 
-In the identity's cryptography settings, select the post-quantum OpenPGP certificate generated above for signing and encryption.
+In the identity's cryptography settings, select the post-quantum OpenPGP certificate that you generated during the shared setup for signing and encryption.
 
 Use KMail's normal `Local Folders` resource for Drafts, Sent and Outbox. No additional Maildir or isolated Akonadi instance is required.
 
@@ -158,7 +158,7 @@ Compose a message to:
 rfc9980-poc@example.invalid
 ```
 
-with both signing and encryption disabled.
+Disable both signing and encryption.
 
 Queue it.
 
@@ -172,7 +172,7 @@ This verifies the KMail, Akonadi and Outbox configuration independently of OpenP
 
 ## Test signing
 
-Compose another message to the same recipient with OpenPGP signing enabled and encryption disabled.
+Compose another message to the same recipient. Enable OpenPGP signing and disable encryption.
 
 Queue it.
 
@@ -185,7 +185,7 @@ Content-Type: multipart/signed;
 
 ## Test signing and encryption
 
-Compose a third message to the same recipient with both OpenPGP signing and encryption enabled.
+Compose a third message to the same recipient. Enable both OpenPGP signing and encryption.
 
 Queue it.
 
@@ -198,7 +198,7 @@ Content-Type: multipart/encrypted;
 
 ## Locate the Outbox messages
 
-On the tested Fedora 45 setup, the normal local Outbox is:
+Locate the normal local Outbox at:
 
 ```text
 ~/.local/share/akonadi_maildir_resource_0/outbox
@@ -219,7 +219,7 @@ Inspect the headers of the three messages and note their filenames.
 
 ## Independent message verification
 
-The following recipe can also be used on complete raw MIME messages exported from Claws Mail or Evolution; substitute the message paths and verification directory as appropriate.
+You can also use the following recipe on complete raw MIME messages exported from Claws Mail or Evolution. Substitute the message paths and verification directory as appropriate.
 
 ### Verify the signed message
 
@@ -265,7 +265,7 @@ Inspect the signature packet:
 gpg --list-packets "$WORK/signed-signature.asc"
 ```
 
-The tested signature contains:
+Confirm that the signature contains:
 
 ```text
 :signature packet: algo 30
@@ -280,7 +280,7 @@ gpg --status-fd=1 \
   "$WORK/signed-content.txt"
 ```
 
-The successful Fedora 45 test reported:
+A successful verification reports:
 
 ```text
 gpg: using MLDSA65_Ed25519 key ...
@@ -327,7 +327,7 @@ Inspect the packet:
 gpg --list-packets "$WORK/encrypted.pgp"
 ```
 
-The tested message contains:
+Confirm that the message contains:
 
 ```text
 :pubkey enc packet: version 6, algo 35
@@ -341,7 +341,7 @@ gpg --status-fd=1 \
   --decrypt "$WORK/encrypted.pgp"
 ```
 
-The successful test reported:
+A successful decryption reports:
 
 ```text
 [GNUPG:] ENC_TO ... 35 0
@@ -391,7 +391,7 @@ Inspect the inner signature:
 gpg --list-packets "$WORK/inner-signature.asc"
 ```
 
-The tested result contains:
+Confirm that the result contains:
 
 ```text
 :signature packet: algo 30
@@ -406,7 +406,7 @@ gpg --status-fd=1 \
   "$WORK/inner-content.txt"
 ```
 
-The successful test reported:
+A successful verification reports:
 
 ```text
 gpg: using MLDSA65_Ed25519 key ...
@@ -416,9 +416,9 @@ gpg: using MLDSA65_Ed25519 key ...
 
 and returned status `0`.
 
-## What the clean-VM test demonstrated
+## Result
 
-The Fedora 45 test demonstrated the following complete path:
+The procedure exercises this complete path:
 
 ```text
 KMail
@@ -453,4 +453,4 @@ This establishes that KMail can use the Sequoia-based RFC 9980 implementation th
 
 ## Scope and next guides
 
-This demonstrates successful KMail integration on the tested Fedora 45 KDE desktop. The documented tests used a short-lived, passwordless test key. The isolated compatibility package leaves Fedora's system `gpg` and `gpgsm` intact. See the [shared setup](/notes/pq-openpgp-fedora-45-base) for the exact package versions, Sequoia import and trust commands, the transitional agent/Pinentry architecture, and how to leave the test environment. See [Claws Mail](/notes/pq-openpgp-fedora-45-claws-mail) and [Evolution](/notes/pq-openpgp-fedora-45-evolution) for the other independently verified client paths.
+This procedure demonstrates successful KMail integration on Fedora 45 KDE. Use only a short-lived, passwordless key for this test. The isolated compatibility package leaves Fedora's system `gpg` and `gpgsm` intact. See the [shared setup](/notes/pq-openpgp-fedora-45-base) for the exact package versions, Sequoia import and trust commands, the transitional agent/Pinentry architecture, and how to leave the test environment. See [Claws Mail](/notes/pq-openpgp-fedora-45-claws-mail) and [Evolution](/notes/pq-openpgp-fedora-45-evolution) for the other independently verified client paths.

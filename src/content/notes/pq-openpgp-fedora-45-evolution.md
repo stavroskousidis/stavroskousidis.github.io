@@ -17,7 +17,7 @@ tags: [OpenPGP, Post-Quantum, Evolution, Sequoia, Fedora, RFC9980]
 draft: false
 ---
 
-This note records the Evolution-specific part of the Fedora 45 RFC 9980 proof of concept. Complete the [shared setup](/notes/pq-openpgp-fedora-45-base) first.
+This guide covers the Evolution-specific part of the Fedora 45 RFC 9980 proof of concept. Complete the [shared setup](/notes/pq-openpgp-fedora-45-base) first.
 
 Evolution is architecturally different from KMail and Claws Mail. Its OpenPGP path uses Camel's GnuPG-compatible command-line integration rather than the GPGME path exercised by the other two clients:
 
@@ -29,7 +29,7 @@ Evolution
   -> Sequoia OpenPGP / Keystore
 ```
 
-This distinction was verified at runtime.
+The runtime checks below confirm this distinction.
 
 ## Test environment
 
@@ -43,7 +43,7 @@ sequoia-openpgp 2.4.1
 sequoia-sq 1.4.1
 ```
 
-Evolution was installed explicitly:
+Install Evolution:
 
 ```console
 sudo dnf install -y evolution
@@ -51,7 +51,7 @@ sudo dnf install -y evolution
 
 ## Stock GPGME is sufficient
 
-For this test the experimental GPGME patch was deliberately removed and Fedora's stock package restored:
+Remove the experimental GPGME patch and restore Fedora's stock package:
 
 ```console
 sudo dnf copr disable stavroskousidis/rfc9980-openpgp-poc
@@ -61,13 +61,13 @@ sudo dnf distro-sync -y \
   gpgme
 ```
 
-The resulting package was:
+Confirm that Fedora installed:
 
 ```text
 gpgme-2.0.1-6.fc45.x86_64
 ```
 
-The Chameleon package remained installed.
+This operation leaves the Chameleon package installed.
 
 This is an important result: Evolution's successful RFC 9980 signing and encryption did not require the proof-of-concept GPGME algorithm patch.
 
@@ -166,20 +166,20 @@ to:
 rfc9980-poc@example.invalid
 ```
 
-Evolution stored the test messages in:
+Find Evolution's test messages in:
 
 ```text
 ~/.local/share/evolution/mail/local/.Outbox/cur
 ```
 
-The signed-only message used:
+Confirm that the signed-only message uses:
 
 ```text
 Content-Type: multipart/signed; micalg="pgp-sha512";
 protocol="application/pgp-signature"
 ```
 
-The encrypted-and-signed message used:
+Confirm that the encrypted-and-signed message uses:
 
 ```text
 Content-Type: multipart/encrypted;
@@ -195,7 +195,7 @@ The signed-only message contained:
 digest algo 10
 ```
 
-and verified as:
+Verify it independently and confirm:
 
 ```text
 using MLDSA65_Ed25519 key ...
@@ -223,7 +223,7 @@ DECRYPTION_OKAY
 DECRYPT_RC=0
 ```
 
-The decrypted MIME entity was again PGP/MIME signed:
+Confirm that the decrypted MIME entity is also PGP/MIME signed:
 
 ```text
 Content-Type: multipart/signed; micalg="pgp-sha512";
@@ -235,7 +235,7 @@ The inner signature contained:
 :signature packet: algo 30
 ```
 
-and independently verified with:
+Verify the inner signature independently and confirm:
 
 ```text
 GOODSIG
@@ -334,7 +334,7 @@ This is a separate GnuPG-CLI compatibility gap worth tracking independently of t
 
 ## Result
 
-The Fedora 45 GNOME test demonstrated:
+The procedure exercises this path:
 
 ```text
 Evolution
@@ -345,7 +345,7 @@ Evolution
 
 using Fedora's stock GPGME package.
 
-The generated messages were independently verified as:
+Independent verification confirms:
 
 ```text
 Signing:

@@ -22,7 +22,7 @@ This is the shared setup for three client-specific notes:
 
 The experiment tests hybrid post-quantum OpenPGP mail on Fedora 45 using Sequoia Chameleon as a GnuPG-compatible OpenPGP engine.
 
-The tested constructions are:
+Use these constructions:
 
 ```text
 Signing:    ML-DSA-65+Ed25519   OpenPGP algorithm 30
@@ -54,7 +54,7 @@ Evolution
   -> Sequoia OpenPGP / Keystore
 ```
 
-The important architectural difference is that KMail and Claws Mail exercise GPGME and therefore need the experimental RFC 9980 GPGME patch used in this proof of concept. Evolution does not: the successful Evolution test used Fedora's stock GPGME package.
+KMail and Claws Mail exercise GPGME and therefore require the experimental RFC 9980 GPGME patch used in this proof of concept. Evolution does not; use Fedora's stock GPGME package for Evolution.
 
 ## Install the common components
 
@@ -81,7 +81,7 @@ rpm -q \
   sequoia-sq
 ```
 
-The tests used Sequoia Chameleon `0.13.1` with `sequoia-openpgp 2.4.1`. The Fedora `sequoia-sq` package release changed during the test period (`1.4.1-1.fc45` and later `1.4.1-3.fc45`); this did not change the tested key-generation syntax.
+Use Sequoia Chameleon `0.13.1` with `sequoia-openpgp 2.4.1`. Both Fedora `sequoia-sq` releases used during testing (`1.4.1-1.fc45` and `1.4.1-3.fc45`) accept the key-generation syntax below.
 
 ## GPGME: client-specific setup
 
@@ -96,7 +96,7 @@ sudo dnf upgrade -y \
   gpgme
 ```
 
-The tested build was:
+Confirm that Fedora installs this build:
 
 ```text
 gpgme-2.0.1-6.rfc9980.1.fc45.x86_64
@@ -106,13 +106,13 @@ The patch adds recognition of the RFC 9980 algorithm IDs needed by the GPGME-bas
 
 ### Evolution
 
-Evolution was deliberately tested with Fedora's stock GPGME:
+For Evolution, use Fedora's stock GPGME:
 
 ```text
 gpgme-2.0.1-6.fc45.x86_64
 ```
 
-If the patched build was installed previously, restore Fedora's package before the Evolution test:
+If you previously installed the patched build, restore Fedora's package before testing Evolution:
 
 ```console
 sudo dnf copr disable stavroskousidis/rfc9980-openpgp-poc
@@ -122,7 +122,7 @@ sudo dnf distro-sync -y \
   gpgme
 ```
 
-The installed Chameleon package remains present.
+This operation leaves the Chameleon package installed.
 
 ## Select Chameleon for the desktop session
 
@@ -173,7 +173,7 @@ sq key generate \
 sq inspect rfc9980-secret.pgp
 ```
 
-The generated certificate has an ML-DSA-65+Ed25519 primary/signing structure and an ML-KEM-768+X25519 encryption subkey.
+This command creates a certificate with an ML-DSA-65+Ed25519 primary/signing structure and an ML-KEM-768+X25519 encryption subkey.
 
 Import it into the Sequoia-backed environment:
 
@@ -204,7 +204,7 @@ The one-day, passwordless key is intentionally disposable and should not be used
 
 ## Test methodology
 
-Each client is tested with three messages to:
+In each client, create three messages to:
 
 ```text
 rfc9980-poc@example.invalid
@@ -218,7 +218,7 @@ Signed only
 Encrypted + signed
 ```
 
-The signed and encrypted messages are then inspected independently:
+Then inspect the signed and encrypted messages independently and confirm:
 
 ```text
 signed-only signature packet:
@@ -246,12 +246,12 @@ inner signature after decryption:
 
 | Client | Desktop | GPGME | Result |
 | --- | --- | --- | --- |
-| KMail 26.08.1 | Fedora 45 KDE Plasma | experimental patched GPGME | Signed and encrypted PGP/MIME verified independently with algorithms 30 and 35. |
-| Claws Mail 4.4.0 | Fedora 45 KDE Plasma | experimental patched GPGME | Signed and encrypted PGP/MIME verified independently with algorithms 30 and 35. |
-| Evolution 3.62.0 | Fedora 45 GNOME | stock Fedora GPGME | Signed and encrypted PGP/MIME verified independently with algorithms 30 and 35; Camel invokes the GnuPG-compatible CLI directly. |
+| KMail 26.08.1 | Fedora 45 KDE Plasma | experimental patched GPGME | Independent verification of signed and encrypted PGP/MIME succeeds with algorithms 30 and 35. |
+| Claws Mail 4.4.0 | Fedora 45 KDE Plasma | experimental patched GPGME | Independent verification of signed and encrypted PGP/MIME succeeds with algorithms 30 and 35. |
+| Evolution 3.62.0 | Fedora 45 GNOME | stock Fedora GPGME | Independent verification of signed and encrypted PGP/MIME succeeds with algorithms 30 and 35; Camel invokes the GnuPG-compatible CLI directly. |
 
 See the client-specific notes for the runtime evidence and message locations.
 
 ## Scope
 
-This is an experimental interoperability proof of concept, not a recommendation to replace Fedora's system OpenPGP stack globally. The COPR packages and compatibility wrapper were deliberately scoped so that Fedora's `/usr/bin/gpg*` tools are not replaced on disk.
+Treat this as an experimental interoperability proof of concept, not as a recommendation to replace Fedora's system OpenPGP stack globally. The COPR packages and compatibility wrapper keep Fedora's `/usr/bin/gpg*` tools unchanged on disk.
