@@ -4,7 +4,7 @@ description: "Shared Sequoia Chameleon setup for KMail, Claws Mail and Evolution
 type: "Guide"
 status: "Experimental"
 published: "2026-09-25"
-updated: "2026-09-25"
+updated: "2026-09-26"
 testedOn:
   - "Fedora 45 KDE Plasma (KMail and Claws Mail)"
   - "Fedora 45 GNOME (Evolution)"
@@ -160,8 +160,7 @@ cd "$HOME/rfc9980-mail-test"
 
 sq key generate \
   --own-key \
-  --name "RFC9980 PoC" \
-  --email "rfc9980-poc@example.invalid" \
+  --userid "RFC9980 PoC <rfc9980-poc@example.invalid>" \
   --profile rfc9580 \
   --cipher-suite mldsa65-ed25519 \
   --encryption-algorithm mlkem768-x25519 \
@@ -173,7 +172,20 @@ sq key generate \
 sq inspect rfc9980-secret.pgp
 ```
 
-This command creates a certificate with an ML-DSA-65+Ed25519 primary/signing structure and an ML-KEM-768+X25519 encryption subkey.
+This command uses one explicit User ID containing both the display name and e-mail address. This is the identity form used for the walkthrough because it integrates cleanly with Evolution's sender-address matching.
+
+Alternatively, generate the certificate with separate name and e-mail User IDs by replacing the `--userid` option with:
+
+```console
+--name "RFC9980 PoC" \
+--email "rfc9980-poc@example.invalid"
+```
+
+Choose one identity form; do not create both certificates for the test. Both forms worked with KMail and Evolution in this proof of concept. Evolution behaved more cleanly with the explicit `--userid` form containing the sender e-mail address, so the rest of these guides use that form.
+
+The mail client's account display name is a separate account setting and does not determine how the OpenPGP certificate's User ID is encoded.
+
+The command creates a certificate with an ML-DSA-65+Ed25519 primary/signing structure and an ML-KEM-768+X25519 encryption subkey.
 
 Import it into the Sequoia-backed environment:
 
