@@ -111,6 +111,11 @@ code { font: .77rem/1.8 ui-monospace, SFMono-Regular, Menlo, monospace; overflow
 .note-body pre { max-width: 100%; margin: 1.5rem 0; padding: 1.2rem; overflow-x: auto; background: var(--ink); color: var(--paper); }
 .note-body pre code { font-size: .82rem; }
 .note-body :not(pre) > code { padding: .12rem .3rem; background: var(--panel); }
+.note-body table { width: 100%; max-width: 100%; margin: 1.5rem 0; border-collapse: collapse; text-align: left; }
+.note-body th, .note-body td { padding: .75rem 1rem; vertical-align: top; border-bottom: 1px solid var(--line); }
+.note-body th:first-child, .note-body td:first-child { padding-left: 0; }
+.note-body th:last-child, .note-body td:last-child { padding-right: 0; }
+.note-body th { font-weight: 650; }
 .site-footer { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; padding: 3.5rem 0 2rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; }
 .site-footer strong { color: var(--ink); }
 .footer-links { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: .7rem 1.5rem; }
