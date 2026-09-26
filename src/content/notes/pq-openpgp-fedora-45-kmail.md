@@ -4,7 +4,6 @@ description: "KMail-specific setup, PGP/MIME tests and independently verified hy
 type: "Guide"
 status: "Experimental"
 published: "2026-09-25"
-updated: "2026-09-25"
 testedOn:
   - "Fedora 45 KDE Plasma"
   - "KMail 26.08.1"
