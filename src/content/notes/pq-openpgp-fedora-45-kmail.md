@@ -90,7 +90,7 @@ Inspect the crypto libraries loaded by the process:
 
 ```console
 grep -E \
-  'libgpgme\\.so|libgpgmepp\\.so|libqgpgme' \
+  'libgpgme\.so|libgpgmepp\.so|libqgpgme' \
   "/proc/$KMAIL_PID/maps" \
   | awk '{print $6}' \
   | sort -u
