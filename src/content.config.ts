@@ -9,7 +9,6 @@ const notes = defineCollection({
     type: z.enum(['Guide', 'Lab note', 'Background']),
     status: z.enum(['Stable', 'Experimental', 'Draft']),
     published: z.string(),
-    updated: z.string(),
     testedOn: z.array(z.string()).default([]),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false)
