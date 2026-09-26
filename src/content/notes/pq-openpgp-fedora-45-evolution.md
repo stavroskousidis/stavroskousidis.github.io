@@ -4,7 +4,7 @@ description: "Evolution RFC 9980 proof of concept using Camel's GnuPG-compatible
 type: "Guide"
 status: "Experimental"
 published: "2026-09-25"
-updated: "2026-09-25"
+updated: "2026-09-26"
 testedOn:
   - "Fedora 45 GNOME"
   - "Evolution 3.62.0"
@@ -148,7 +148,7 @@ Name:  RFC9980 PoC
 Email: rfc9980-poc@example.invalid
 ```
 
-For the most reproducible test, enter the full certificate fingerprint explicitly in Evolution's **OpenPGP Key ID** field.
+Keep Evolution's default option to use the sender e-mail address for OpenPGP key selection. With the `--userid "RFC9980 PoC <rfc9980-poc@example.invalid>"` certificate from the shared setup, no explicit fingerprint is required in the **OpenPGP Key ID** field.
 
 ## Create the three messages
 
@@ -245,74 +245,32 @@ INNER_VERIFY_RC=0
 
 One test message contained two identical algorithm-35 PKESK packets because Evolution's **Always encrypt to myself** option was enabled.
 
-## Sender-address warning
+## Certificate identity interoperability
 
-With the original disposable certificate generated using separate `--name` and `--email` options, Evolution successfully verified the signature but displayed:
+The shared setup uses a single explicit User ID:
+
+```text
+RFC9980 PoC <rfc9980-poc@example.invalid>
+```
+
+and leaves Evolution on its default sender-e-mail-address key selection. This combination worked without requiring an explicit fingerprint in the **OpenPGP Key ID** field.
+
+A certificate generated with separate `--name` and `--email` options also worked cryptographically with Evolution, but one test displayed:
 
 ```text
 Valid signature, but sender address and signer address do not match (RFC9980 PoC)
 ```
 
-The certificate contained separate User IDs:
+The certificate represented the identity as separate User IDs:
 
 ```text
 RFC9980 PoC
 <rfc9980-poc@example.invalid>
 ```
 
-Adding a third, combined User ID:
+Independent verification still returned `GOODSIG`, `VALIDSIG` and exit status `0`; the warning was an identity-matching issue rather than a signature failure. Adding another Combined User ID during that investigation did not remove the warning.
 
-```text
-RFC9980 PoC <rfc9980-poc@example.invalid>
-```
-
-did not remove the warning.
-
-Independent OpenPGP verification still returned `GOODSIG`, `VALIDSIG` and exit status `0`. The warning therefore did not indicate a cryptographic verification failure.
-
-## Follow-up: selector interoperability
-
-A clean follow-up test exposed a separate interoperability issue in the current test stack.
-
-Evolution's **Use sender e-mail address** setting causes Camel to sign using:
-
-```text
--u rfc9980-poc@example.invalid
-```
-
-A direct Chameleon test reproduced the failure:
-
-```console
-gpg \
-  --local-user "rfc9980-poc@example.invalid" \
-  --armor \
-  --detach-sign \
-  message.txt
-```
-
-with:
-
-```text
-gpg: signing failed: No certificates matched rfc9980-poc@example.invalid
-```
-
-The same certificate selected by full fingerprint signed successfully.
-
-A fresh certificate with:
-
-```text
-<rfc9980-poc@example.invalid>
-RFC9980 PoC
-RFC9980 PoC <rfc9980-poc@example.invalid>
-```
-
-was present, trusted and usable by fingerprint, but the e-mail selector still did not resolve it in the follow-up test.
-
-This selector behavior is separate from RFC 9980 cryptographic support. The successful packet-level tests prove that Evolution can create and process the post-quantum messages when the certificate is selected unambiguously.
-
-For reproducible testing, use the full fingerprint in Evolution's **OpenPGP Key ID** field.
-
-The exact reason why the initial run succeeded with **Use sender e-mail address** while the later clean selector test failed remains unresolved and should not be over-interpreted as a final upstream diagnosis.
+Both certificate-generation approaches are therefore viable for the tested cryptographic operations. For this Evolution walkthrough, prefer the explicit `--userid` form containing the sender e-mail address because it gave the cleaner application-level result.
 
 ## Additional GnuPG-CLI compatibility observation
 
