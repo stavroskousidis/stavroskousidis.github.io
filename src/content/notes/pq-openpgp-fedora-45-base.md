@@ -4,7 +4,6 @@ description: "Shared Sequoia Chameleon setup for KMail, Claws Mail and Evolution
 type: "Guide"
 status: "Experimental"
 published: "2026-09-26"
-updated: "2026-09-26"
 testedOn:
   - "Fedora 45 KDE Plasma (KMail and Claws Mail)"
   - "Fedora 45 GNOME (Evolution)"
