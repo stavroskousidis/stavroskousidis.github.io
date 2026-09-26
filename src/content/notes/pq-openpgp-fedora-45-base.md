@@ -3,7 +3,7 @@ title: "Post-quantum OpenPGP on Fedora 45: shared setup"
 description: "Shared Sequoia Chameleon setup for KMail, Claws Mail and Evolution RFC 9980 proof-of-concept tests on Fedora 45."
 type: "Guide"
 status: "Experimental"
-published: "2026-09-25"
+published: "2026-09-26"
 updated: "2026-09-26"
 testedOn:
   - "Fedora 45 KDE Plasma (KMail and Claws Mail)"
@@ -193,7 +193,9 @@ Import it into the Sequoia-backed environment:
 sq key import rfc9980-secret.pgp
 ```
 
-Importing the key makes the certificate available to Sequoia, but does not authenticate its User ID. Because this is a self-generated test identity without an external certification path, explicitly authorize the certificate-to-User-ID binding in Sequoia's PKI. This matters because applications may need more than “a suitable key exists”: they may require a sufficiently authenticated binding between the sender or recipient identity and that key before selecting it for encryption or regarding a signature as belonging to that identity.
+Importing the key makes the certificate available to Sequoia, but does not authenticate its User ID. Because this is a self-generated test identity without an external certification path, explicitly authorize the certificate-to-User-ID binding in Sequoia's PKI.
+
+This matters because applications may need more than “a suitable key exists”: they may require a sufficiently authenticated binding between the sender or recipient identity and that key before selecting it for encryption or regarding a signature as belonging to that identity.
 
 Authorize the local test identity using the fingerprint printed by `sq`:
 
