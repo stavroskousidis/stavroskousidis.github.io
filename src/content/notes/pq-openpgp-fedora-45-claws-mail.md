@@ -4,7 +4,6 @@ description: "Claws Mail PGP/MIME proof of concept using Sequoia Chameleon and p
 type: "Guide"
 status: "Experimental"
 published: "2026-09-25"
-updated: "2026-09-25"
 testedOn:
   - "Fedora 45 KDE Plasma"
   - "Claws Mail 4.4.0"
