@@ -39,12 +39,10 @@ end
 
 function Meta(meta)
   local published = stringify(meta.published)
-  local updated = stringify(meta.updated)
   local tested_on = stringify_list(meta.testedOn)
   local date_lines = {}
 
   append_field(date_lines, "Published", published, true)
-  append_field(date_lines, "Updated", updated, true)
   append_field(date_lines, "Tested on", tested_on, false)
 
   if #date_lines > 0 then
