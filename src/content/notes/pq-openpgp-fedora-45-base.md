@@ -256,11 +256,13 @@ inner signature after decryption:
 
 ## Results
 
-| Client | Desktop | GPGME | Result |
+| Client | Desktop | GPGME | Verified |
 | --- | --- | --- | --- |
-| KMail 26.08.1 | Fedora 45 KDE Plasma | experimental patched GPGME | Independent verification of signed and encrypted PGP/MIME succeeds with algorithms 30 and 35. |
-| Claws Mail 4.4.0 | Fedora 45 KDE Plasma | experimental patched GPGME | Independent verification of signed and encrypted PGP/MIME succeeds with algorithms 30 and 35. |
-| Evolution 3.62.0 | Fedora 45 GNOME | stock Fedora GPGME | Independent verification of signed and encrypted PGP/MIME succeeds with algorithms 30 and 35; Camel invokes the GnuPG-compatible CLI directly. |
+| KMail 26.08.1 | Fedora 45 KDE Plasma | Experimental patch | Sign ✓ · Encrypt ✓ |
+| Claws Mail 4.4.0 | Fedora 45 KDE Plasma | Experimental patch | Sign ✓ · Encrypt ✓ |
+| Evolution 3.62.0 | Fedora 45 GNOME | Fedora stock | Sign ✓ · Encrypt ✓ |
+
+KMail and Claws Mail use the experimental RFC 9980 GPGME patch. Evolution uses Fedora's stock GPGME package because Camel invokes the GnuPG-compatible Chameleon CLI directly. Independent verification confirms algorithms 30 and 35 for all three clients.
 
 See the client-specific notes for the runtime evidence and message locations.
 
