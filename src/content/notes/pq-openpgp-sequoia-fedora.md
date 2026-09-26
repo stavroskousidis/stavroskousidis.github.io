@@ -4,7 +4,7 @@ description: "A reproducible first step towards hybrid post-quantum OpenPGP usin
 type: "Guide"
 status: "Experimental"
 published: "2026-09-19"
-updated: "2026-09-19"
+updated: "2026-09-26"
 testedOn:
   - "Fedora 45"
   - "Sequoia PGP sq"
@@ -39,13 +39,12 @@ Before continuing, confirm that the help output lists `mldsa65-ed25519` and `mlk
 
 ## Generate the key
 
-Replace the example identity and output filenames before running the command:
+Replace the example identity and output filenames before running the command. One option is to create a single explicit User ID containing both name and e-mail address:
 
 ```console
 sq key generate \
   --own-key \
-  --name "YOUR NAME" \
-  --email "you@example.org" \
+  --userid "YOUR NAME <you@example.org>" \
   --profile rfc9580 \
   --cipher-suite mldsa65-ed25519 \
   --encryption-algorithm mlkem768-x25519 \
@@ -53,6 +52,15 @@ sq key generate \
   --output openpgp-pq-secret.pgp \
   --rev-cert openpgp-pq.rev
 ```
+
+Alternatively, replace the `--userid` option with separate identity arguments:
+
+```console
+--name "YOUR NAME" \
+--email "you@example.org"
+```
+
+Choose the identity representation that fits the intended application; you do not need to generate both certificates. Both forms worked in the Fedora 45 KMail and Evolution proof-of-concept tests. Evolution integrated more cleanly in the tested setup when the certificate used an explicit User ID containing the sender e-mail address. See the [Evolution integration guide](/notes/pq-openpgp-fedora-45-evolution) for that application-specific observation.
 
 Enter a strong, unique passphrase when prompted. The secret-key file is sensitive even when it is encrypted.
 
@@ -90,4 +98,4 @@ Generating a certificate does not imply that desktop mail clients can use it. In
 
 ## Next steps
 
-Follow-up notes will cover exporting the public certificate, interoperability tests, and integration experiments with KMail, Claws Mail and Evolution.
+Continue with the Fedora 45 mail-client proof-of-concept guides for [KMail](/notes/pq-openpgp-fedora-45-kmail), [Claws Mail](/notes/pq-openpgp-fedora-45-claws-mail) and [Evolution](/notes/pq-openpgp-fedora-45-evolution). Their [shared setup](/notes/pq-openpgp-fedora-45-base) records the common Chameleon environment, disposable test certificate and verification methodology.
