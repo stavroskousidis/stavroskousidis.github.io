@@ -209,7 +209,7 @@ Match the test messages by their decoded subjects and MIME types; do not assume 
 ```console
 find "$OUTBOX" -type f \( -path '*/new/*' -o -path '*/cur/*' \) -print0 |
 while IFS= read -r -d '' MESSAGE; do
-  printf '\\n=== %s ===\\n' "$MESSAGE"
+  printf '\n=== %s ===\n' "$MESSAGE"
   python3 - "$MESSAGE" <<'PY'
 from email import policy
 from email.parser import BytesParser
