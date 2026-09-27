@@ -111,6 +111,9 @@ code { font: .77rem/1.8 ui-monospace, SFMono-Regular, Menlo, monospace; overflow
 .note-body pre { max-width: 100%; margin: 1.5rem 0; padding: 1.2rem; overflow-x: auto; background: var(--ink); color: var(--paper); }
 .note-body pre code { font-size: .82rem; }
 .note-body :not(pre) > code { padding: .12rem .3rem; background: var(--panel); }
+.note-body a { color: var(--accent-ink); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em; }
+.note-body a:hover { text-decoration-thickness: 2px; }
+.note-body a code { text-decoration: none; }
 .note-body table { width: 100%; max-width: 100%; margin: 1.5rem 0; border-collapse: collapse; text-align: left; }
 .note-body th, .note-body td { padding: .75rem 1rem; vertical-align: top; border-bottom: 1px solid var(--line); }
 .note-body th:first-child, .note-body td:first-child { padding-left: 0; }
