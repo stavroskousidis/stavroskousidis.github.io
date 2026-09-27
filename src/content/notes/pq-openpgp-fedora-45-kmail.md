@@ -58,7 +58,7 @@ gpgme-2.0.1-6.rfc9980.1.fc45.x86_64
 gpgmepp-2.0.0-2.fc45.x86_64
 qgpgme-qt6-2.0.0-4.fc45.x86_64
 libkleo-26.08.1-1.fc45.x86_64
-akonadi-server-26.08.1-1.fc45.x86_64
+akonadi-server-26.08.1-2.fc45.x86_64
 ```
 
 ## Start KMail and verify the runtime stack
@@ -438,6 +438,7 @@ For signing:
 ```text
 OpenPGP algorithm: 30
 Construction: ML-DSA-65+Ed25519
+Signature packet version: 6
 KMail PGP/MIME creation: successful
 Independent verification: successful
 ```
@@ -447,7 +448,7 @@ For encryption:
 ```text
 OpenPGP algorithm: 35
 Construction: ML-KEM-768+X25519
-OpenPGP packet version: 6
+Public-key encrypted session key packet version: 6
 KMail PGP/MIME creation: successful
 Independent decryption: successful
 Inner signature verification: successful
