@@ -3,7 +3,7 @@ title: "Post-quantum OpenPGP with KMail on Fedora 45 KDE"
 description: "KMail-specific setup, PGP/MIME tests and independently verified hybrid post-quantum packets."
 type: "Guide"
 status: "Experimental"
-published: "2026-09-26"
+published: "2026-09-27"
 testedOn:
   - "Fedora 45 KDE Plasma"
   - "KMail 26.08.1"
@@ -108,28 +108,32 @@ The library paths establish the GPGME integration, while the package and `gpgcon
 
 ## Configure a KMail test identity
 
-Create a dedicated test identity, for example:
+On the first KMail start, skip the account setup assistant. This test does not require a receiving account. Configure the test identity and outgoing transport manually under **Settings → Configure KMail → Accounts**.
+
+Under **Identities**, create a dedicated test identity:
 
 ```text
 Name:  RFC9980 PoC
 Email: rfc9980-poc@example.invalid
 ```
 
-In the identity's cryptography settings, select the post-quantum OpenPGP certificate that you generated during the shared setup for signing and encryption.
+Modify the identity and open its **Cryptography** tab. KMail should automatically match the identity to the certified post-quantum OpenPGP certificate generated during the shared setup. Verify that this certificate is selected. If KMail did not select it automatically, select it manually. Keep **Use same key for encryption and signing** enabled.
 
-Use KMail's normal `Local Folders` resource for Drafts, Sent and Outbox. No separate Maildir resource or isolated Akonadi instance is required. The existing Local Folders resource may itself use a Maildir directory on disk.
+Use KMail's normal `Local Folders` resource for Drafts, Sent and Outbox. Do not create a receiving account, separate Maildir resource, or isolated Akonadi instance for this test. The existing Local Folders resource may itself use a Maildir directory on disk.
 
-If KMail requires an outgoing transport before it will queue a message, create a deliberately non-functional local SMTP transport for the test, for example:
+Under **Sending**, create a deliberately non-functional local SMTP transport so KMail can queue the test messages. In the tested KMail 26.08.1 interface, configure:
 
 ```text
 Name: RFC9980 Test
 Server: localhost
 Port: 25
-Authentication: none
-Encryption: none
+Encryption: None
+Authentication: LOGIN
 ```
 
-The purpose is only to let KMail construct the message and place it in Outbox. A working SMTP server is not required for the cryptographic test.
+KMail 26.08.1 does not offer a `None` authentication method in this transport dialog. No credentials are needed for this test because the transport is deliberately non-functional. Set **Send messages in outbox folder** to **Never Automatically** so the queued messages remain available for inspection.
+
+The purpose of the transport is only to let KMail construct the message and place it in Outbox. A working SMTP server is not required for the cryptographic test.
 
 ## Test unsigned mail
 
@@ -200,7 +204,28 @@ find "$OUTBOX" -type f \( -path '*/new/*' -o -path '*/cur/*' \) \
   -printf '%T@ %p\n' | sort -nr | head
 ```
 
-Match the three test messages by their subjects and MIME headers; do not assume that the three newest files necessarily belong to this test. Record the full paths of the signed-only and encrypted-and-signed messages.
+Match the test messages by their decoded subjects and MIME types; do not assume that the three newest files necessarily belong to this test:
+
+```console
+find "$OUTBOX" -type f \( -path '*/new/*' -o -path '*/cur/*' \) -print0 |
+while IFS= read -r -d '' MESSAGE; do
+  printf '\\n=== %s ===\\n' "$MESSAGE"
+  python3 - "$MESSAGE" <<'PY'
+from email import policy
+from email.parser import BytesParser
+from pathlib import Path
+import sys
+
+path = Path(sys.argv[1])
+message = BytesParser(policy=policy.default).parsebytes(path.read_bytes())
+
+print("Subject:", message.get("Subject", ""))
+print("Content-Type:", message.get_content_type())
+PY
+done
+```
+
+For the three messages created above, identify the entries with subjects `Unsigned`, `Signed only`, and `Encrypted + signed`. Their MIME types should be `text/plain`, `multipart/signed`, and `multipart/encrypted`, respectively. Record the full paths of the signed-only and encrypted-and-signed messages.
 
 ## Independent message verification
 
