@@ -360,4 +360,3 @@ Encryption:
 
 This proof of concept requires no Claws Mail source patch.
 
-Select the correct account in the compose window; an account-selection error is a configuration issue and does not form part of the cryptographic result.
