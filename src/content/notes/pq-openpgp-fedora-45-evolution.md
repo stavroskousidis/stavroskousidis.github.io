@@ -1,9 +1,10 @@
 ---
+
 description: Evolution RFC 9980 proof of concept using Camel's
   GnuPG-compatible CLI integration and Sequoia Chameleon, with stock
   Fedora GPGME.
 draft: false
-published: 2026-09-28
+published: "2026-09-28"
 status: Experimental
 tags:
 - OpenPGP
