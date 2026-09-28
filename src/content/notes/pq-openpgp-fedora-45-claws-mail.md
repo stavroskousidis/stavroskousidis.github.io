@@ -81,7 +81,7 @@ Your email address: rfc9980-poc@example.invalid
 Organization:       [leave blank]
 ```
 
-On **Receiving mail**, select **Local mbox file**. Leave the automatically selected local mailbox unchanged. In the tested VM it was `/var/mail/chewbacca`; normally this is the local system mailbox for the current user. This receiving mailbox is not the MH mailbox used below for queued test messages.
+On **Receiving mail**, select **Local mbox file**. Leave the automatically selected local mailbox unchanged. Normally this is `/var/mail/$USER`, the local system mailbox for the current user. This receiving mailbox is not the MH mailbox used below for queued test messages.
 
 On **Sending mail**, use:
 
@@ -132,30 +132,41 @@ Together with the package and `gpgconf` checks, this establishes the GPGME-based
 
 ## Configure the test account
 
-Open **Configuration -> Edit accounts...**, select the account created by the wizard, and choose **Edit**.
+Open **Configuration -> Edit accounts...**. The account created by the first-run wizard may not yet be displayed as **RFC9980 PoC**. With the local-mbox setup above, Claws can initially name it after the local mailbox, normally `/var/mail/$USER`. Select that wizard-created account and choose **Edit**.
 
-On **Basic**, set **Name of account** to:
-
-```text
-RFC9980 PoC
-```
-
-The first-run wizard does not ask for this internal account name; with a local receiving account, Claws initially names it after the local mailbox. Renaming it makes the intended account unambiguous in the compose window.
-
-Confirm that **Basic** also contains:
+On **Basic**, use:
 
 ```text
+Name of account:    RFC9980 PoC
+Set as default:     enabled
 Full name:          RFC9980 PoC
 Mail address:       rfc9980-poc@example.invalid
 Protocol:           Local mbox file
+Local mailbox:      /var/mail/$USER
 SMTP server (send): localhost
 ```
 
-On **Privacy**, set **Default privacy system** to **PGP/MIME**. Leave **Always sign messages** and **Always encrypt messages** disabled so that you can create the unsigned, signed-only, and encrypted-and-signed variants separately.
+Keep the wizard-created local mailbox value if it differs from `/var/mail/$USER`. The first-run wizard does not ask for the internal **Name of account**; renaming it to **RFC9980 PoC** makes the test account easy to identify.
 
-Under **Plugins -> GPG**, choose **Select key by your email address**. With the test identity from the shared setup, this selects the certificate whose User ID contains `rfc9980-poc@example.invalid`.
+On **Privacy**, use:
 
-Choose **OK** to save the account settings, then close the account list.
+```text
+Default privacy system:                                  PGP/MIME
+Always sign messages:                                    disabled
+Always encrypt messages:                                 disabled
+Always sign messages when replying to a signed message:  enabled
+Always encrypt messages when replying to an encrypted message: enabled
+Encrypt sent messages with your own key in addition to recipient's: disabled
+Save sent encrypted messages as clear text:              disabled
+```
+
+Leaving **Always sign messages** and **Always encrypt messages** disabled lets you create the unsigned, signed-only, and encrypted-and-signed variants separately.
+
+Under **Plugins -> GPG**, in **Sign key**, select **Select key by your email address**. Do not select **Use default GnuPG key** or **Specify key manually** for this test. With the test identity from the shared setup, the email-address selection resolves the certificate whose User ID contains `rfc9980-poc@example.invalid`.
+
+The **Plugins -> S/MIME** page requires no changes for this OpenPGP test.
+
+Choose **OK** to save the account settings, then close **Edit accounts...**.
 
 ## Create and locate the three messages
 
