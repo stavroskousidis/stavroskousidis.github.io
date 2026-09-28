@@ -7,14 +7,11 @@ published: "2026-09-26"
 testedOn:
   - "Fedora 45"
   - "Sequoia PGP sq"
-tags:
-  - "OpenPGP"
-  - "Post-Quantum"
-  - "Sequoia"
+tags: [OpenPGP, Post-Quantum, Sequoia, Fedora]
 draft: false
 ---
 
-This guide records a minimal, reproducible path for generating a hybrid post-quantum OpenPGP certificate with Sequoia PGP. It is deliberately marked **experimental**: client support for the algorithms used here is still limited, and interoperability must be tested for every intended application.
+This guide records a minimal, reproducible path for generating a hybrid post-quantum OpenPGP certificate with Sequoia PGP. It is deliberately marked **experimental**: client support for the algorithms and certificate profile is still evolving, and every desktop client must be tested separately.
 
 ## Goal
 
