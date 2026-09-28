@@ -215,7 +215,7 @@ Create the three test messages as:
 | Signed only        | on       | off         |
 | Encrypted + signed | on       | on          |
 
-The receiving Maildir configured above and Evolution's local Outbox are different stores. The test messages remain in Evolution's Outbox when the deliberately non-functional SMTP transport cannot send them.
+The receiving Maildir configured above and Evolution's local Outbox are separate stores. The test messages remain in Evolution's Outbox when the deliberately non-functional SMTP transport cannot send them.
 
 The tested queued messages were stored below:
 
