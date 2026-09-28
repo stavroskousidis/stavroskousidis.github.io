@@ -18,7 +18,7 @@ draft: false
 
 This guide covers the Evolution-specific part of the Fedora 45 RFC 9980 proof of concept. Complete the [shared setup](/notes/pq-openpgp-fedora-45-base) first.
 
-Evolution is architecturally different from KMail and Claws Mail. Its OpenPGP path uses Camel's GnuPG-compatible command-line integration rather than the GPGME path exercised by the other two clients:
+Evolution is architecturally different from KMail and Claws Mail. Its OpenPGP path uses Camel's GnuPG-compatible command-line integration instead of the GPGME path exercised by the other two clients:
 
 ```text
 Evolution
@@ -38,7 +38,7 @@ Install Evolution:
 sudo dnf install -y evolution
 ```
 
-The shared setup restores Fedora's stock GPGME for the Evolution test. Verify the Evolution-specific packages and that GPGME is the stock Fedora build:
+The shared setup restores Fedora's stock GPGME for the Evolution test. Verify the installed Evolution packages and confirm that GPGME is the stock Fedora build:
 
 ```console
 rpm -q evolution evolution-data-server gpgme
@@ -65,7 +65,7 @@ command -v gpg
 gpgconf --list-components | grep -E '^(gpg:|gpgsm:)'
 ```
 
-Start Evolution once and keep this instance open for the remaining steps:
+Start Evolution once from this terminal and keep this instance open for the remaining steps:
 
 ```console
 evolution >/tmp/evolution-rfc9980.log 2>&1 &
@@ -198,7 +198,7 @@ Signed only
 Encrypted + signed
 ```
 
-In the compose window, enable OpenPGP operations through:
+In the compose window, enable the relevant OpenPGP controls through:
 
 ```text
 ☰
@@ -236,7 +236,7 @@ Choose the directory corresponding to Evolution's local Outbox and set `OUTBOX`,
 OUTBOX="$HOME/.local/share/evolution/mail/local/.Outbox"
 ```
 
-The value above is the **tested layout**, not a portable constant. Inspect its message files:
+The value above is the **tested layout**, not a portable constant. Inspect the message files:
 
 ```console
 find "$OUTBOX" -type f \( -path '*/cur/*' -o -path '*/new/*' \) \
@@ -257,7 +257,7 @@ mkdir -p "$WORK"
 
 ## Independent verification
 
-Extract the signed-only PGP/MIME signature and canonicalized signed MIME part:
+Extract the signed-only PGP/MIME signature and the canonicalized signed MIME part:
 
 ```console
 python3 - <<'PY'
