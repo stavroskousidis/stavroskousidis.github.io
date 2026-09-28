@@ -3,7 +3,7 @@ title: "Post-quantum OpenPGP with Claws Mail on Fedora 45 KDE"
 description: "Claws Mail PGP/MIME proof of concept using Sequoia Chameleon and patched GPGME, independently verified with RFC 9980 algorithms 30 and 35."
 type: "Guide"
 status: "Experimental"
-published: "2026-09-26"
+published: "2026-09-28"
 testedOn:
   - "Fedora 45 KDE Plasma"
   - "Claws Mail 4.4.0"
@@ -154,20 +154,19 @@ find "$QUEUE" -maxdepth 1 -type f -printf '%T@ %p\n' \
   | sort -nr
 ```
 
-Do not assume numeric queue filenames from another run. Match the test messages by their subjects and Claws-specific headers. A signed queue file contains:
+Do not assume numeric queue filenames from another run. Match the test messages by their subjects and Claws-specific headers:
 
-```text
-X-Claws-Sign:1
+```console
+find "$QUEUE" -maxdepth 1 -type f -print0 |
+while IFS= read -r -d '' MESSAGE; do
+  printf '\n=== %s ===\n' "$MESSAGE"
+  grep -E '^(Subject:|X-Claws-Sign:|X-Claws-Encrypt:)' "$MESSAGE"
+done
 ```
 
-and an encrypted-and-signed queue file contains:
+For the three messages created above, identify the entries with subjects `Unsigned`, `Signed only`, and `Encrypted + signed`. The unsigned queue file has `X-Claws-Sign:0`; the signed-only queue file has `X-Claws-Sign:1`; and the encrypted-and-signed queue file has both `X-Claws-Sign:1` and `X-Claws-Encrypt:1`.
 
-```text
-X-Claws-Sign:1
-X-Claws-Encrypt:1
-```
-
-Record the full paths and create one verification directory:
+Record the full paths of the signed-only and encrypted-and-signed queue files and create one verification directory:
 
 ```console
 SIGNED="SIGNED_QUEUE_FILE"
