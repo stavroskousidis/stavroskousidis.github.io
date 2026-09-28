@@ -13,7 +13,7 @@ tags: [OpenPGP, Post-Quantum, Sequoia, Fedora, RFC9980]
 draft: false
 ---
 
-This is the shared setup for three client-specific notes:
+This is the shared setup for three client-specific guides:
 
 - [KMail](/notes/pq-openpgp-fedora-45-kmail)
 - [Claws Mail](/notes/pq-openpgp-fedora-45-claws-mail)
@@ -28,7 +28,7 @@ Signing:    ML-DSA-65+Ed25519   OpenPGP algorithm 30
 Encryption: ML-KEM-768+X25519   OpenPGP algorithm 35
 ```
 
-A successful UI indication alone is not sufficient evidence. The client-specific notes also inspect the generated OpenPGP packets and independently verify or decrypt the messages.
+A successful UI indication alone is not sufficient evidence. The client-specific guides also inspect the generated OpenPGP packets and independently verify or decrypt the messages.
 
 ## Architecture at a glance
 
@@ -59,7 +59,7 @@ KMail and Claws Mail exercise GPGME and therefore require the experimental RFC 9
 
 Enable the COPR and install the Chameleon package:
 
-```console
+```console copy
 sudo dnf copr enable stavroskousidis/rfc9980-openpgp-poc
 
 sudo dnf install -y \
@@ -68,13 +68,13 @@ sudo dnf install -y \
 
 Install Sequoia `sq` from Fedora:
 
-```console
+```console copy
 sudo dnf install -y sequoia-sq
 ```
 
 Check the installed packages:
 
-```console
+```console copy
 rpm -q \
   sequoia-chameleon-rfc9980-poc \
   sequoia-sq
@@ -88,7 +88,7 @@ Use Sequoia Chameleon `0.13.1` with `sequoia-openpgp 2.4.1`. Both Fedora `sequoi
 
 For KMail and Claws Mail, install the experimental GPGME build from the COPR:
 
-```console
+```console copy
 sudo dnf upgrade -y \
   --allow-vendor-change \
   --repo="copr:copr.fedorainfracloud.org:stavroskousidis:rfc9980-openpgp-poc" \
@@ -113,7 +113,7 @@ gpgme-2.0.1-6.fc45.x86_64
 
 If you previously installed the patched build, restore Fedora's package before testing Evolution:
 
-```console
+```console copy
 sudo dnf copr disable stavroskousidis/rfc9980-openpgp-poc
 
 sudo dnf distro-sync -y \
@@ -127,7 +127,7 @@ This operation leaves the Chameleon package installed.
 
 In a terminal in the normal desktop session:
 
-```console
+```console copy
 export PATH="/usr/libexec/rfc9980-openpgp/bin:/usr/bin:/bin"
 
 command -v gpg
@@ -153,7 +153,7 @@ Start the mail client from the same terminal session so that it inherits this `P
 
 For an isolated test:
 
-```console
+```console copy
 mkdir -p "$HOME/rfc9980-mail-test"
 cd "$HOME/rfc9980-mail-test"
 
@@ -171,16 +171,16 @@ sq key generate \
 sq inspect rfc9980-secret.pgp
 ```
 
-This command uses one explicit User ID containing both the display name and e-mail address. This is the identity form used for the walkthrough because it integrates cleanly with Evolution's sender-address matching.
+This command uses one explicit User ID containing both the display name and e-mail address. This is the identity form used for the walkthrough because it integrates cleanly with Evolution's sender-e-mail matching.
 
 Alternatively, generate the certificate with separate name and e-mail User IDs by replacing the `--userid` option with:
 
-```console
+```console copy
 --name "RFC9980 PoC" \
 --email "rfc9980-poc@example.invalid"
 ```
 
-Choose one identity form; do not create both certificates for the test. Both forms worked with KMail and Evolution in this proof of concept. Evolution behaved more cleanly with the explicit `--userid` form containing the sender e-mail address, so the rest of these guides use that form.
+Choose one identity form; do not create both certificates for the test. Both forms worked with KMail and Evolution in this proof of concept. Evolution integrated more cleanly with the explicit `--userid` form.
 
 The mail client's account display name is a separate account setting and does not determine how the OpenPGP certificate's User ID is encoded.
 
@@ -188,17 +188,17 @@ The command creates a certificate with an ML-DSA-65+Ed25519 primary/signing stru
 
 Import it into the Sequoia-backed environment:
 
-```console
+```console copy
 sq key import rfc9980-secret.pgp
 ```
 
-Importing the key makes the certificate available to Sequoia, but does not authenticate its User ID. Because this is a self-generated test identity without an external certification path, explicitly authorize the certificate-to-User-ID binding in Sequoia's PKI.
+Importing the key makes the certificate available to Sequoia, but does not authenticate its User ID. Because this is a self-generated test identity without an external certification path, explicit authorization is required.
 
-This matters because applications may need more than “a suitable key exists”: they may require a sufficiently authenticated binding between the sender or recipient identity and that key before selecting it for encryption or regarding a signature as belonging to that identity.
+This matters because applications may need more than "a suitable key exists": they may require a sufficiently authenticated binding between the sender or recipient identity and that key before permitting cryptographic operations.
 
 Authorize the local test identity using the fingerprint printed by `sq`:
 
-```console
+```console copy
 sq pki link authorize \
   --unconstrained \
   --cert=YOUR_FINGERPRINT \
@@ -207,7 +207,7 @@ sq pki link authorize \
 
 Check both interfaces:
 
-```console
+```console copy
 sq cert list YOUR_FINGERPRINT
 gpg --with-colons --list-keys YOUR_FINGERPRINT
 gpg --with-colons --list-secret-keys YOUR_FINGERPRINT
@@ -265,10 +265,10 @@ inner signature after decryption:
 | Claws Mail 4.4.0 | Fedora 45 KDE Plasma | Experimental patch | Sign ✓ · Encrypt ✓ |
 | Evolution 3.62.0 | Fedora 45 GNOME | Fedora stock | Sign ✓ · Encrypt ✓ |
 
-KMail and Claws Mail use the experimental RFC 9980 GPGME patch. Evolution uses Fedora's stock GPGME package because Camel invokes the GnuPG-compatible Chameleon CLI directly. Independent verification confirms algorithms 30 and 35 for all three clients.
+KMail and Claws Mail use the experimental RFC 9980 GPGME patch. Evolution uses Fedora's stock GPGME package because Camel invokes the GnuPG-compatible Chameleon CLI directly. Independent verification confirms algorithm 30 and 35 packets with `GOODSIG`, `VALIDSIG`, `DECRYPTION_OKAY`, and exit status `0`.
 
-See the client-specific notes for the runtime evidence and message locations.
+See the client-specific guides for the runtime evidence and message locations.
 
 ## Scope
 
-Treat this as an experimental interoperability proof of concept, not as a recommendation to replace Fedora's system OpenPGP stack globally. The COPR packages and compatibility wrapper keep Fedora's `/usr/bin/gpg*` tools unchanged on disk.
+Treat this as an experimental interoperability proof of concept, not as a recommendation to replace Fedora's system OpenPGP stack globally. The COPR packages and compatibility wrapper keep Fedora's standard GnuPG infrastructure intact and allow side-by-side testing without affecting the rest of the system.
