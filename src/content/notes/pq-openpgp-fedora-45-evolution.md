@@ -34,13 +34,13 @@ The runtime checks below confirm this distinction.
 
 Install Evolution:
 
-```console
+```console copy
 sudo dnf install -y evolution
 ```
 
 The shared setup restores Fedora's stock GPGME for the Evolution test. Verify the installed Evolution packages and confirm that GPGME is the stock Fedora build:
 
-```console
+```console copy
 rpm -q evolution evolution-data-server gpgme
 ```
 
@@ -60,14 +60,14 @@ Use the same terminal in which you set the compatibility `PATH` in the shared se
 
 Confirm the selected OpenPGP command:
 
-```console
+```console copy
 command -v gpg
 gpgconf --list-components | grep -E '^(gpg:|gpgsm:)'
 ```
 
 Start Evolution once from this terminal and keep this instance open for the remaining steps:
 
-```console
+```console copy
 evolution >/tmp/evolution-rfc9980.log 2>&1 &
 EVOLUTION_PID=$!
 sleep 8
@@ -78,7 +78,7 @@ If the last command fails, inspect `/tmp/evolution-rfc9980.log` and check whethe
 
 Inspect whether the main process maps Camel and GPGME:
 
-```console
+```console copy
 grep -E 'libcamel|libgpgme' "/proc/$EVOLUTION_PID/maps" \
   | awk '{print $6}' | sort -u
 ```
@@ -149,7 +149,7 @@ $HOME/Maildir
 
 Create it if necessary:
 
-```console
+```console copy
 mkdir -p "$HOME/Maildir"/{cur,new,tmp}
 ```
 
@@ -225,27 +225,27 @@ $HOME/.local/share/evolution/mail/local/.Outbox/cur/
 
 Discover candidate Outbox directories instead of assuming the exact internal layout:
 
-```console
+```console copy
 find "$HOME/.local/share/evolution/mail" -type d \
   \( -name '.Outbox' -o -name 'Outbox' \) -print
 ```
 
 Choose the directory corresponding to Evolution's local Outbox and set `OUTBOX`, for example:
 
-```console
+```console copy
 OUTBOX="$HOME/.local/share/evolution/mail/local/.Outbox"
 ```
 
 The value above is the **tested layout**, not a portable constant. Inspect the message files:
 
-```console
+```console copy
 find "$OUTBOX" -type f \( -path '*/cur/*' -o -path '*/new/*' \) \
   -printf '%T@ %p\n' | sort -nr | head
 ```
 
 Match the messages by subject and MIME headers. Record the signed-only and encrypted-and-signed paths, then create a verification directory:
 
-```console
+```console copy
 SIGNED="SIGNED_MESSAGE"
 ENCRYPTED="ENCRYPTED_MESSAGE"
 WORK="$HOME/rfc9980-mail-test/evolution-verify"
@@ -259,7 +259,7 @@ mkdir -p "$WORK"
 
 Extract the signed-only PGP/MIME signature and the canonicalized signed MIME part:
 
-```console
+```console copy
 python3 - <<'PY'
 from email import policy
 from email.parser import BytesParser
@@ -284,7 +284,7 @@ Confirm an algorithm-`30` signature, `GOODSIG`, `VALIDSIG ... 30 ...`, and exit 
 
 Extract and inspect the encrypted OpenPGP payload:
 
-```console
+```console copy
 python3 - <<'PY'
 from email import policy
 from email.parser import BytesParser
@@ -309,7 +309,7 @@ Confirm a version-6 public-key encrypted session key packet using algorithm `35`
 
 Extract and verify the inner signature:
 
-```console
+```console copy
 python3 - <<'PY'
 from email import policy
 from email.parser import BytesParser
@@ -357,7 +357,7 @@ RFC9980 PoC
 
 Independent verification still returned `GOODSIG`, `VALIDSIG` and exit status `0`; the warning was an identity-matching issue rather than a signature failure. Adding another Combined User ID during that investigation did not remove the warning.
 
-Both certificate-generation approaches are therefore viable for the tested cryptographic operations. For this Evolution walkthrough, prefer the explicit `--userid` form containing the sender e-mail address because it gave the cleaner application-level result.
+Both certificate-generation approaches are viable for the tested cryptographic operations. For this Evolution walkthrough, prefer the explicit `--userid` form containing the sender e-mail address because it gave the cleaner application-level result.
 
 ## Additional GnuPG-CLI compatibility observation
 
