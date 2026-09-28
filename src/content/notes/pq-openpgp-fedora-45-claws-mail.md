@@ -46,15 +46,6 @@ claws-mail-plugins-pgp-4.4.0-8.fc45.x86_64
 gpgme-2.0.1-6.rfc9980.1.fc45.x86_64
 ```
 
-In **Configuration -> Plugins**, load:
-
-```text
-PGP/Core
-PGP/MIME
-```
-
-Use PGP/MIME for the test identity.
-
 ## Start Claws Mail and verify the runtime stack
 
 Use the same terminal in which you set the compatibility `PATH` in the shared setup. Close any existing Claws Mail instance before continuing.
@@ -78,7 +69,48 @@ kill -0 "$CLAWS_PID"
 
 If the last command fails, inspect `/tmp/rfc9980-claws.log` and check whether an earlier Claws Mail instance was still running.
 
-After loading **PGP/Core** and **PGP/MIME**, inspect the libraries and plugins loaded by this process:
+### Complete the first-run wizard
+
+On a fresh Claws Mail installation, complete the setup wizard before loading the PGP plugins.
+
+On **About You**, enter:
+
+```text
+Your name:          RFC9980 PoC
+Your email address: rfc9980-poc@example.invalid
+Organization:       [leave blank]
+```
+
+On **Receiving mail**, select **Local mbox file**. Leave the automatically selected local mailbox unchanged. In the tested VM it was `/var/mail/chewbacca`; normally this is the local system mailbox for the current user. This receiving mailbox is not the MH mailbox used below for queued test messages.
+
+On **Sending mail**, use:
+
+```text
+SMTP server address: localhost
+Use authentication:  off
+Use TLS:             off
+```
+
+No working SMTP server is required; the goal is to let Claws construct and queue the complete MIME message locally.
+
+On **Saving mail on disk**, leave the mailbox name as:
+
+```text
+Mail
+```
+
+This creates the local MH mailbox at `$HOME/Mail`, which the verification steps below use for the queue. Finish the wizard with **Save**.
+
+### Load the PGP plugins
+
+Open **Configuration -> Plugins** and load:
+
+```text
+PGP/Core
+PGP/MIME
+```
+
+Then inspect the libraries and plugins loaded by the Claws Mail process started above:
 
 ```console
 grep -E \
@@ -100,26 +132,32 @@ Together with the package and `gpgconf` checks, this establishes the GPGME-based
 
 ## Configure the test account
 
-Use:
+Open **Configuration -> Edit accounts...**, select the account created by the wizard, and choose **Edit**.
+
+On **Basic**, set **Name of account** to:
 
 ```text
-Display name: RFC9980 PoC
-Email:        rfc9980-poc@example.invalid
+RFC9980 PoC
 ```
 
-For the outgoing test transport:
+The first-run wizard does not ask for this internal account name; with a local receiving account, Claws initially names it after the local mailbox. Renaming it makes the intended account unambiguous in the compose window.
+
+Confirm that **Basic** also contains:
 
 ```text
-SMTP server: localhost
-Authentication: none
-Encryption: none
+Full name:          RFC9980 PoC
+Mail address:       rfc9980-poc@example.invalid
+Protocol:           Local mbox file
+SMTP server (send): localhost
 ```
 
-No working SMTP server is required; the goal is to let Claws construct and queue the complete MIME message locally.
+On **Privacy**, set **Default privacy system** to **PGP/MIME**. Leave **Always sign messages** and **Always encrypt messages** disabled so that you can create the unsigned, signed-only, and encrypted-and-signed variants separately.
 
-Choose PGP/MIME as the privacy system and select the RFC 9980 test certificate.
+Under **Plugins -> GPG**, choose **Select key by your email address**. With the test identity from the shared setup, this selects the certificate whose User ID contains `rfc9980-poc@example.invalid`.
 
-> **Short configuration note:** Select the intended Claws Mail account in the compose window. Choosing the wrong default account causes signing to fail even when the OpenPGP implementation works correctly.
+Choose **OK** to save the account settings, then close the account list.
+
+> **Short configuration note:** Select the **RFC9980 PoC** account in the compose window. Choosing the wrong default account causes signing to fail even when the OpenPGP implementation works correctly.
 
 ## Create and locate the three messages
 
