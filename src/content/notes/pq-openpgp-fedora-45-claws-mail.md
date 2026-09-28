@@ -157,8 +157,6 @@ Under **Plugins -> GPG**, choose **Select key by your email address**. With the 
 
 Choose **OK** to save the account settings, then close the account list.
 
-> **Short configuration note:** Select the **RFC9980 PoC** account in the compose window. Choosing the wrong default account causes signing to fail even when the OpenPGP implementation works correctly.
-
 ## Create and locate the three messages
 
 Create three messages to:
