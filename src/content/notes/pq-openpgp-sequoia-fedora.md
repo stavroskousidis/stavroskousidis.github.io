@@ -26,7 +26,7 @@ Generate a password-protected transferable secret key with:
 
 Use a build of Sequoia PGP whose `sq` command exposes the required cipher suite and encryption algorithm:
 
-```console
+```console copy
 sq --version
 sq key generate --help
 ```
@@ -37,7 +37,7 @@ Before continuing, confirm that the help output lists `mldsa65-ed25519` and `mlk
 
 Replace the example identity and output filenames before running the command. One option is to create a single explicit User ID containing both name and e-mail address:
 
-```console
+```console copy
 sq key generate \
   --own-key \
   --userid "YOUR NAME <you@example.org>" \
@@ -51,20 +51,20 @@ sq key generate \
 
 Alternatively, replace the `--userid` option with separate identity arguments:
 
-```console
+```console copy
 --name "YOUR NAME" \
 --email "you@example.org"
 ```
 
-Choose the identity representation that fits the intended application; you do not need to generate both certificates. Both forms worked in the Fedora 45 KMail and Evolution proof-of-concept tests. Evolution integrated more cleanly in the tested setup when the certificate used an explicit User ID containing the sender e-mail address. See the [Evolution integration guide](/notes/pq-openpgp-fedora-45-evolution) for that application-specific observation.
+Choose the identity representation that fits the intended application; you do not need to generate both certificates. Both forms worked in the Fedora 45 KMail and Evolution proof-of-concept tests. Evolution integrated more cleanly with the explicit `--userid` form. See the [Evolution integration guide](/notes/pq-openpgp-fedora-45-evolution) for that application-specific observation.
 
-Enter a strong, unique passphrase when prompted. The secret-key file is sensitive even when it is encrypted.
+Enter a strong, unique passphrase when prompted. The secret-key file is sensitive even when encrypted.
 
 The `rfc9580` profile selects the modern OpenPGP packet and certificate profile. The hybrid post-quantum algorithms are specified separately through the cipher-suite and encryption-algorithm options.
 
 ## Inspect the result
 
-```console
+```console copy
 sq inspect openpgp-pq-secret.pgp
 ```
 
@@ -80,7 +80,7 @@ Confirm at least the following properties:
 
 Also verify that both files exist and are non-empty:
 
-```console
+```console copy
 ls -lh openpgp-pq-secret.pgp openpgp-pq.rev
 ```
 

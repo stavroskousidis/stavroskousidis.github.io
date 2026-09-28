@@ -32,7 +32,7 @@ Unlike Evolution, Claws Mail is therefore part of the GPGME-based test path.
 
 Install the packages on Fedora 45 KDE:
 
-```console
+```console copy
 sudo dnf install -y \
   claws-mail \
   claws-mail-plugins-pgp
@@ -40,7 +40,7 @@ sudo dnf install -y \
 
 Verify the installed package versions:
 
-```console
+```console copy
 rpm -q claws-mail claws-mail-plugins-pgp gpgme
 ```
 
@@ -58,7 +58,7 @@ Use the same terminal in which you set the compatibility `PATH` in the shared se
 
 Confirm the selected OpenPGP command and patched GPGME package:
 
-```console
+```console copy
 command -v gpg
 gpgconf --list-components | grep -E '^(gpg:|gpgsm:)'
 rpm -q gpgme
@@ -66,7 +66,7 @@ rpm -q gpgme
 
 Start Claws Mail once from this terminal and keep this instance open for the remaining steps:
 
-```console
+```console copy
 claws-mail >/tmp/rfc9980-claws.log 2>&1 &
 CLAWS_PID=$!
 sleep 5
@@ -87,7 +87,7 @@ Your email address: rfc9980-poc@example.invalid
 Organization:       [leave blank]
 ```
 
-On **Receiving mail**, select **Local mbox file**. Leave the automatically selected local mailbox unchanged. Normally this is `/var/mail/<username>`, the local system mailbox for the current user; in the exercised VM it was `/var/mail/chewbacca`. This receiving mailbox is not the MH mailbox used below for queued test messages.
+On **Receiving mail**, select **Local mbox file**. Leave the automatically selected local mailbox unchanged. Normally this is `/var/mail/<username>`, the local system mailbox for the current user. This test only queues outgoing messages, so receiving mail configuration is minimal.
 
 On **Sending mail**, use:
 
@@ -105,20 +105,20 @@ On **Saving mail on disk**, leave the mailbox name as:
 Mail
 ```
 
-This creates the local MH mailbox at `$HOME/Mail`, which the verification steps below use for the queue. Finish the wizard with **Save**.
+This creates the local MH mailbox at `$HOME/Mail`, which the verification steps use for the queue. Finish the wizard.
 
 ### Load the PGP plugins
 
-Open **Configuration -> Plugins** and load:
+Open **Configuration → Plugins** and load:
 
 ```text
 PGP/Core
 PGP/MIME
 ```
 
-Then inspect the libraries and plugins loaded by the Claws Mail process started above:
+Then inspect the libraries loaded by the Claws Mail process:
 
-```console
+```console copy
 grep -E \
   'pgpcore\.so|pgpmime\.so|libgpgme\.so' \
   "/proc/$CLAWS_PID/maps" \
@@ -138,7 +138,7 @@ Together with the package and `gpgconf` checks, this establishes the GPGME-based
 
 ## Configure the test account
 
-Open **Configuration -> Edit accounts...**. The account created by the first-run wizard may not yet be displayed as **RFC9980 PoC**. With the local-mbox setup above, Claws can initially name it after the local mailbox, normally `/var/mail/<username>`. Select that wizard-created account and choose **Edit**.
+Open **Configuration → Edit accounts...**. The account created by the first-run wizard may not yet display as **RFC9980 PoC**.
 
 On **Basic**, use:
 
@@ -152,7 +152,7 @@ Local mailbox:      [keep the wizard-created value]
 SMTP server (send): localhost
 ```
 
-The local mailbox is normally `/var/mail/<username>`; in the exercised VM it was `/var/mail/chewbacca`. Keep the value created by the wizard. The first-run wizard does not ask for the internal **Name of account**; renaming it to **RFC9980 PoC** makes the test account easy to identify.
+The local mailbox is normally `/var/mail/<username>`; keep the value created by the wizard.
 
 On **Privacy**, use:
 
@@ -166,11 +166,11 @@ Encrypt sent messages with your own key in addition to recipient's: disabled
 Save sent encrypted messages as clear text:              disabled
 ```
 
-Leaving **Always sign messages** and **Always encrypt messages** disabled lets you create the unsigned, signed-only, and encrypted-and-signed variants separately.
+Leaving **Always sign messages** and **Always encrypt messages** disabled allows you to create the unsigned, signed-only, and encrypted-and-signed variants separately.
 
-Under **Plugins -> GPG**, in **Sign key**, select **Select key by your email address**. Do not select **Use default GnuPG key** or **Specify key manually** for this test. With the test identity from the shared setup, the email-address selection resolves the certificate whose User ID contains `rfc9980-poc@example.invalid`.
+Under **Plugins → GPG**, in **Sign key**, select **Select key by your email address**. Do not select **Use default GnuPG key** or **Specify key manually** for this test.
 
-The **Plugins -> S/MIME** page requires no changes for this OpenPGP test.
+The **Plugins → S/MIME** page requires no changes for this OpenPGP test.
 
 Choose **OK** to save the account settings, then close **Edit accounts...**.
 
@@ -191,13 +191,13 @@ Signed only         on                 off
 Encrypted + signed  on                 on
 ```
 
-Use the compose window's PGP/MIME signing and encryption controls for each variant. **Queue** each message; do not send it. The following verification steps inspect the locally queued messages.
+Use the compose window's PGP/MIME signing and encryption controls for each variant. **Queue** each message; do not send it. The verification steps inspect the locally queued messages.
 
-The tested configuration used Claws Mail's local MH mailbox at `$HOME/Mail`. If your account uses a different mailbox location, use that configured location instead.
+The tested configuration used Claws Mail's local MH mailbox at `$HOME/Mail`. If your account uses a different location, adjust accordingly.
 
 For the tested layout, set:
 
-```console
+```console copy
 MAILBOX="$HOME/Mail"
 QUEUE="$MAILBOX/queue"
 test -d "$QUEUE"
@@ -205,14 +205,14 @@ test -d "$QUEUE"
 
 List the queue files in modification-time order:
 
-```console
+```console copy
 find "$QUEUE" -maxdepth 1 -type f -printf '%T@ %p\n' \
   | sort -nr
 ```
 
-Do not assume numeric queue filenames from another run. Match the test messages by their subjects and Claws-specific headers:
+Do not assume numeric queue filenames. Match the test messages by their subjects and Claws-specific headers:
 
-```console
+```console copy
 find "$QUEUE" -maxdepth 1 -type f -print0 |
 while IFS= read -r -d '' MESSAGE; do
   printf '\n=== %s ===\n' "$MESSAGE"
@@ -220,11 +220,11 @@ while IFS= read -r -d '' MESSAGE; do
 done
 ```
 
-For the three messages created above, identify the entries with subjects `Unsigned`, `Signed only`, and `Encrypted + signed`. The unsigned queue file has `X-Claws-Sign:0`; the signed-only queue file has `X-Claws-Sign:1`; and the encrypted-and-signed queue file has both `X-Claws-Sign:1` and `X-Claws-Encrypt:1`.
+For the three messages created above, identify the entries with subjects `Unsigned`, `Signed only`, and `Encrypted + signed`. The unsigned queue file has `X-Claws-Sign:0`; the signed-only queue file has `X-Claws-Sign:1` and `X-Claws-Encrypt:0`; the encrypted-and-signed queue file has both set to `1`.
 
 Record the full paths of the signed-only and encrypted-and-signed queue files and create one verification directory:
 
-```console
+```console copy
 SIGNED="SIGNED_QUEUE_FILE"
 ENCRYPTED="ENCRYPTED_QUEUE_FILE"
 WORK="$HOME/rfc9980-mail-test/claws-verify"
@@ -236,7 +236,7 @@ mkdir -p "$WORK"
 
 Claws queue files contain private queue headers before the RFC 5322/MIME message. Strip those headers before MIME parsing:
 
-```console
+```console copy
 python3 - <<'PY'
 from pathlib import Path
 import os
@@ -255,18 +255,18 @@ PY
 
 Confirm the resulting MIME types:
 
-```console
+```console copy
 grep -m1 '^Content-Type:' "$WORK/signed.eml"
 grep -m1 '^Content-Type:' "$WORK/encrypted.eml"
 ```
 
-The expected outer types are `multipart/signed` and `multipart/encrypted`, respectively.
+The expected outer types are `multipart/signed` and `multipart/encrypted` respectively.
 
 ## Independent verification
 
 Extract and verify the signed-only PGP/MIME message:
 
-```console
+```console copy
 python3 - <<'PY'
 from email import policy
 from email.parser import BytesParser
@@ -291,7 +291,7 @@ Confirm a signature packet using algorithm `30`, followed by `GOODSIG` and `VALI
 
 Extract the encrypted OpenPGP payload:
 
-```console
+```console copy
 python3 - <<'PY'
 from email import policy
 from email.parser import BytesParser
@@ -316,7 +316,7 @@ Confirm a version-6 public-key encrypted session key packet using algorithm `35`
 
 The decrypted MIME entity is signed. Extract and verify its inner signature:
 
-```console
+```console copy
 python3 - <<'PY'
 from email import policy
 from email.parser import BytesParser
@@ -368,4 +368,3 @@ Encryption:
 ```
 
 This proof of concept requires no Claws Mail source patch.
-

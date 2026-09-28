@@ -13,7 +13,9 @@ tags: [OpenPGP, Post-Quantum, KMail, Sequoia, Fedora]
 draft: false
 ---
 
-This guide covers the KMail-specific part of the Fedora 45 proof of concept. Complete the [shared setup](/notes/pq-openpgp-fedora-45-base) first, including the patched GPGME installation, Chameleon command selection, and disposable test certificate import and authorization.
+This guide covers the KMail-specific part of the Fedora 45 RFC 9980 proof of concept. Complete the [shared setup](/notes/pq-openpgp-fedora-45-base) first, including the patched GPGME installation, Chameleon command selection, and disposable test certificate import and authorization.
+
+KMail uses its OpenPGP integration through GPGME:
 
 ```text
 KMail
@@ -30,7 +32,7 @@ The steps below configure KMail, create PGP/MIME messages, and independently ins
 
 Install KMail using Fedora's normal package:
 
-```console
+```console copy
 sudo dnf install -y kmail
 ```
 
@@ -38,7 +40,7 @@ Do not explicitly install `qgpgme-qt6` or `gpgmepp`. They are normal KMail depen
 
 Verify the relevant packages:
 
-```console
+```console copy
 rpm -q \
   kmail \
   kmail-libs \
@@ -49,7 +51,7 @@ rpm -q \
   akonadi-server
 ```
 
-Verify that your package versions match or supersede this tested baseline:
+Verify that your package versions match or supersede the tested baseline:
 
 ```text
 kmail-26.08.1-1.fc45.x86_64
@@ -67,7 +69,7 @@ Use the same terminal in which you set the compatibility `PATH` in the shared se
 
 Confirm the selected OpenPGP command and GPGME package:
 
-```console
+```console copy
 command -v gpg
 gpgconf --list-components | grep -E '^(gpg:|gpgsm:)'
 rpm -q gpgme
@@ -75,20 +77,20 @@ rpm -q gpgme
 
 The OpenPGP component should point to `/usr/libexec/rfc9980-openpgp/bin/gpg`, while `gpgsm` remains `/usr/bin/gpgsm`. The GPGME package should be the experimental RFC 9980 build from the shared setup.
 
-Start KMail **once**, from this terminal, and keep this instance open for the remaining steps:
+Start KMail once from this terminal and keep this instance open for the remaining steps:
 
-```console
+```console copy
 kmail >/tmp/rfc9980-kmail.log 2>&1 &
 KMAIL_PID=$!
 sleep 8
 kill -0 "$KMAIL_PID"
 ```
 
-If the last command fails, inspect `/tmp/rfc9980-kmail.log` and check whether an earlier KMail instance was still running. Do not assume that `$KMAIL_PID` identifies the active application after a handoff to an existing instance.
+If the last command fails, inspect `/tmp/rfc9980-kmail.log` and check whether an earlier KMail instance was still running. Do not assume that `$KMAIL_PID` identifies the active application after asynchronous startup.
 
 Inspect the crypto libraries loaded by the process:
 
-```console
+```console copy
 grep -E \
   'libgpgme\.so|libgpgmepp\.so|libqgpgme' \
   "/proc/$KMAIL_PID/maps" \
@@ -104,11 +106,11 @@ The tested runtime loaded:
 /usr/lib64/libqgpgmeqt6.so.15v2.7.0
 ```
 
-The library paths establish the GPGME integration, while the package and `gpgconf` checks establish the patched GPGME build and Chameleon command selection. KMail, Akonadi, D-Bus, Wayland, and Local Folders remain in the normal desktop session.
+The library paths establish the GPGME integration, while the package and `gpgconf` checks establish the patched GPGME build and Chameleon command selection.
 
 ## Configure a KMail test identity
 
-On the first KMail start, skip the account setup assistant. This test does not require a receiving account. Configure the test identity and outgoing transport manually under **Settings → Configure KMail → Accounts**.
+On the first KMail start, skip the account setup assistant. This test does not require a receiving account. Configure the test identity and outgoing transport manually under **Settings → Configure KMail**.
 
 Under **Identities**, create a dedicated test identity:
 
@@ -117,11 +119,11 @@ Name:  RFC9980 PoC
 Email: rfc9980-poc@example.invalid
 ```
 
-Modify the identity and open its **Cryptography** tab. KMail should automatically match the identity to the certified post-quantum OpenPGP certificate generated during the shared setup. Verify that this certificate is selected. If KMail did not select it automatically, select it manually. Keep **Use same key for encryption and signing** enabled.
+Modify the identity and open its **Cryptography** tab. KMail should automatically match the identity to the certified post-quantum OpenPGP certificate generated during the shared setup. Verify that the fingerprint and algorithm are correct.
 
-Use KMail's normal `Local Folders` resource for Drafts, Sent and Outbox. Do not create a receiving account, separate Maildir resource, or isolated Akonadi instance for this test. The existing Local Folders resource may itself use a Maildir directory on disk.
+Use KMail's normal `Local Folders` resource for Drafts, Sent and Outbox. Do not create a receiving account, separate Maildir resource, or isolated Akonadi instance for this test.
 
-Under **Sending**, create a deliberately non-functional local SMTP transport so KMail can queue the test messages. In the tested KMail 26.08.1 interface, configure:
+Under **Sending**, create a deliberately non-functional local SMTP transport so KMail can queue the test messages. Configure:
 
 ```text
 Name: RFC9980 Test
@@ -131,9 +133,9 @@ Encryption: None
 Authentication: LOGIN
 ```
 
-KMail 26.08.1 does not offer a `None` authentication method in this transport dialog. No credentials are needed for this test because the transport is deliberately non-functional. Set **Send messages in outbox folder** to **Never Automatically** so the queued messages remain available for inspection.
+KMail 26.08.1 does not offer a `None` authentication method in this dialog. No credentials are needed for this test because the transport is deliberately non-functional. Set **Send message** to proceed anyway.
 
-The purpose of the transport is only to let KMail construct the message and place it in Outbox. A working SMTP server is not required for the cryptographic test.
+The purpose of this transport is only to let KMail construct the message and place it in Outbox. A working SMTP server is not required.
 
 ## Test unsigned mail
 
@@ -143,9 +145,7 @@ Compose a message to:
 rfc9980-poc@example.invalid
 ```
 
-Disable both signing and encryption.
-
-Queue it.
+Disable both signing and encryption, then queue it.
 
 The resulting Outbox message should have an ordinary content type such as:
 
@@ -157,9 +157,7 @@ This verifies the KMail, Akonadi and Outbox configuration independently of OpenP
 
 ## Test signing
 
-Compose another message to the same recipient. Enable OpenPGP signing and disable encryption.
-
-Queue it.
+Compose another message to the same recipient. Enable OpenPGP signing and disable encryption, then queue it.
 
 The Outbox message should use PGP/MIME:
 
@@ -170,9 +168,7 @@ Content-Type: multipart/signed;
 
 ## Test signing and encryption
 
-Compose a third message to the same recipient. Enable both OpenPGP signing and encryption.
-
-Queue it.
+Compose a third message to the same recipient. Enable both OpenPGP signing and encryption, then queue it.
 
 The outer message should use PGP/MIME encryption:
 
@@ -183,30 +179,30 @@ Content-Type: multipart/encrypted;
 
 ## Locate the Outbox messages
 
-The tested installation stored Local Folders in an Akonadi Maildir resource, but its instance number is not portable. First discover candidate Outbox directories in the normal Akonadi data location:
+The tested installation stored Local Folders in an Akonadi Maildir resource, but its instance number is not portable. First discover candidate Outbox directories:
 
-```console
+```console copy
 find "$HOME/.local/share" -type d -name outbox \
   -path '*/akonadi_maildir_resource_*/*' -print
 ```
 
-Compare the candidates with the **Local Folders → Outbox** shown in KMail. If there is more than one candidate, identify the matching resource rather than selecting the first one automatically. Set `OUTBOX` to the actual directory printed on your system, for example:
+Compare the candidates with the **Local Folders → Outbox** shown in KMail. Identify the matching resource:
 
-```console
+```console copy
 OUTBOX="$HOME/.local/share/akonadi_maildir_resource_0/outbox"
 ```
 
-The `resource_0` value above is **only an example**. Confirm the selected directory contains Maildir message subdirectories:
+The `resource_0` value above is **only an example**. Confirm the selected directory contains Maildir subdirectories:
 
-```console
+```console copy
 test -d "$OUTBOX/cur" && test -d "$OUTBOX/new"
 find "$OUTBOX" -type f \( -path '*/new/*' -o -path '*/cur/*' \) \
   -printf '%T@ %p\n' | sort -nr | head
 ```
 
-Match the test messages by their decoded subjects and MIME types; do not assume that the three newest files necessarily belong to this test:
+Match the test messages by their decoded subjects and MIME types:
 
-```console
+```console copy
 find "$OUTBOX" -type f \( -path '*/new/*' -o -path '*/cur/*' \) -print0 |
 while IFS= read -r -d '' MESSAGE; do
   printf '\n=== %s ===\n' "$MESSAGE"
@@ -225,13 +221,13 @@ PY
 done
 ```
 
-For the three messages created above, identify the entries with subjects `Unsigned`, `Signed only`, and `Encrypted + signed`. Their MIME types should be `text/plain`, `multipart/signed`, and `multipart/encrypted`, respectively. Record the full paths of the signed-only and encrypted-and-signed messages.
+For the three messages created above, identify the entries with subjects `Unsigned`, `Signed only`, and `Encrypted + signed`. Their MIME types should be `text/plain`, `multipart/signed`, and `multipart/encrypted` respectively.
 
 ## Independent message verification
 
-Use the actual KMail Outbox message paths found above. Set both paths and one verification directory in the same terminal:
+Use the actual KMail Outbox message paths found above. Set both paths and one verification directory:
 
-```console
+```console copy
 SIGNED="SIGNED_MESSAGE"
 ENCRYPTED="ENCRYPTED_MESSAGE"
 WORK="$HOME/rfc9980-mail-test/kmail-verify"
@@ -240,13 +236,13 @@ export SIGNED ENCRYPTED WORK
 mkdir -p "$WORK"
 ```
 
-Replace both placeholders with full paths to the corresponding raw MIME files. The Python snippets below read these exported variables rather than assuming a fixed temporary directory.
+Replace both placeholders with full paths to the corresponding raw MIME files.
 
 ### Verify the signed message
 
 Extract the detached PGP/MIME signature and the signed MIME part. PGP/MIME signatures are computed over MIME content using canonical CRLF line endings:
 
-```console
+```console copy
 python3 - <<'PY'
 from email import policy
 from email.parser import BytesParser
@@ -271,7 +267,7 @@ PY
 
 Inspect the signature packet:
 
-```console
+```console copy
 gpg --list-packets "$WORK/signed-signature.asc"
 ```
 
@@ -283,7 +279,7 @@ Confirm that the signature contains:
 
 Verify it:
 
-```console
+```console copy
 gpg --status-fd=1 \
   --verify \
   "$WORK/signed-signature.asc" \
@@ -298,13 +294,13 @@ gpg: using MLDSA65_Ed25519 key ...
 [GNUPG:] VALIDSIG ... 30 ...
 ```
 
-and returned status `0`.
+and returns status `0`.
 
 ### Verify the encrypted message
 
 Extract the encrypted OpenPGP payload:
 
-```console
+```console copy
 python3 - <<'PY'
 from email import policy
 from email.parser import BytesParser
@@ -326,7 +322,7 @@ PY
 
 Inspect the packet:
 
-```console
+```console copy
 gpg --list-packets "$WORK/encrypted.pgp"
 ```
 
@@ -338,7 +334,7 @@ Confirm that the message contains:
 
 Decrypt it:
 
-```console
+```console copy
 gpg --status-fd=1 \
   --output "$WORK/decrypted.eml" \
   --decrypt "$WORK/encrypted.pgp"
@@ -354,7 +350,7 @@ gpg: encrypted with MLKEM768_X25519 key ...
 
 The decrypted MIME entity is itself signed:
 
-```console
+```console copy
 grep -m1 '^Content-Type:' "$WORK/decrypted.eml"
 ```
 
@@ -366,7 +362,7 @@ Content-Type: multipart/signed;
 
 Extract the inner signature:
 
-```console
+```console copy
 python3 - <<'PY'
 from email import policy
 from email.parser import BytesParser
@@ -391,7 +387,7 @@ PY
 
 Inspect the inner signature:
 
-```console
+```console copy
 gpg --list-packets "$WORK/inner-signature.asc"
 ```
 
@@ -403,7 +399,7 @@ Confirm that the result contains:
 
 Verify it:
 
-```console
+```console copy
 gpg --status-fd=1 \
   --verify \
   "$WORK/inner-signature.asc" \
@@ -418,7 +414,7 @@ gpg: using MLDSA65_Ed25519 key ...
 [GNUPG:] VALIDSIG ... 30 ...
 ```
 
-and returned status `0`.
+and returns status `0`.
 
 ## Result
 
@@ -458,4 +454,4 @@ This establishes that KMail can use the Sequoia-based RFC 9980 implementation th
 
 ## Scope and next guides
 
-This procedure demonstrates KMail integration on Fedora 45 KDE using the experimental GPGME build and Sequoia Chameleon. See the [shared setup](/notes/pq-openpgp-fedora-45-base) for the common Chameleon environment, disposable test certificate, and verification methodology. See [Claws Mail](/notes/pq-openpgp-fedora-45-claws-mail) and [Evolution](/notes/pq-openpgp-fedora-45-evolution) for the other client-specific tests.
+This procedure demonstrates KMail integration on Fedora 45 KDE using the experimental GPGME build and Sequoia Chameleon. See the [shared setup](/notes/pq-openpgp-fedora-45-base) for the common Chameleon environment and the [Claws Mail](/notes/pq-openpgp-fedora-45-claws-mail) and [Evolution](/notes/pq-openpgp-fedora-45-evolution) guides for other client tests.
