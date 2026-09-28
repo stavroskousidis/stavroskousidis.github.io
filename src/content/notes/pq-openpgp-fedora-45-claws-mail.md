@@ -38,7 +38,13 @@ sudo dnf install -y \
   claws-mail-plugins-pgp
 ```
 
-Verify that your package versions match or supersede this tested baseline:
+Verify the installed package versions:
+
+```console
+rpm -q claws-mail claws-mail-plugins-pgp gpgme
+```
+
+The tested baseline is:
 
 ```text
 claws-mail-4.4.0-8.fc45.x86_64
@@ -81,7 +87,7 @@ Your email address: rfc9980-poc@example.invalid
 Organization:       [leave blank]
 ```
 
-On **Receiving mail**, select **Local mbox file**. Leave the automatically selected local mailbox unchanged. Normally this is `/var/mail/$USER`, the local system mailbox for the current user. This receiving mailbox is not the MH mailbox used below for queued test messages.
+On **Receiving mail**, select **Local mbox file**. Leave the automatically selected local mailbox unchanged. Normally this is `/var/mail/<username>`, the local system mailbox for the current user; in the exercised VM it was `/var/mail/chewbacca`. This receiving mailbox is not the MH mailbox used below for queued test messages.
 
 On **Sending mail**, use:
 
@@ -132,7 +138,7 @@ Together with the package and `gpgconf` checks, this establishes the GPGME-based
 
 ## Configure the test account
 
-Open **Configuration -> Edit accounts...**. The account created by the first-run wizard may not yet be displayed as **RFC9980 PoC**. With the local-mbox setup above, Claws can initially name it after the local mailbox, normally `/var/mail/$USER`. Select that wizard-created account and choose **Edit**.
+Open **Configuration -> Edit accounts...**. The account created by the first-run wizard may not yet be displayed as **RFC9980 PoC**. With the local-mbox setup above, Claws can initially name it after the local mailbox, normally `/var/mail/<username>`. Select that wizard-created account and choose **Edit**.
 
 On **Basic**, use:
 
@@ -142,11 +148,11 @@ Set as default:     enabled
 Full name:          RFC9980 PoC
 Mail address:       rfc9980-poc@example.invalid
 Protocol:           Local mbox file
-Local mailbox:      /var/mail/$USER
+Local mailbox:      [keep the wizard-created value]
 SMTP server (send): localhost
 ```
 
-Keep the wizard-created local mailbox value if it differs from `/var/mail/$USER`. The first-run wizard does not ask for the internal **Name of account**; renaming it to **RFC9980 PoC** makes the test account easy to identify.
+The local mailbox is normally `/var/mail/<username>`; in the exercised VM it was `/var/mail/chewbacca`. Keep the value created by the wizard. The first-run wizard does not ask for the internal **Name of account**; renaming it to **RFC9980 PoC** makes the test account easy to identify.
 
 On **Privacy**, use:
 
@@ -176,13 +182,16 @@ Create three messages to:
 rfc9980-poc@example.invalid
 ```
 
-using:
+Configure and queue them as follows:
 
 ```text
-Unsigned
-Signed only
-Encrypted + signed
+Subject             PGP/MIME signing   PGP/MIME encryption
+Unsigned            off                off
+Signed only         on                 off
+Encrypted + signed  on                 on
 ```
+
+Use the compose window's PGP/MIME signing and encryption controls for each variant. **Queue** each message; do not send it. The following verification steps inspect the locally queued messages.
 
 The tested configuration used Claws Mail's local MH mailbox at `$HOME/Mail`. If your account uses a different mailbox location, use that configured location instead.
 
