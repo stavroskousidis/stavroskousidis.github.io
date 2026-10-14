@@ -15,4 +15,17 @@ const notes = defineCollection({
   })
 });
 
-export const collections = { notes };
+const theses = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/theses' }),
+  schema: z.object({
+    title: z.string(),
+    summary: z.string(),
+    researchQuestion: z.string(),
+    level: z.enum(['Bachelor', 'Master']),
+    status: z.enum(['Open', 'Under discussion', 'Assigned']),
+    researchDirection: z.string(),
+    tags: z.array(z.string()).default([])
+  })
+});
+
+export const collections = { notes, theses };
