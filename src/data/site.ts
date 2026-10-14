@@ -19,13 +19,14 @@ export const profile = {
   }
 };
 
-export const theses = [
-  {
-    level: 'Bachelor / Master thesis',
-    title: 'Thesis topic · TBD',
-    summary:
-      'This is a template for future thesis announcements. The final entry will describe the research question, scope, prerequisites, expected results and associated repository.',
-    tags: ['Topic TBD', 'Scope TBD', 'Repository TBD'],
-    status: 'TBD'
-  }
-];
+export interface ThesisListing {
+  level: string;
+  title: string;
+  summary: string;
+  tags: string[];
+  repo?: string;
+  status: string;
+}
+
+// Populate with real, available thesis topics only; no public placeholder listing.
+export const theses: ThesisListing[] = [];
