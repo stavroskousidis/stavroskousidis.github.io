@@ -39,7 +39,7 @@ function Pandoc(doc)
   end
   local footer = pandoc.read(
     "**Contact:** [stavros.kousidis@th-koeln.de](mailto:stavros.kousidis@th-koeln.de)  " ..
-    "\\n**Thesis opportunities:** [stavroskousidis.github.io/theses](https://stavroskousidis.github.io/theses/)",
+    "\n**Thesis opportunities:** [stavroskousidis.github.io/theses](https://stavroskousidis.github.io/theses/)",
     "markdown"
   )
   for _, block in ipairs(footer.blocks) do
