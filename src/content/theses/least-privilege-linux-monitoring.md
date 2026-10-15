@@ -21,6 +21,12 @@ The security evaluation will examine sandbox isolation, resource restrictions, a
 
 A working Linux prototype, a documented security architecture, and an experimental evaluation of isolation guarantees and limitations.
 
+## Starting points
+
+- [Shah, *LogJack: Indirect Prompt Injection Through Cloud Logs Against LLM Debugging Agents* (2026)](https://arxiv.org/abs/2604.15368).
+- [OWASP, *LLM Prompt Injection Prevention Cheat Sheet*](https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html).
+- [Linux seccomp documentation](https://man7.org/linux/man-pages/man2/seccomp.2.html).
+
 ## Related research
 
 This is part of Secure Monitoring with Untrusted AI Agents. A related [Master's thesis](/theses/trustworthy-monitoring-untrusted-agents/) investigates the trustworthiness of monitoring when individual components may be compromised. Both theses can be pursued independently.

@@ -29,4 +29,5 @@ A reproducible evaluation protocol, experimental results, and a critical assessm
 
 - [CyberGym benchmark and dataset](https://www.cybergym.io/cybergym/).
 - [AI Cyber Challenge open-source archive](https://archive.aicyberchallenge.com/).
-- [SoK: DARPA's AI Cyber Challenge](https://arxiv.org/abs/2602.07666).
+- [Zhang et al., *SoK: DARPA's AI Cyber Challenge* (2026)](https://arxiv.org/abs/2602.07666).
+- [Wang et al., *CyberGym: Evaluating AI Agents' Real-World Cybersecurity Capabilities at Scale*](https://www.cybergym.io/cybergym/).
