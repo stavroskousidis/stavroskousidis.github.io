@@ -15,6 +15,7 @@ export const profile = {
     eprint: 'https://eprint.iacr.org/search?q=kousidis',
     thKoeln: 'https://www.th-koeln.de/',
     thKoelnProfile: 'https://www.th-koeln.de/en/person/stavros.kousidis/',
-    ietf: 'https://datatracker.ietf.org/person/kousidis.ietf%40gmail.com'
+    ietf: 'https://datatracker.ietf.org/person/kousidis.ietf%40gmail.com',
+    hochschulbibliografie: 'https://bibliografie.th-koeln.de/search.xed'
   }
 };
