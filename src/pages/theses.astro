@@ -19,8 +19,24 @@ const theses = (await getCollection('theses'))
     <p class="lede">
       A good thesis starts with a well-defined question. The goal is to investigate it
       systematically, explain your decisions, and support your conclusions with evidence.
-      Here is how I approach supervision and how you can get started.
+      Explore the topics below, then learn about supervision and how to get started.
     </p>
+  </section>
+
+  <section class="section thesis-opportunities" aria-labelledby="available-topics">
+    <div class="section-heading">
+      <div><p class="kicker">Opportunities</p><h2 id="available-topics">Available topics</h2></div>
+    </div>
+    {
+      theses.length > 0 ? (
+        <div class="card-grid">{theses.map((thesis) => <ThesisCard entry={thesis} />)}</div>
+      ) : (
+        <p class="muted thesis-empty">
+          Individual topics will be published here as they become
+          available. In the meantime, you are welcome to propose a suitable research question.
+        </p>
+      )
+    }
   </section>
 
   <section class="section" aria-labelledby="expectations">
@@ -103,7 +119,7 @@ const theses = (await getCollection('theses'))
         <span class="thesis-step-number">01</span>
         <h3>Explore a topic.</h3>
         <p>
-          Look through the available topics below, or propose your own idea related
+          Look through the available topics above, or propose your own idea related
           to my research interests. Think about the concrete question you would like
           to answer.
         </p>
@@ -133,19 +149,5 @@ const theses = (await getCollection('theses'))
     </p>
   </section>
 
-  <section class="section thesis-opportunities" aria-labelledby="available-topics">
-    <div class="section-heading">
-      <div><p class="kicker">Opportunities</p><h2 id="available-topics">Available topics</h2></div>
-    </div>
-    {
-      theses.length > 0 ? (
-        <div class="card-grid">{theses.map((thesis) => <ThesisCard entry={thesis} />)}</div>
-      ) : (
-        <p class="muted thesis-empty">
-          Individual topics will be published here as they become
-          available. In the meantime, you are welcome to propose a suitable research question.
-        </p>
-      )
-    }
-  </section>
+
 </BaseLayout>
