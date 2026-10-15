@@ -1,14 +1,31 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { profile } from '../data/site';
+
+const researchPrompt = "Investigate the research contributions of Stavros Kousidis, Professor of Cyber Security Engineering at TH Köln (ORCID 0000-0002-6947-4963).\n\nStart with https://stavroskousidis.github.io/publications/ and investigate the linked ORCID, arXiv, IACR Cryptology ePrint Archive, and IETF Datatracker profiles. Consult original publications and standards documents where possible; do not assume every link is accessible.\n\nSummarize the principal research areas and verifiable contributions, explain their technical significance and limitations, and identify open research questions. Distinguish peer-reviewed papers, preprints, published RFCs, and Internet-Drafts. Provide citations with direct links. Be critical and evidence-based; explicitly state when information is missing or cannot be verified.";
+const askChatGPTUrl = `https://chatgpt.com/?q=${encodeURIComponent(researchPrompt)}`;
 ---
 
 <BaseLayout title="Publications · Stavros Kousidis">
-  <section class="page-intro"><p class="kicker">Publications & standards</p><h1>Selected research outputs.</h1><p class="lede">Canonical publication lists and standards activity are maintained by the services below.</p></section>
+  <section class="page-intro"><p class="kicker">Publications & standards</p><h1>Research publications &amp; standards contributions.</h1><p class="lede">Explore my research publications, preprints, and contributions to Internet standards through the external repositories and publication databases linked below.</p></section>
   <section class="link-list">
     <a href={profile.links.orcid}><div><small>Persistent researcher identity</small><h2>ORCID</h2><p>0000-0002-6947-4963</p></div><span>↗</span></a>
     <a href={profile.links.arxiv}><div><small>Open-access preprints</small><h2>arXiv</h2><p>Author search and freely available manuscripts</p></div><span>↗</span></a>
     <a href={profile.links.eprint}><div><small>Cryptographic research</small><h2>IACR Cryptology ePrint Archive</h2><p>Author search and freely available preprints</p></div><span>↗</span></a>
     <a href={profile.links.ietf}><div><small>Internet standards</small><h2>IETF Datatracker</h2><p>RFCs, Internet-Drafts and working-group activity</p></div><span>↗</span></a>
   </section>
+  <section class="research-ai" aria-labelledby="research-ai-heading">
+    <p class="kicker">Explore further</p>
+    <h2 id="research-ai-heading">Explore my research with AI.</h2>
+    <p>Interested in the broader context, technical contributions, or open questions arising from my work?</p>
+    <a href={askChatGPTUrl} target="_blank" rel="noopener noreferrer">Ask ChatGPT ↗</a>
+    <p class="research-ai-note">AI-generated assessments are independent, may be incomplete, and should be verified against the original publications.</p>
+  </section>
+  <style>
+    .research-ai { margin: -3rem 0 7rem; }
+    .research-ai h2 { margin: .7rem 0 1rem; }
+    .research-ai > p:not(.kicker) { max-width: 65ch; color: var(--muted); }
+    .research-ai > a { display: inline-block; margin-top: .8rem; text-decoration: underline; text-underline-offset: .25em; }
+    .research-ai .research-ai-note { margin-top: 1.3rem; font-size: .85rem; }
+  </style>
 </BaseLayout>
