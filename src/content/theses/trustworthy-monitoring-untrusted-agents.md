@@ -17,7 +17,7 @@ This thesis investigates security architectures that separate event collection, 
 
 A systematic threat model will distinguish attackers who manipulate log entries, compromise the analysis agent, or obtain privileged access to the monitored host. Different architectures will be evaluated experimentally for attack containment, evidence integrity, monitoring-failure detectability, and performance overhead.
 
-Particular attention will be given to **which security guarantees are achievable under each attacker model** and to the fundamental limits of monitoring a potentially compromised host.
+Particular attention will be given to which security guarantees are achievable under each attacker model and to the fundamental limits of monitoring a potentially compromised host.
 
 ## Expected outcome
 
@@ -25,4 +25,4 @@ A precise threat model, a prototype with independent monitoring and verification
 
 ## Related research
 
-This is part of **Secure Monitoring with Untrusted AI Agents**. A related [Bachelor's thesis](/theses/least-privilege-linux-monitoring/) investigates how to isolate an AI monitoring agent from its host. The Master's thesis is independently viable and does not depend on that prototype being completed.
+This is part of Secure Monitoring with Untrusted AI Agents. A related [Bachelor's thesis](/theses/least-privilege-linux-monitoring/) investigates how to isolate an AI monitoring agent from its host. The Master's thesis is independently viable and does not depend on that prototype being completed.

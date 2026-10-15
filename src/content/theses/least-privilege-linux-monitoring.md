@@ -23,4 +23,4 @@ A working Linux prototype, a documented security architecture, and an experiment
 
 ## Related research
 
-This is part of **Secure Monitoring with Untrusted AI Agents**. A related [Master's thesis](/theses/trustworthy-monitoring-untrusted-agents/) investigates the trustworthiness of monitoring when individual components may be compromised. Both theses can be pursued independently.
+This is part of Secure Monitoring with Untrusted AI Agents. A related [Master's thesis](/theses/trustworthy-monitoring-untrusted-agents/) investigates the trustworthiness of monitoring when individual components may be compromised. Both theses can be pursued independently.
