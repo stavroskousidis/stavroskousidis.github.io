@@ -1,6 +1,7 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { notePdfName } from '../../lib/pdf-names.mjs';
 
 export async function getStaticPaths() {
   const notes = await getCollection('notes', ({ data }) => !data.draft);
@@ -13,7 +14,8 @@ interface Props {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
-const pdfUrl = `/pdfs/${entry.id}.pdf`;
+const pdfFileName = notePdfName(entry.id, entry.data.published);
+const pdfUrl = `/pdfs/notes/${pdfFileName}`;
 const sourceUrl = `https://github.com/stavroskousidis/stavroskousidis.github.io/blob/main/src/content/notes/${entry.id}.md`;
 ---
 
@@ -28,7 +30,7 @@ const sourceUrl = `https://github.com/stavroskousidis/stavroskousidis.github.io/
         <div><dt>Tested on</dt><dd>{entry.data.testedOn.join(' · ')}</dd></div>
       </dl>
       <div class="note-actions">
-        <a class="button" href={pdfUrl}>PDF ↓</a>
+        <a class="button" href={pdfUrl} download={pdfFileName}>PDF ↓</a>
         <a class="text-link" href={sourceUrl}>Source ↗</a>
       </div>
     </header>

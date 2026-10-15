@@ -1,7 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ThesisCard from '../components/ThesisCard.astro';
-import { profile, theses } from '../data/site';
+import { profile } from '../data/site';
+import { getCollection } from 'astro:content';
+
+const theses = (await getCollection('theses'))
+  .filter((topic) => topic.data.status !== 'Assigned')
+  .sort((a, b) => a.data.level.localeCompare(b.data.level));
 ---
 
 <BaseLayout
@@ -48,7 +53,7 @@ import { profile, theses } from '../data/site';
         <p class="kicker">03 · Research practice</p>
         <h3>Keep your work coherent.</h3>
         <p>
-          Each student works in an individual GitHub repository. Organize thesis sources,
+          Each student works in an individual private GitHub repository. Organize thesis sources,
           code, experiments, documentation, and results so that your work is traceable
           and, where possible, reproducible. Respect confidentiality, data protection,
           and licensing constraints. I can help with advanced Git workflows, including
@@ -134,10 +139,10 @@ import { profile, theses } from '../data/site';
     </div>
     {
       theses.length > 0 ? (
-        <div class="card-grid">{theses.map((thesis) => <ThesisCard {...thesis} />)}</div>
+        <div class="card-grid">{theses.map((thesis) => <ThesisCard entry={thesis} />)}</div>
       ) : (
         <p class="muted thesis-empty">
-          Individual topics and their repositories will be published here as they become
+          Individual topics will be published here as they become
           available. In the meantime, you are welcome to propose a suitable research question.
         </p>
       )

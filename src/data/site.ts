@@ -18,15 +18,3 @@ export const profile = {
     ietf: 'https://datatracker.ietf.org/person/kousidis.ietf%40gmail.com'
   }
 };
-
-export interface ThesisListing {
-  level: string;
-  title: string;
-  summary: string;
-  tags: string[];
-  repo?: string;
-  status: string;
-}
-
-// Populate with real, available thesis topics only; no public placeholder listing.
-export const theses: ThesisListing[] = [];
