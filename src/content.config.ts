@@ -24,6 +24,8 @@ const theses = defineCollection({
     level: z.enum(['Bachelor', 'Master']),
     status: z.enum(['Open', 'Under discussion', 'Assigned']),
     researchDirection: z.string(),
+    published: z.string(),
+    updated: z.string().optional(),
     tags: z.array(z.string()).default([])
   })
 });

@@ -22,6 +22,13 @@ const { Content } = await render(entry);
       <p class="kicker">{entry.data.level} thesis · {entry.data.status} · {entry.data.researchDirection}</p>
       <h1>{entry.data.title}</h1>
       <p class="lede">{entry.data.summary}</p>
+      <dl class="note-meta">
+        <div><dt>Published</dt><dd><time datetime={entry.data.published}>{entry.data.published}</time></dd></div>
+        {entry.data.updated && <div><dt>Last updated</dt><dd><time datetime={entry.data.updated}>{entry.data.updated}</time></dd></div>}
+      </dl>
+      <div class="note-actions">
+        <a class="button" href={`/pdfs/theses/${entry.id}.pdf`}>One-page PDF ↓</a>
+      </div>
     </header>
     <div class="note-body">
       <h2>Research question</h2>

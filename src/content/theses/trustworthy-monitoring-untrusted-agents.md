@@ -5,6 +5,7 @@ researchQuestion: "How can the integrity and availability of security monitoring
 level: "Master"
 status: "Open"
 researchDirection: "Secure Monitoring with Untrusted AI Agents"
+published: "2026-10-15"
 tags: ["Systems Security", "Evidence Integrity", "Threat Modeling", "AI Agent Security"]
 ---
 
