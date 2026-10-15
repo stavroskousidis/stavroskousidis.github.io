@@ -16,6 +16,6 @@ export const profile = {
     thKoeln: 'https://www.th-koeln.de/',
     thKoelnProfile: 'https://www.th-koeln.de/en/person/stavros.kousidis/',
     ietf: 'https://datatracker.ietf.org/person/kousidis.ietf%40gmail.com',
-    hochschulbibliografie: 'https://bibliografie.th-koeln.de/search.xed'
+    hochschulbibliografie: 'https://bibliografie.th-koeln.de/servlets/solr/select?q=%28all%3AKousidis%2C+AND+all%3AStavros+AND+status%3A%22confirmed%22%29&fl=*&sort=year+desc&rows=10&version=4.5&mask=index.xed'
   }
 };
