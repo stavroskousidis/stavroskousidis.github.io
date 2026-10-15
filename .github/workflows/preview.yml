@@ -31,9 +31,18 @@ jobs:
         run: npm run pdfs
       - name: Build site
         run: npm run build
-      - name: Upload reviewable site build
+      - name: Summarize thesis PDFs
+        run: |
+          echo '### One-page thesis PDFs' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Download the `thesis-pdfs` artifact below to review the three PDF announcements. The HTML site is built for validation but is not uploaded.' >> "$GITHUB_STEP_SUMMARY"
+          echo >> "$GITHUB_STEP_SUMMARY"
+          for pdf in public/pdfs/theses/*.pdf; do
+            echo "- \`$(basename "$pdf")\`" >> "$GITHUB_STEP_SUMMARY"
+          done
+      - name: Upload thesis PDF announcements
         uses: actions/upload-artifact@v4
         with:
-          name: website-preview
-          path: dist/
+          name: thesis-pdfs
+          path: public/pdfs/theses/*.pdf
+          if-no-files-found: error
           retention-days: 14
