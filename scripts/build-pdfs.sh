@@ -2,10 +2,15 @@
 set -euo pipefail
 
 output_dir="public/pdfs"
-mkdir -p "$output_dir"
+mkdir -p "$output_dir/notes" "$output_dir/theses"
 
+# The public PDF URL and downloaded filename both use:
+# YYYY-MM-DD_note_<slug>.pdf or YYYY-MM-DD_thesis-<level>_<slug>.pdf
+# Keep the original slug-only URLs as compatibility aliases.
 for source in src/content/notes/*.md; do
   slug="$(basename "$source" .md)"
+  name="$(node scripts/pdf-name.mjs note "$source")"
+  pdf="$output_dir/notes/$name"
   pandoc "$source" \
     --from=gfm+yaml_metadata_block \
     --pdf-engine=typst \
@@ -14,14 +19,15 @@ for source in src/content/notes/*.md; do
     --metadata-file=config/pdf.yaml \
     --metadata=author:"Stavros Kousidis" \
     --metadata=lang:en \
-    --output="$output_dir/$slug.pdf"
+    --output="$pdf"
+  cp "$pdf" "$output_dir/$slug.pdf"
 done
 
 # Thesis descriptions: one-page A4 announcements with publication metadata.
-mkdir -p "$output_dir/theses"
 for source in src/content/theses/*.md; do
   slug="$(basename "$source" .md)"
-  pdf="$output_dir/theses/$slug.pdf"
+  name="$(node scripts/pdf-name.mjs thesis "$source")"
+  pdf="$output_dir/theses/$name"
   pandoc "$source" \
     --from=gfm+yaml_metadata_block \
     --pdf-engine=typst \
@@ -41,4 +47,5 @@ for source in src/content/theses/*.md; do
     echo "Thesis PDF must be one page: $pdf is $pages pages." >&2
     exit 1
   fi
+  cp "$pdf" "$output_dir/theses/$slug.pdf"
 done

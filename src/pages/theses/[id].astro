@@ -2,6 +2,7 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { profile } from '../../data/site';
+import { thesisPdfName } from '../../lib/pdf-names.mjs';
 
 export async function getStaticPaths() {
   const topics = await getCollection('theses');
@@ -14,6 +15,7 @@ interface Props {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
+const pdfFileName = thesisPdfName(entry.id, entry.data.published, entry.data.level);
 ---
 
 <BaseLayout title={`${entry.data.title} · Stavros Kousidis`} description={entry.data.summary}>
@@ -27,7 +29,7 @@ const { Content } = await render(entry);
         {entry.data.updated && <div><dt>Last updated</dt><dd><time datetime={entry.data.updated}>{entry.data.updated}</time></dd></div>}
       </dl>
       <div class="note-actions">
-        <a class="button" href={`/pdfs/theses/${entry.id}.pdf`}>One-page PDF ↓</a>
+        <a class="button" href={`/pdfs/theses/${pdfFileName}`} download={pdfFileName}>One-page PDF ↓</a>
       </div>
     </header>
     <div class="note-body">

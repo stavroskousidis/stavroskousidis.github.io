@@ -36,13 +36,13 @@ jobs:
           echo '### One-page thesis PDFs' >> "$GITHUB_STEP_SUMMARY"
           echo 'Download the `thesis-pdfs` artifact below to review the three PDF announcements. The HTML site is built for validation but is not uploaded.' >> "$GITHUB_STEP_SUMMARY"
           echo >> "$GITHUB_STEP_SUMMARY"
-          for pdf in public/pdfs/theses/*.pdf; do
+          for pdf in public/pdfs/theses/*_thesis-*.pdf; do
             echo "- \`$(basename "$pdf")\`" >> "$GITHUB_STEP_SUMMARY"
           done
       - name: Upload thesis PDF announcements
         uses: actions/upload-artifact@v4
         with:
           name: thesis-pdfs
-          path: public/pdfs/theses/*.pdf
+          path: public/pdfs/theses/*_thesis-*.pdf
           if-no-files-found: error
           retention-days: 14
