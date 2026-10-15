@@ -28,3 +28,4 @@ A transparent prioritization method, worked scenarios, and an evidence-based eva
 - [ENISA: Cybersecurity Guide for SMEs](https://www.enisa.europa.eu/publications/cybersecurity-guide-for-smes).
 - [ENISA: NIS2 Technical Implementation Guidance](https://www.enisa.europa.eu/publications/nis2-technical-implementation-guidance).
 - [European Commission: Cyber Resilience Act](https://digital-strategy.ec.europa.eu/en/policies/cyber-resilience-act).
+- [ENISA, *Cybersecurity for SMEs: Challenges and Recommendations* (2021)](https://www.enisa.europa.eu/publications/enisa-report-cybersecurity-for-smes).

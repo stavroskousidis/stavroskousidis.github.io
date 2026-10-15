@@ -23,6 +23,12 @@ Particular attention will be given to which security guarantees are achievable u
 
 A precise threat model, a prototype with independent monitoring and verification components, and a comparative security evaluation identifying achievable guarantees and their limitations.
 
+## Starting points
+
+- [Schneier and Kelsey, *Secure Audit Logs to Support Computer Forensics* (1999)](https://doi.org/10.1145/317087.317089).
+- [NIST SP 800-92, *Guide to Computer Security Log Management*](https://csrc.nist.gov/pubs/sp/800/92/final).
+- [Shah, *LogJack: Indirect Prompt Injection Through Cloud Logs* (2026)](https://arxiv.org/abs/2604.15368).
+
 ## Related research
 
 This is part of Secure Monitoring with Untrusted AI Agents. A related [Bachelor's thesis](/theses/least-privilege-linux-monitoring/) investigates how to isolate an AI monitoring agent from its host. The Master's thesis is independently viable and does not depend on that prototype being completed.

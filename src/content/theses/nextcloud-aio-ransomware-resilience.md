@@ -30,3 +30,4 @@ A reproducible Nextcloud AIO test environment, a threat model, measured containm
 - [Nextcloud All-in-One: deployment and backup documentation](https://github.com/nextcloud/all-in-one).
 - [Nextcloud: server hardening guidance](https://docs.nextcloud.com/server/stable/admin_manual/installation/harden_server.html).
 - [BorgBackup documentation](https://borgbackup.readthedocs.io/en/stable/).
+- [NIST SP 1800-11, *Recovering from Ransomware and Other Destructive Events*](https://csrc.nist.gov/pubs/sp/1800/11/final).

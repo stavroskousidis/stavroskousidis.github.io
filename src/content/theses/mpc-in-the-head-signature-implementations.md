@@ -29,3 +29,4 @@ A reproducible comparison, an explanation of observed trade-offs grounded in the
 
 - [NIST: Additional Post-Quantum Digital Signature Schemes](https://csrc.nist.gov/Projects/pqc-dig-sig).
 - [NIST: Round 3 Additional Signatures, including MQOM and SDitH](https://csrc.nist.gov/projects/pqc-dig-sig/round-3-additional-signatures).
+- [Ishai et al., *Zero-Knowledge from Secure Multiparty Computation* (STOC 2007)](https://doi.org/10.1145/1250790.1250794).

@@ -30,3 +30,4 @@ A comparative experimental study, an analysis of security and compatibility assu
 - [IETF: SLH-DSA-MTL for DNSSEC (work in progress)](https://datatracker.ietf.org/doc/draft-fregly-dnsop-slh-dsa-mtl-dnssec/).
 - [IETF: ML-DSA-MTL for DNSSEC (work in progress)](https://datatracker.ietf.org/doc/draft-kaizer-dnsop-ml-dsa-mtl-dnssec/).
 - [DNSSEC protocol overview, RFC 4033](https://www.rfc-editor.org/rfc/rfc4033).
+- [NIST FIPS 205, *Stateless Hash-Based Digital Signature Standard*](https://csrc.nist.gov/pubs/fips/205/final).
