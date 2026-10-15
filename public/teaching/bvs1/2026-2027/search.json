@@ -1,0 +1,582 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "BVS1 – Betriebssysteme",
+    "section": "",
+    "text": "Course Overview\nThis site contains the teaching material for BVS1 – Betriebssysteme at TH Köln, ICCT, for Wintersemester 2026/2027 · TH Köln · ICCT. The course is attended by students from multiple Bachelor programmes.\nThe course provides two aligned representations: concise lecture-specific Beamer slides for classroom interaction, and a reader-oriented chapter source used for both the PDF script and the HTML course.",
+    "crumbs": [
+      "BVS1 – Betriebssysteme"
+    ]
+  },
+  {
+    "objectID": "index.html#course-material",
+    "href": "index.html#course-material",
+    "title": "BVS1 – Betriebssysteme",
+    "section": "Course Material",
+    "text": "Course Material\nThe lecture chapters are listed in the HTML navigation and in the PDF table of contents.",
+    "crumbs": [
+      "BVS1 – Betriebssysteme"
+    ]
+  },
+  {
+    "objectID": "chapters/01-introduction.html",
+    "href": "chapters/01-introduction.html",
+    "title": "1  From Executing Code to Operating Systems",
+    "section": "",
+    "text": "2 From Executing Code to Operating Systems\nAn operating system is familiar enough that it is easy to begin with examples rather than with the problem it solves. Windows, Ubuntu, Android and macOS are recognizable operating-system environments, but naming familiar systems does not yet explain why operating systems exist.\nBVS1 therefore starts with a smaller question:\nThe first practical system is deliberately tiny. An RV64 target machine runs one program in QEMU and prints:\nThe experiment gives us a concrete machine to reason about before we introduce operating-system mechanisms.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>From Executing Code to Operating Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-introduction.html#one-program-can-run-without-a-guest-operating-system",
+    "href": "chapters/01-introduction.html#one-program-can-run-without-a-guest-operating-system",
+    "title": "1  From Executing Code to Operating Systems",
+    "section": "2.1 1. One program can run without a guest operating system",
+    "text": "2.1 1. One program can run without a guest operating system\nAt the lowest level, a processor executes instructions. Those instructions operate on registers and memory and can communicate with devices.\nOne important idea of the stored-program / Von Neumann model is that instructions and data are both kept in memory.\nA deliberately simplified machine model is:\n     instructions + data\n             │\n             ▼\n          memory\n             ▲\n             │\n             ▼\n            CPU\n             │\n             ▼\n          devices\nThis model omits many details of real hardware, but it is enough for the first distinction:\n\nCPU, memory and devices exist independently of an operating system.\n\nThe point here is conceptual rather than historical or microarchitectural. Modern processors may use separate instruction and data caches internally, but the important point here is that instructions and data both occupy target memory. Lecture 2 returns to this idea when the linker script makes the abstract memory model concrete.\nIn the Hello BVS1 experiment, QEMU provides the target machine. The target contains an RV64 CPU, memory and devices. The program is loaded and begins executing without a guest operating system.\nThe physical computer still runs an operating system, and our Ubuntu development environment also runs an operating system. The important observation concerns the target:\n\nExecuting instructions is not, by itself, what makes an operating system necessary.\n\n\n2.1.1 Interpreting the experiment\nThe classroom experiment deliberately separates observation from explanation. Consider these statements:\n\nQEMU executed our program.\nA virtual CPU executed our program.\nUbuntu executed our guest program.\nThe target had an operating system.\nQEMU was already running before our guest program started.\nThe string Hello BVS1 existed somewhere in memory while the program was running.\n\nThe purpose of discussing them is to expose the execution model.\nA precise description is:\n\nthe Ubuntu development VM runs the QEMU process;\nQEMU implements the target machine;\nthe target contains an emulated RV64 CPU, memory and devices;\nthe RV64 program runs on that target;\nthe target has no guest operating system.\n\nSaying “QEMU executed the program” is understandable in informal language, but the more useful model is that QEMU emulates the machine whose CPU executes the target instructions.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>From Executing Code to Operating Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-introduction.html#the-isa-connects-software-and-processor",
+    "href": "chapters/01-introduction.html#the-isa-connects-software-and-processor",
+    "title": "1  From Executing Code to Operating Systems",
+    "section": "2.2 2. The ISA connects software and processor",
+    "text": "2.2 2. The ISA connects software and processor\nMachine code only has meaning if software and the processor agree on what each instruction means.\nThis agreement is the Instruction Set Architecture (ISA).\nAn ISA specifies properties visible to machine-level software, including:\n\ninstructions and their encodings,\nregisters,\nmemory-addressing rules,\nexceptional control transfers,\nprivilege mechanisms.\n\nDifferent processor implementations can implement the same ISA.\nThe ISA should therefore be distinguished from the microarchitecture:\n\nISA: the contract visible to software;\nmicroarchitecture: how a particular processor implements that contract internally.\n\nFor BVS1, the teaching target uses RV64, the 64-bit form of RISC-V.\n\n2.2.1 Why RV64?\nRISC-V is a teaching choice, not a claim that it is the best ISA for every system.\nIt offers a comparatively regular architecture, public specifications, a modern privilege model, suitable development tools, and a well-supported QEMU virt machine. These properties let us expose operating-system mechanisms without making historical processor complexity the subject of the course.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>From Executing Code to Operating Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-introduction.html#development-host-and-target-are-different-roles",
+    "href": "chapters/01-introduction.html#development-host-and-target-are-different-roles",
+    "title": "1  From Executing Code to Operating Systems",
+    "section": "2.3 3. Development host and target are different roles",
+    "text": "2.3 3. Development host and target are different roles\nThe machine on which software is developed does not need to use the same ISA as the machine for which the program is built.\nIn BVS1:\n\nthe development host is the Ubuntu bvs1 VM in which the development tools run;\nthe target is the RV64 machine for which we build the program.\n\nThe development VM may itself run on an x86-64 or Arm64 host platform. The teaching target is nevertheless RV64.\nThis gives two separate questions:\n\nWhere do the development tools execute?\nWhich machine will execute the generated program?\n\nKeeping these roles separate is essential for understanding both cross-compilation and emulation.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>From Executing Code to Operating Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-introduction.html#virtualization-and-emulation-are-different",
+    "href": "chapters/01-introduction.html#virtualization-and-emulation-are-different",
+    "title": "1  From Executing Code to Operating Systems",
+    "section": "2.4 4. Virtualization and emulation are different",
+    "text": "2.4 4. Virtualization and emulation are different\nThe most useful first question is:\n\nCan the physical CPU execute the guest or target instructions directly?\n\nThat question separates the roles of virtualization and emulation more clearly than the word virtual machine by itself.\n\n2.4.1 Virtualization: the guest instructions already belong to the host ISA\nIn hardware-assisted virtualization, guest and host normally use the same processor ISA.\nA guest instruction is therefore, in the ordinary case, already an instruction that the physical CPU understands. Most non-privileged guest instructions can execute directly on the physical processor.\nThe virtualization mechanism controls the parts that must not simply be handed to the guest, for example:\n\nisolation between machines,\nprivileged processor state,\naccess to memory and devices,\ntransitions that require intervention by the virtualization layer.\n\nA simplified model is:\nguest instruction\n       ↓\nphysical CPU\nThe important point is not that virtualization performs no mediation. It is that the guest machine does not require a different instruction vocabulary from the physical CPU.\nIn BVS1, Multipass manages the Ubuntu development VM using virtualization facilities available on the host platform. The exact backend can differ between operating systems.\n\n\n2.4.2 Emulation: the target instruction may not be a host instruction\nEmulation can reproduce a machine whose ISA differs from the host ISA.\nSuppose the physical processor uses x86-64 while the BVS1 target uses RV64. The physical x86-64 CPU does not directly understand an RV64 instruction.\nAn emulator must therefore reproduce the effect of the target instruction. Conceptually:\nRV64 target instruction\n          ↓\n        QEMU\n          ↓\ninterpret / translate\n          ↓\nhost operations\n          ↓\nphysical CPU\nThe word interpret is useful for the conceptual distinction, but it should not be understood as a claim that an emulator must process every instruction individually. QEMU can dynamically translate blocks of target instructions into host code.\nThe essential point is:\n\nVirtualization can largely run guest instructions directly; emulation must reproduce what target instructions would do when the host cannot execute them directly.\n\n\n\n2.4.3 Our BVS1 machine stack\nThe resulting stack is:\nphysical host\n     ↓  virtualization (managed through Multipass)\nUbuntu development VM: bvs1\n     ↓  runs\nQEMU process\n     ↓  emulates RV64\nRV64 target machine\n     ↓  executes\nHello BVS1\nThe layers have different roles:\n\nthe physical host provides the real CPU, memory and devices;\nthe Ubuntu development VM is the common environment in which the course tools run;\nMultipass manages that development VM and is not an additional machine layer;\nQEMU is a process running inside the development VM;\nQEMU emulates the RV64 target machine;\nHello BVS1 executes on that target.\n\nOnly the RV64 target is the teaching machine whose operating-system mechanisms we will build. It initially contains no guest operating system.\nA virtual machine is the machine environment presented to software. Virtualization and emulation are different techniques that can provide such environments.\nQEMU itself is capable of more than the configuration used here: in other settings it can also participate in hardware-assisted virtualization. In BVS1, its relevant role is RV64 emulation.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>From Executing Code to Operating Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-introduction.html#the-toolchain-connects-development-host-and-target",
+    "href": "chapters/01-introduction.html#the-toolchain-connects-development-host-and-target",
+    "title": "1  From Executing Code to Operating Systems",
+    "section": "2.5 5. The toolchain connects development host and target",
+    "text": "2.5 5. The toolchain connects development host and target\nThe source program is written in a human-readable programming language, but the target CPU needs RV64 machine instructions.\nA simplified build path is:\nsource code\n    ↓\ncross compiler / assembler\n    ↓\nobject files\n    ↓\nlinker\n    ↓\nRV64 executable\n    ↓\nQEMU\n    ↓\nRV64 target machine\nThe cooperating compiler, assembler, linker and binary utilities form the toolchain.\nA cross compiler runs on one architecture while producing code for another target architecture.\nQEMU has a different role: it does not translate source code into the executable. It provides the machine on which the already generated target program can run.\n\n2.5.1 Object files are not yet the complete program\nCompilation and assembly can already produce target-specific object files. These can contain RV64 machine code, but they are not yet the complete executable. Separate pieces still have to be combined and references between them resolved.\nThe final result of this build path is a linked RV64 ELF executable that QEMU can load for the target machine.\nLecture 2 unfolds this path manually: we inspect the object files, discover what is still unresolved, and then see why linking and the target memory layout are necessary.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>From Executing Code to Operating Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-introduction.html#when-does-an-operating-system-become-useful",
+    "href": "chapters/01-introduction.html#when-does-an-operating-system-become-useful",
+    "title": "1  From Executing Code to Operating Systems",
+    "section": "2.6 6. When does an operating system become useful?",
+    "text": "2.6 6. When does an operating system become useful?\nThe Hello BVS1 target can run one tiny program without a guest operating system.\nNow change the requirement:\n\nThe machine must run two programs.\n\nNew questions immediately appear:\n\nWhich program receives the processor?\nWhere is each program’s state kept?\nWhat happens when one program waits for a device?\nCan one program overwrite another program’s memory?\nWho coordinates access to shared devices?\nHow does a program request a shared service?\n\nIncrease the requirements further:\n\nmany programs,\nmultiple users,\npersistent storage,\nkeyboard and display,\nnetworking,\nfailures,\nprograms that do not trust one another.\n\nThe problem is no longer merely “execute instructions”.\nNow the system needs mechanisms for sharing, coordination, protection and abstraction.\nThis gives us the working definition used in BVS1:\n\nAn operating system is software that helps turn hardware into a usable computer system by providing abstractions, resource management, coordination, protection, and services for programs and users.\n\nThis is intentionally a working definition.\nWe will test and sharpen it as concrete mechanisms are introduced.\nTwo classical viewpoints are already visible:\n\nOperating system as resource manager\nCPU time, memory, storage and devices are finite resources that must be shared and controlled.\nOperating system as abstract machine\nPrograms should not need to manipulate every hardware detail directly. The operating system can provide safer and more useful abstractions and services.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>From Executing Code to Operating Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-introduction.html#applying-the-working-definition",
+    "href": "chapters/01-introduction.html#applying-the-working-definition",
+    "title": "1  From Executing Code to Operating Systems",
+    "section": "2.7 7. Applying the working definition",
+    "text": "2.7 7. Applying the working definition\nThe opening lecture deliberately asks students to classify several familiar terms before the working definition is established.\nAfter deriving the definition, the distinctions become clearer:\n\nWindows, Ubuntu and Android are complete operating-system environments.\nThe Linux kernel is the core used by Linux-based operating-system environments, not such an environment by itself.\nUEFI is firmware and a firmware interface/environment.\nQEMU is an emulator and virtualizer.\nDocker provides container tooling built on operating-system mechanisms.\nFirefox is an application.\n\nThe purpose of the exercise is not to memorize labels.\nIt is to ask which responsibilities a component actually assumes and at which layer it operates.\nExercise 1 extends this idea with less obvious boundary cases such as a boot manager, Proxmox, and the deliberately provocative question “Is Emacs an operating system?”",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>From Executing Code to Operating Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-introduction.html#from-hello-bvs1-to-a-minimal-operating-system",
+    "href": "chapters/01-introduction.html#from-hello-bvs1-to-a-minimal-operating-system",
+    "title": "1  From Executing Code to Operating Systems",
+    "section": "2.8 8. From Hello BVS1 to a minimal operating system",
+    "text": "2.8 8. From Hello BVS1 to a minimal operating system\nThe course deliberately starts with a target that can do very little:\nHello BVS1\nThe semester question is:\n\nWhat must we add to Hello BVS1 before we would call the result an operating system?\n\nInitial answers may include:\n\nhandling devices,\nmultiple executions,\nscheduling,\nprotection,\nmemory management,\nsystem services,\ncommunication,\npersistent storage,\nusers,\na command interface.\n\nAt the beginning these are hypotheses, not a checklist to memorize.\nWe add mechanisms only when a new requirement gives us a reason for them.\nThe practical target remains:\n\na small educational operating system on RV64 and QEMU virt, eventually providing a simple shell\n\nThe red thread is:\na machine executes code\n    ↓\nsoftware communicates with devices\n    ↓\nevents must be handled\n    ↓\nmultiple programs must coexist\n    ↓\nprograms compete for the CPU\n    ↓\nprograms and resources need protection\n    ↓\nprograms need operating-system services\n    ↓\nprograms need coordination\n    ↓\nprograms need communication\n    ↓\na user needs to control programs\n    ↓\na simple shell\nThe course is therefore not organized as a catalogue of terminology.\nEach new mechanism should answer a problem that the current system has acquired.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>From Executing Code to Operating Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-introduction.html#key-ideas",
+    "href": "chapters/01-introduction.html#key-ideas",
+    "title": "1  From Executing Code to Operating Systems",
+    "section": "2.9 9. Key ideas",
+    "text": "2.9 9. Key ideas\nLecture 1 establishes a small number of distinctions that we will use repeatedly:\n\nA target processor can execute a program without a guest operating system.\nCPU, memory and devices exist independently of the OS.\nAn ISA defines the machine-level contract on which software relies.\nDevelopment host and target are different roles.\nVirtualization and emulation are different techniques.\nMultipass gives us the virtualized development environment; QEMU emulates our RV64 target in the BVS1 setup.\nA cross-toolchain produces machine code for a target ISA different from the development system.\nOperating systems become useful as requirements for sharing, abstraction, coordination, protection and services grow.\nThe BVS1 system grows only when a new requirement motivates a new mechanism.\n\nA useful test of understanding is to explain this complete path:\nsource code\n    ↓\ncross-toolchain\n    ↓\nRV64 executable\n    ↓\nQEMU process in the development VM\n    ↓\nemulated RV64 machine\n    ↓\nobservable program behaviour\nand then explain why successful execution still does not imply that the target contains an operating system.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>From Executing Code to Operating Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-introduction.html#references",
+    "href": "chapters/01-introduction.html#references",
+    "title": "1  From Executing Code to Operating Systems",
+    "section": "2.10 References",
+    "text": "2.10 References\n\nRemzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau, Operating Systems: Three Easy Pieces. https://pages.cs.wisc.edu/~remzi/OSTEP/\nAndrew S. Tanenbaum and Herbert Bos, Modern Operating Systems, Pearson.\nRISC-V International, RISC-V ISA specifications. https://docs.riscv.org/\nQEMU documentation, RISC-V virt Generic Virtual Platform. https://www.qemu.org/docs/master/system/riscv/virt.html\nCanonical Multipass documentation. https://documentation.ubuntu.com/multipass/",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>From Executing Code to Operating Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-source-to-execution.html",
+    "href": "chapters/02-source-to-execution.html",
+    "title": "2  From Source to Process",
+    "section": "",
+    "text": "2.1 1. From source code to target-specific object code\nLecture 1 showed that an RV64 target can execute a small program without a guest operating system. Lecture 2 asks how that execution comes into existence and why, for an operating system, simply starting a program is not enough.\nThe path is:\nand then:\nThe build tools are therefore not the final topic. We unfold them once because they make the transition from source code to a running machine state visible.\nWe first compile main.c without linking:\nThe important option is -c: stop before linking.\nInspecting the result with\nshows that main.o is already a RISC-V ELF object.\nThis distinction matters: the compiler has already translated C into code for our target ISA. The object file is therefore not architecture-neutral. But it is also not yet a complete program. Separate pieces can still refer to one another, and their final addresses have not yet been established.\nThe startup assembly is translated in the same way:",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-source-to-execution.html#from-source-code-to-target-specific-object-code",
+    "href": "chapters/02-source-to-execution.html#from-source-code-to-target-specific-object-code",
+    "title": "2  From Source to Process",
+    "section": "",
+    "text": "mkdir -p build/manual\n\nriscv64-unknown-elf-gcc -march=rv64imac -mabi=lp64 \\\n  -mcmodel=medany -msmall-data-limit=0 -c main.c -o build/manual/main.o\n\n\nfile build/manual/main.o\n\n\n\nriscv64-unknown-elf-gcc -march=rv64imac -mabi=lp64 \\\n  -mcmodel=medany -c start.S -o build/manual/start.o",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-source-to-execution.html#why-object-files-still-need-a-linker",
+    "href": "chapters/02-source-to-execution.html#why-object-files-still-need-a-linker",
+    "title": "2  From Source to Process",
+    "section": "2.2 2. Why object files still need a linker",
+    "text": "2.2 2. Why object files still need a linker\nUsing nm (“name list”) lets us inspect the symbols in the two objects:\nriscv64-unknown-elf-nm build/manual/start.o\nriscv64-unknown-elf-nm build/manual/main.o\nFor the symbols relevant here, we can read the result as:\nstart.o defines _start\nstart.o needs   main\nstart.o needs   _stack_top\n\nmain.o  defines main\nThe important concept is not the letters printed by nm, but the relationship between separately translated pieces. One object can provide a symbol while another refers to it. The linker connects those pieces.\nThe unresolved _stack_top also reveals a second responsibility of the linker: it must establish where the program lives in target memory.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-source-to-execution.html#from-the-stored-program-idea-to-a-concrete-memory-layout",
+    "href": "chapters/02-source-to-execution.html#from-the-stored-program-idea-to-a-concrete-memory-layout",
+    "title": "2  From Source to Process",
+    "section": "2.3 3. From the stored-program idea to a concrete memory layout",
+    "text": "2.3 3. From the stored-program idea to a concrete memory layout\nLecture 1 used the abstract model:\ninstructions + data\n        ↓\n      memory\n        ↕\n       CPU\nOur real program now contains different kinds of bytes that need concrete places:\nRV64 memory from 0x80000000\n\n+----------------------------------------------------------+\n| .text    _start, main, ...      | instructions          |\n| .rodata  \"Hello BVS1\\n\"         | constant data         |\n| .data                           | initialized data      |\n| .bss                            | zero-initialized data |\n| C stack  (top: _stack_top)      | runtime data          |\n+----------------------------------------------------------+\nThese roles are not properties that memory itself knows. They arise from the executable layout and from how the program and CPU use the addresses.\nThe course-provided linker.ld makes that layout concrete:\nENTRY(_start)\n\nMEMORY {\n    RAM (rwx) : ORIGIN = 0x80000000, LENGTH = 128M\n}\n\n. = ALIGN(16);\n. += 16K;\n_stack_top = .;\nHere . is the linker’s current output address. After 16 KiB have been reserved for the initial stack, that address is named _stack_top.\nStudents do not need to write linker scripts in BVS1. The important idea is that the linker does not merely join files; it constructs one final address space in which the pieces can refer to one another.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-source-to-execution.html#linking-produces-the-program-qemu-can-load",
+    "href": "chapters/02-source-to-execution.html#linking-produces-the-program-qemu-can-load",
+    "title": "2  From Source to Process",
+    "section": "2.4 4. Linking produces the program QEMU can load",
+    "text": "2.4 4. Linking produces the program QEMU can load\nWe link the two objects using the course layout:\nriscv64-unknown-elf-gcc -nostdlib -nostartfiles -no-pie \\\n  -T linker.ld build/manual/start.o build/manual/main.o \\\n  -o build/manual/hello-bvs1.elf\nAt this point the linker has:\n\ncombined the objects;\nresolved the symbol references;\nestablished the final memory layout.\n\nThe resulting ELF is what QEMU receives. QEMU does not compile or link the program; it provides the emulated RV64 machine and loads the already-built image.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-source-to-execution.html#why-execution-starts-before-main",
+    "href": "chapters/02-source-to-execution.html#why-execution-starts-before-main",
+    "title": "2  From Source to Process",
+    "section": "2.5 5. Why execution starts before main",
+    "text": "2.5 5. Why execution starts before main\nThe linker script declares:\nENTRY(_start)\nand _start is defined in start.S:\n_start:\n    la   sp, _stack_top\n    call main\n1:\n    j    1b\nThis small fragment exposes an important boundary between machine startup and ordinary C code.\nBefore main can run, startup code establishes at least the execution environment that C expects. Here that means setting sp, the stack pointer, to the address denoted by _stack_top.\nThen call main transfers control to main and remembers where execution should return. We deliberately do not open the full calling convention yet. The fact that a return point must somehow be preserved becomes important in Lecture 3.\nThe local label 1: and 1b only express the final fallback loop: if main returns, execution remains there.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-source-to-execution.html#the-whole-path-and-what-make-hides",
+    "href": "chapters/02-source-to-execution.html#the-whole-path-and-what-make-hides",
+    "title": "2  From Source to Process",
+    "section": "2.6 6. The whole path, and what Make hides",
+    "text": "2.6 6. The whole path, and what Make hides\nRunning the ELF manually:\nqemu-system-riscv64 -machine virt -m 128M -smp 1 -nographic \\\n  -bios none -kernel build/manual/hello-bvs1.elf\nreconstructs the complete path:\nmain.c    → compile  → main.o  ──┐\n                                 │\nstart.S   → assemble → start.o ──┼─→ link → hello-bvs1.elf\n                                 │                ↓\nlinker.ld ───────────────────────┘               QEMU\n                                                  ↓\n                                                 RV64\n                                                  ↓\n                                              Hello BVS1\nCompilation, assembly, linking, and QEMU itself run in the Ubuntu development VM. The final RV64 instructions execute in the emulated target.\nMake automates this workflow. It decides when a target is out of date and runs the corresponding recipe. The GCC driver performs the translation steps and invokes the linker. QEMU provides the machine on which the result executes.\nDoing the path manually once is useful because the automation then has a visible meaning rather than being a black box.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-source-to-execution.html#change-rebuild-observe",
+    "href": "chapters/02-source-to-execution.html#change-rebuild-observe",
+    "title": "2  From Source to Process",
+    "section": "2.7 7. Change, rebuild, observe",
+    "text": "2.7 7. Change, rebuild, observe\nIf only the string in main.c changes, we can predict the consequences before rebuilding:\n\nmain.o must change;\nstart.o does not;\nthe final ELF must be linked again;\nlinker.ld does not change;\nQEMU itself does not change.\n\nThis small exercise is about maintaining a causal model of the system:\n\npredict → change → build → run → observe → explain\n\nThat pattern will be reused when the changes are no longer only strings, but operating-system mechanisms.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-source-to-execution.html#why-an-executing-program-is-not-yet-a-process",
+    "href": "chapters/02-source-to-execution.html#why-an-executing-program-is-not-yet-a-process",
+    "title": "2  From Source to Process",
+    "section": "2.8 8. Why an executing program is not yet a process",
+    "text": "2.8 8. Why an executing program is not yet a process\nOur current target has one execution:\n_start\n  ↓\nmain\n  ↓\nprint\n  ↓\nfor (;;) {}\nOnce it starts, nothing inside our target can currently stop it, regain control, and later continue it.\nThat is the new requirement. An operating system must be able to manage an execution rather than merely start it.\nFor our first model:\n\nA process is an execution that the operating system can manage.\n\nFor Checkpoint 1, “manage” means only:\ncreate → run → yield → resume → exit\nThis is intentionally much smaller than a complete Unix process model. We do not yet need address spaces, files, process IDs, or scheduling policies.\nThe minimum lifecycle is:\ncreate ──→ READY ──run / resume──→ RUNNING ──exit──→ FINISHED\n             ↑                       │\n             └──────── yield ────────┘\nA yielded process is still runnable. A finished process is not.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-source-to-execution.html#yield-exit-resume-and-restart",
+    "href": "chapters/02-source-to-execution.html#yield-exit-resume-and-restart",
+    "title": "2  From Source to Process",
+    "section": "2.9 9. Yield, exit, resume, and restart",
+    "text": "2.9 9. Yield, exit, resume, and restart\nYield and exit both transfer control back to the operating system, but they have different meanings.\n\nyield: the execution is not finished and must be able to continue later;\nexit: the execution is finished and must never continue.\n\nThe distinction becomes visible in this intended interface:\nuart_puts(\"A\\n\");\nprocess_yield();\nuart_puts(\"B\\n\");\nprocess_exit();\nprocess_yield() and process_exit() are not library functions we already have. They are functions our minimal operating system still has to implement.\nAfter process_yield(), the operating system has control. When the process runs again, it must continue with uart_puts(\"B\\n\"). Printing A again would mean that we restarted the execution instead of resuming it.\nThis is the conceptual step that makes the next lecture necessary.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-source-to-execution.html#the-question-that-leads-to-execution-context",
+    "href": "chapters/02-source-to-execution.html#the-question-that-leads-to-execution-context",
+    "title": "2  From Source to Process",
+    "section": "2.10 10. The question that leads to execution context",
+    "text": "2.10 10. The question that leads to execution context\nTo resume correctly, something about the paused execution must survive:\nprocess runs\n     ↓\nyield\n     ↓\nOS regains control\n     ↓\nresume\n     ↓\ncontinue exactly where it stopped\nWhat must be preserved so this can work?\nAt this point it is enough to suspect that some machine state must survive the pause. Lecture 3 determines exactly what that state is.\nThe final path of Lecture 2 is therefore:\nsource → objects → linked ELF → memory → _start → main\nfollowed by:\nexecuting program → OS-managed execution → process\nThe remaining question is:\n\nWhat machine state makes resume possible?",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-preserving-execution.html",
+    "href": "chapters/03-preserving-execution.html",
+    "title": "3  Preserving Execution",
+    "section": "",
+    "text": "3.1 1. From “run” to “continue later”\nCheckpoint 1 is intentionally modest:\nBefore a process can exist as an operating-system abstraction, the system needs one simpler capability: execution must be able to stop and later continue.\nThis chapter develops only the machine state needed to make that idea visible.\nThe current Hello BVS1 program starts and then follows one continuous control flow.\nNow imagine:\nThe intended behaviour is:\nThe process must therefore retain enough machine state to preserve its continuation.\nConceptually, execution state includes:\nFor the first checkpoint, we deliberately exploit normal C function-call rules so that the saved context stays small and understandable.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-preserving-execution.html#from-run-to-continue-later",
+    "href": "chapters/03-preserving-execution.html#from-run-to-continue-later",
+    "title": "3  Preserving Execution",
+    "section": "",
+    "text": "do_first_thing();\n\nprocess_yield();\n\ndo_second_thing();\n\n\nexecute do_first_thing();\nenter process_yield();\nlet the kernel regain control;\nlater resume the process;\ncontinue with do_second_thing().\n\n\n\n\nwhere execution should continue;\nregister values that are required to survive;\nthe current stack position;\nthe stack contents themselves.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-preserving-execution.html#return-addresses-make-continuation-visible",
+    "href": "chapters/03-preserving-execution.html#return-addresses-make-continuation-visible",
+    "title": "3  Preserving Execution",
+    "section": "3.2 2. Return addresses make continuation visible",
+    "text": "3.2 2. Return addresses make continuation visible\nConsider:\nvoid first(void)\n{\n    second();\n    third();\n}\nA machine-level function call must know both where to go and where to return afterwards.\nRISC-V uses the register ra as the return-address register.\nAt a conceptual level:\ncall second\n    ↓\nremember continuation in ra\n    ↓\nexecute second\n    ↓\nret\n    ↓\ncontinue using ra\nThe exact instruction encoding is not important here.\nThe relevant insight is that a continuation is represented by machine state.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-preserving-execution.html#why-a-stack-is-needed",
+    "href": "chapters/03-preserving-execution.html#why-a-stack-is-needed",
+    "title": "3  Preserving Execution",
+    "section": "3.3 3. Why a stack is needed",
+    "text": "3.3 3. Why a stack is needed\nNested calls require values to survive while other functions execute.\nThe stack provides storage whose lifetime follows nested function calls.\nRISC-V software conventionally uses sp as the stack pointer, and the stack grows toward lower addresses.\nIf two independent executions have different stacks, they also need different saved values of sp.\nFor example:\nexecution A: sp = 0x81003f80\nexecution B: sp = 0x81007f40\nRestoring B’s registers but accidentally retaining A’s stack pointer would cause B to use the wrong stack.\nThe stack pointer is therefore part of the context that must be preserved.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-preserving-execution.html#the-calling-convention-reduces-what-we-need-to-save",
+    "href": "chapters/03-preserving-execution.html#the-calling-convention-reduces-what-we-need-to-save",
+    "title": "3  Preserving Execution",
+    "section": "3.4 4. The calling convention reduces what we need to save",
+    "text": "3.4 4. The calling convention reduces what we need to save\nA normal C function call does not promise that every general-purpose register is unchanged afterwards.\nThe calling convention distinguishes, among other categories:\n\ncaller-saved registers — the caller must preserve them if it needs them later;\ncallee-saved registers — the called function must restore them before returning.\n\nRISC-V names the callee-saved general-purpose registers s0 through s11.\nFor a cooperative context switch that occurs at a normal function-call boundary, we can exploit that contract.\nA minimal saved context can therefore contain:\nra\nsp\ns0 ... s11\nThe reason for saving ra here deserves care. In the general ABI it is not a callee-saved register. In the context-switch routine it is saved because it identifies the continuation to which the restored context should return.\nThis is not yet a full interrupt or trap frame. Later preemption occurs at an asynchronous boundary and requires different handling.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-preserving-execution.html#represent-the-saved-context-in-c",
+    "href": "chapters/03-preserving-execution.html#represent-the-saved-context-in-c",
+    "title": "3  Preserving Execution",
+    "section": "3.5 5. Represent the saved context in C",
+    "text": "3.5 5. Represent the saved context in C\nA compact representation is:\nstruct context {\n    uint64_t ra;\n    uint64_t sp;\n    uint64_t s[12];\n};\nThe exact final layout must agree with the assembly offsets used by the context-switch scaffold.\nThe important conceptual distinction is:\n\nA context is saved execution state. It is not yet the whole process.\n\nThe structure simply answers:\n\nWhere, on which stack, and with which preserved register values can this execution continue?",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-preserving-execution.html#the-narrow-assembly-boundary",
+    "href": "chapters/03-preserving-execution.html#the-narrow-assembly-boundary",
+    "title": "3  Preserving Execution",
+    "section": "3.6 6. The narrow assembly boundary",
+    "text": "3.6 6. The narrow assembly boundary\nA simplified context switch can be read as:\nswitch_context:\n    sd ra, 0(a0)\n    sd sp, 8(a0)\n\n    ld ra, 0(a1)\n    ld sp, 8(a1)\n    ret\nThe calling convention passes:\na0 → address of context to save\na1 → address of context to restore\nThe complete scaffold also preserves the callee-saved s registers.\nThe learning target is not to reproduce the whole routine from memory.\nThe important sequence is:\n\nstore the current continuation and stack position into one context;\nload another context’s continuation and stack position;\nexecute ret;\ncontinue according to the restored ra on the restored stack.\n\nThis is the key conceptual moment:\n\nThe final ret returns into the restored context, not necessarily to the code that called the switch most recently in wall-clock time.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-preserving-execution.html#kernel-context-and-process-context",
+    "href": "chapters/03-preserving-execution.html#kernel-context-and-process-context",
+    "title": "3  Preserving Execution",
+    "section": "3.7 7. Kernel context and process context",
+    "text": "3.7 7. Kernel context and process context\nCheckpoint 1 needs two saved continuations:\nkernel context\n    ↕\nswitch_context\n    ↕\nprocess context\nWhen the kernel first switches to the process, the kernel context is saved.\nWhen the process later yields, the process context is saved and the kernel context is restored.\nWhen the kernel resumes the process, the reverse happens again.\nThe kernel context is not being introduced here as a second user process. It is simply the state needed so kernel code can continue after control returns from the process.\nFor CP1, this is not yet a user/kernel privilege boundary.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-preserving-execution.html#starting-a-context-that-has-never-run",
+    "href": "chapters/03-preserving-execution.html#starting-a-context-that-has-never-run",
+    "title": "3  Preserving Execution",
+    "section": "3.8 8. Starting a context that has never run",
+    "text": "3.8 8. Starting a context that has never run\nA previously running context already has a saved continuation.\nA new process does not.\nWe solve that by constructing an initial context whose values make the normal restore mechanism enter a bootstrap function:\nsp → top of the process's new stack\nra → process_bootstrap\nSuppose the process has stack storage:\nuint8_t stack[4096];\nBecause the stack grows downward, its initial stack pointer begins near the top of that storage.\nThe exact alignment details can be handled by provided code or a helper. The important idea is that the process owns separate stack storage and that the saved context points into it.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-preserving-execution.html#the-bootstrap-returns-us-to-ordinary-c",
+    "href": "chapters/03-preserving-execution.html#the-bootstrap-returns-us-to-ordinary-c",
+    "title": "3  Preserving Execution",
+    "section": "3.9 9. The bootstrap returns us to ordinary C",
+    "text": "3.9 9. The bootstrap returns us to ordinary C\nA small bootstrap can conceptually look like:\nstatic void process_bootstrap(void)\n{\n    current-&gt;entry();\n    process_exit(0);\n}\nThe first restore enters this function because the initial context contains its address in ra.\nFrom there, ordinary C function calls can be used.\nThis is an important pattern for the course:\n\nAssembly is used only at the narrow boundary where the abstraction needs direct machine control. Once the boundary has been crossed, ordinary C and higher-level operating-system concepts take over.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-preserving-execution.html#trace-a-complete-cooperative-switch",
+    "href": "chapters/03-preserving-execution.html#trace-a-complete-cooperative-switch",
+    "title": "3  Preserving Execution",
+    "section": "3.10 10. Trace a complete cooperative switch",
+    "text": "3.10 10. Trace a complete cooperative switch\nAssume the kernel is running and a new process has:\nprocess.context.sp → its stack\nprocess.context.ra → process_bootstrap\nThe kernel calls:\nswitch_context(&kernel_context, &process.context);\nThe switch:\n\nsaves the kernel continuation and stack;\nrestores the process context;\nexecutes ret;\nenters process_bootstrap.\n\nLater the process calls:\nprocess_yield();\nInside that operation, the process context is saved and the kernel context is restored.\nThe switch then returns to the kernel continuation saved by the earlier switch.\nWhen the kernel later restores the process context, execution resumes inside the previous call to process_yield(). That function then returns normally, and the process continues after its yield.\nThis is what “resume” means in the first process implementation.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-preserving-execution.html#from-saved-context-to-first-process",
+    "href": "chapters/03-preserving-execution.html#from-saved-context-to-first-process",
+    "title": "3  Preserving Execution",
+    "section": "3.11 11. From saved context to first process",
+    "text": "3.11 11. From saved context to first process\nA saved context answers:\n\nWhere and with which machine state can execution continue?\n\nCheckpoint 1 needs one slightly larger abstraction:\nstruct process {\n    struct context context;\n    uint8_t stack[4096];\n    void (*entry)(void);\n    enum state state;\n    int exit_status;\n};\nThis is one useful teaching representation, not a required internal design.\nThe process adds:\n\nan entry function;\nowned stack storage;\nlifecycle state;\nan exit status.\n\nNo scheduler, address space, or user-mode boundary is required.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-preserving-execution.html#minimal-lifecycle",
+    "href": "chapters/03-preserving-execution.html#minimal-lifecycle",
+    "title": "3  Preserving Execution",
+    "section": "3.12 12. Minimal lifecycle",
+    "text": "3.12 12. Minimal lifecycle\nA small lifecycle is enough:\nunused\n   ↓ create\nready\n   ↓ run\nrunning\n   ↓ yield\nready\n   ↓ run\nrunning\n   ↓ exit\nfinished\nThe distinctions are semantic:\n\ncreate prepares an executable context but does not run it;\nyield pauses a process that may run again;\nexit finishes a process that must not run again.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-preserving-execution.html#creation-prepares-the-initial-context",
+    "href": "chapters/03-preserving-execution.html#creation-prepares-the-initial-context",
+    "title": "3  Preserving Execution",
+    "section": "3.13 13. Creation prepares the initial context",
+    "text": "3.13 13. Creation prepares the initial context\nCreation establishes:\nentry function\nprocess stack\ncontext.sp → top of that stack\ncontext.ra → process_bootstrap\nstate → ready\nThe entry function itself has not executed yet.\nThe first run uses the same context-switch operation that later performs resume.\nThis is why the artificial initial ra and sp matter: they make a never-before-run process satisfy the same restore interface as an already-paused process.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-preserving-execution.html#yield-and-resume",
+    "href": "chapters/03-preserving-execution.html#yield-and-resume",
+    "title": "3  Preserving Execution",
+    "section": "3.14 14. Yield and resume",
+    "text": "3.14 14. Yield and resume\nSuppose the process body is:\nfirst_part();\nprocess_yield();\nsecond_part();\nYield means:\nrunning → ready\nsave process context\nrestore kernel context\nThe kernel may perform other work and later run the same process again:\nready → running\nsave kernel context\nrestore process context\nThe restored continuation returns into the old process_yield(), which then returns normally. Execution proceeds with second_part().\nNo scheduler is required yet. Kernel code can explicitly decide to run the one process again.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-preserving-execution.html#exit",
+    "href": "chapters/03-preserving-execution.html#exit",
+    "title": "3  Preserving Execution",
+    "section": "3.15 15. Exit",
+    "text": "3.15 15. Exit\nExit has different semantics:\nprocess_exit(42);\nmeans:\nrunning → finished\nexit_status = 42\nrestore kernel context\ndo not resume this process again\nThe saved context may still physically exist. The process abstraction determines whether the operating system is allowed to use it.\nThis distinction between machine capability and OS policy becomes more important later.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-preserving-execution.html#the-full-cp1-behaviour",
+    "href": "chapters/03-preserving-execution.html#the-full-cp1-behaviour",
+    "title": "3  Preserving Execution",
+    "section": "3.16 16. The full CP1 behaviour",
+    "text": "3.16 16. The full CP1 behaviour\nThe first checkpoint can now be described completely:\ncreate\n→ run on own context / stack\n→ yield\n→ kernel regains control\n→ resume\n→ exit with status\n→ kernel regains control\nAll concepts required by that sequence have been introduced by the end of Lecture 3.\nLecture 4 therefore serves as consolidation, diagnosis, and transfer rather than adding another required mechanism immediately before the earliest checkpoint.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-preserving-execution.html#key-ideas",
+    "href": "chapters/03-preserving-execution.html#key-ideas",
+    "title": "3  Preserving Execution",
+    "section": "3.17 17. Key ideas",
+    "text": "3.17 17. Key ideas\nStudents should leave this chapter able to explain:\n\nwhy execution cannot resume unless relevant machine state survives;\nwhy the stack pointer and separate stack storage matter;\nhow normal calling conventions reduce the state needed at a cooperative switch boundary;\nwhy ra can serve as the cooperative continuation;\nhow a small assembly switch saves one context and restores another;\nhow an artificial initial ra and sp start a context that has never run before;\nhow a context becomes a process by adding entry, stack ownership, lifecycle state and completion information;\nwhy create, yield, resume and exit are different operations;\nwhy the assembly boundary can remain small while the process abstraction itself is built mostly in C.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-first-process.html",
+    "href": "chapters/04-first-process.html",
+    "title": "4  I Have a Process: Integration and Diagnosis",
+    "section": "",
+    "text": "4.1 1. Reconstruct the dependency chain\nAll concepts required for the first checkpoint have already been introduced before this chapter.\nThe purpose here is different:\nThis is the final consolidation step before:\nThe first process depends on several layers that were introduced separately:\nThe lower layers are still real, but the process abstraction lets ordinary reasoning move upward.\nA useful distinction is:",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-first-process.html#reconstruct-the-dependency-chain",
+    "href": "chapters/04-first-process.html#reconstruct-the-dependency-chain",
+    "title": "4  I Have a Process: Integration and Diagnosis",
+    "section": "",
+    "text": "source code\n   ↓\nRV64 executable\n   ↓\nmachine execution\n   ↓\nsaved execution context\n   ↓\nseparate stack\n   ↓\nprocess lifecycle\n   ↓\nobservable yield / resume / exit\n\n\n\nmachine-level mechanism — saved registers, stack pointer, return address, context switch;\noperating-system abstraction — process state, lifecycle, entry, completion status.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-first-process.html#reconstruct-the-minimum-process",
+    "href": "chapters/04-first-process.html#reconstruct-the-minimum-process",
+    "title": "4  I Have a Process: Integration and Diagnosis",
+    "section": "4.2 2. Reconstruct the minimum process",
+    "text": "4.2 2. Reconstruct the minimum process\nWithout relying on one required source-code layout, a first process must answer:\n\nwhere can execution continue?\nwhich stack belongs to it?\nwhat code should it run?\nmay it run again?\nhow did it finish?\n\nA saved context answers only the first question and part of the second.\nThe broader process abstraction owns the stack storage, identifies the entry function, records lifecycle state, and retains an exit status.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-first-process.html#reconstruct-the-lifecycle",
+    "href": "chapters/04-first-process.html#reconstruct-the-lifecycle",
+    "title": "4  I Have a Process: Integration and Diagnosis",
+    "section": "4.3 3. Reconstruct the lifecycle",
+    "text": "4.3 3. Reconstruct the lifecycle\nThe intended CP1 lifecycle is:\nunused\n   ↓ create\nready\n   ↓ run\nrunning\n   ↓ yield\nready\n   ↓ run / resume\nrunning\n   ↓ exit\nfinished\nCreation prepares but does not execute.\nYield means the process may continue later.\nExit means the process is complete and must not resume.\nThis distinction must remain true even if a stale saved context still physically exists in memory.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-first-process.html#trace-first-run",
+    "href": "chapters/04-first-process.html#trace-first-run",
+    "title": "4  I Have a Process: Integration and Diagnosis",
+    "section": "4.4 4. Trace first run",
+    "text": "4.4 4. Trace first run\nA fresh process has an artificial initial context:\nsp → top of its own stack\nra → process_bootstrap\nstate = READY\nWhen the kernel switches to it:\n\nthe kernel context is saved;\nthe process context is restored;\nthe final return uses the restored ra;\nthe bootstrap begins on the process stack;\nordinary C process code starts.\n\nThe initial continuation was constructed during process creation rather than saved from previous process execution.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-first-process.html#trace-yield-and-resume",
+    "href": "chapters/04-first-process.html#trace-yield-and-resume",
+    "title": "4  I Have a Process: Integration and Diagnosis",
+    "section": "4.5 5. Trace yield and resume",
+    "text": "4.5 5. Trace yield and resume\nSuppose:\nputs(\"A\\n\");\nprocess_yield();\nputs(\"B\\n\");\nA correct observable trace can include:\nA\n&lt;kernel output&gt;\nB\nThis demonstrates that the process continued after the yield.\nA trace such as:\nA\n&lt;kernel output&gt;\nA\nsuggests restart or reinitialization rather than resume.\nAt yield:\nRUNNING → READY\nsave process context\nrestore kernel context\nAt resume:\nREADY → RUNNING\nsave kernel context\nrestore process context\nThe restored return address eventually lets process_yield() return normally.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-first-process.html#trace-exit",
+    "href": "chapters/04-first-process.html#trace-exit",
+    "title": "4  I Have a Process: Integration and Diagnosis",
+    "section": "4.6 6. Trace exit",
+    "text": "4.6 6. Trace exit\nIf the process calls:\nprocess_exit(42);\nthe required semantics are:\nRUNNING → FINISHED\nexit_status = 42\nkernel regains control\nprocess is not run again\nThe exit status is an observable completion result. It will later become useful when higher-level mechanisms such as a shell start processes.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-first-process.html#diagnose-by-concept",
+    "href": "chapters/04-first-process.html#diagnose-by-concept",
+    "title": "4  I Have a Process: Integration and Diagnosis",
+    "section": "4.7 7. Diagnose by concept",
+    "text": "4.7 7. Diagnose by concept\n\n4.7.1 Wrong stack\nSymptom:\nprocess runs\nprocess yields\nkernel performs work\nresume crashes or corrupts state\nIf the restored continuation looks plausible, investigate the process stack and saved sp.\nA correct continuation on the wrong stack is still an invalid execution state.\n\n\n4.7.2 Restart instead of resume\nExpected:\nprocess: first\nkernel: back\nprocess: second\nActual:\nprocess: first\nkernel: back\nprocess: first\nLikely conceptual causes include:\n\nthe yielded continuation was not restored;\nthe process was recreated/reinitialized before the second run.\n\n\n\n4.7.3 Finished process runs again\nIf the kernel observes FINISHED and then resumes the same process, the lifecycle abstraction has been violated.\nThe lower-level context-switch mechanism may still be physically capable of restoring the saved registers. The OS abstraction must prevent that operation.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-first-process.html#function-call-versus-process",
+    "href": "chapters/04-first-process.html#function-call-versus-process",
+    "title": "4  I Have a Process: Integration and Diagnosis",
+    "section": "4.8 8. Function call versus process",
+    "text": "4.8 8. Function call versus process\nCompare:\nhello();\nwith:\ncreate hello\nrun\nyield\nkernel work\nresume\nexit\nkernel observes status\nThe second case has independently resumable execution state.\nUseful distinguishing properties are:\n\nseparate stack storage;\nsaved continuation;\nsuspension without unwinding the call chain;\nexplicit lifecycle state;\nobservable completion status;\noperating-system control over when execution continues.\n\nA particular function name or file structure is not what makes it a process.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-first-process.html#why-assembly-is-already-disappearing",
+    "href": "chapters/04-first-process.html#why-assembly-is-already-disappearing",
+    "title": "4  I Have a Process: Integration and Diagnosis",
+    "section": "4.9 9. Why assembly is already disappearing",
+    "text": "4.9 9. Why assembly is already disappearing\nAt the machine boundary, the implementation still needs operations such as:\nsave registers\nrestore registers\nret\nBut above that boundary the useful vocabulary is now:\ncreate process\nrun process\nyield\nresume\nexit\nThis is intentional.\nThe course is climbing an abstraction hierarchy. Once the mechanism below an abstraction has been understood, students should be able to reason with the abstraction without repeatedly expanding it into assembly.\nThey must still be able to descend one layer when explanation or diagnosis requires it.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-first-process.html#cp1-behavioural-contract",
+    "href": "chapters/04-first-process.html#cp1-behavioural-contract",
+    "title": "4  I Have a Process: Integration and Diagnosis",
+    "section": "4.10 10. CP1 behavioural contract",
+    "text": "4.10 10. CP1 behavioural contract\nA public checker should eventually establish behaviour equivalent to:\nprocess starts\nprocess yields\nkernel regains control\nprocess resumes\nprocess exits with a known status\nkernel observes completion\nThe checker should observe behaviour rather than enforce one private source-code architecture.\nPassing an output checker alone is not evidence of understanding. At the mandatory checkpoint, each student must also explain the mechanism and handle a small equivalent variation, prediction, or diagnosis.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-first-process.html#readiness-questions",
+    "href": "chapters/04-first-process.html#readiness-questions",
+    "title": "4  I Have a Process: Integration and Diagnosis",
+    "section": "4.11 11. Readiness questions",
+    "text": "4.11 11. Readiness questions\nBefore the checkpoint, a student should be able to answer without following a recipe:\n\nWhat state survives a yield?\nWhy does the process need its own stack?\nHow does first start differ from resume?\nWhy is exit not another yield?\nHow can output demonstrate resume rather than restart?\nWhich narrow assembly mechanism supports the higher-level C abstraction?\nWhat would you inspect first if resume fails after kernel code has run?\n\nThese questions stay inside the announced competence family.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-first-process.html#bridge-to-the-next-problem",
+    "href": "chapters/04-first-process.html#bridge-to-the-next-problem",
+    "title": "4  I Have a Process: Integration and Diagnosis",
+    "section": "4.12 12. Bridge to the next problem",
+    "text": "4.12 12. Bridge to the next problem\nWith one process, the kernel may explicitly decide when to run it again.\nNow suppose:\nprocess A never yields\nprocess B is ready\nIf A keeps the CPU forever, B cannot progress.\nThat creates the next operating-system requirement:\n\nHow can the OS regain control when the running process does not cooperate?\n\nTimer events, preemption and scheduling belong to the next phase, not to CP1.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "downloads.html",
+    "href": "downloads.html",
+    "title": "5  Downloads",
+    "section": "",
+    "text": "5.1 Course Script\nStudent-facing material for Wintersemester 2026/2027 is available here.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "downloads.html#course-script",
+    "href": "downloads.html#course-script",
+    "title": "5  Downloads",
+    "section": "",
+    "text": "Download the complete course script (PDF)",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  },
+  {
+    "objectID": "downloads.html#lecture-slides",
+    "href": "downloads.html#lecture-slides",
+    "title": "5  Downloads",
+    "section": "5.2 Lecture Slides",
+    "text": "5.2 Lecture Slides\n\n01 — Introduction\n02 — From Source to Process\n03 — Preserving Execution\n04 — I Have a Process\n\nThe HTML version you are currently reading is the primary online version of the course material.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+    ]
+  }
+]

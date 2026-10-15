@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Stavros Kousidis">
+
+<title>1&nbsp; From Executing Code to Operating Systems – BVS1 – Betriebssysteme</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapters/02-source-to-execution.html" rel="next">
+<link href="../index.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-18bef4473ac32dd4d7bfa1551215542a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/01-introduction.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Executing Code to Operating Systems</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">BVS1 – Betriebssysteme</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">BVS1 – Betriebssysteme</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/01-introduction.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Executing Code to Operating Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/02-source-to-execution.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">BVS1 – Betriebssysteme</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/03-preserving-execution.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">BVS1 – Betriebssysteme</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/04-first-process.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">BVS1 – Betriebssysteme</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../downloads.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">BVS1 – Betriebssysteme</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#from-executing-code-to-operating-systems" id="toc-from-executing-code-to-operating-systems" class="nav-link active" data-scroll-target="#from-executing-code-to-operating-systems"><span class="header-section-number">2</span> From Executing Code to Operating Systems</a>
+  <ul class="collapse">
+  <li><a href="#one-program-can-run-without-a-guest-operating-system" id="toc-one-program-can-run-without-a-guest-operating-system" class="nav-link" data-scroll-target="#one-program-can-run-without-a-guest-operating-system"><span class="header-section-number">2.1</span> 1. One program can run without a guest operating system</a>
+  <ul class="collapse">
+  <li><a href="#interpreting-the-experiment" id="toc-interpreting-the-experiment" class="nav-link" data-scroll-target="#interpreting-the-experiment"><span class="header-section-number">2.1.1</span> Interpreting the experiment</a></li>
+  </ul></li>
+  <li><a href="#the-isa-connects-software-and-processor" id="toc-the-isa-connects-software-and-processor" class="nav-link" data-scroll-target="#the-isa-connects-software-and-processor"><span class="header-section-number">2.2</span> 2. The ISA connects software and processor</a>
+  <ul class="collapse">
+  <li><a href="#why-rv64" id="toc-why-rv64" class="nav-link" data-scroll-target="#why-rv64"><span class="header-section-number">2.2.1</span> Why RV64?</a></li>
+  </ul></li>
+  <li><a href="#development-host-and-target-are-different-roles" id="toc-development-host-and-target-are-different-roles" class="nav-link" data-scroll-target="#development-host-and-target-are-different-roles"><span class="header-section-number">2.3</span> 3. Development host and target are different roles</a></li>
+  <li><a href="#virtualization-and-emulation-are-different" id="toc-virtualization-and-emulation-are-different" class="nav-link" data-scroll-target="#virtualization-and-emulation-are-different"><span class="header-section-number">2.4</span> 4. Virtualization and emulation are different</a>
+  <ul class="collapse">
+  <li><a href="#virtualization-the-guest-instructions-already-belong-to-the-host-isa" id="toc-virtualization-the-guest-instructions-already-belong-to-the-host-isa" class="nav-link" data-scroll-target="#virtualization-the-guest-instructions-already-belong-to-the-host-isa"><span class="header-section-number">2.4.1</span> Virtualization: the guest instructions already belong to the host ISA</a></li>
+  <li><a href="#emulation-the-target-instruction-may-not-be-a-host-instruction" id="toc-emulation-the-target-instruction-may-not-be-a-host-instruction" class="nav-link" data-scroll-target="#emulation-the-target-instruction-may-not-be-a-host-instruction"><span class="header-section-number">2.4.2</span> Emulation: the target instruction may not be a host instruction</a></li>
+  <li><a href="#our-bvs1-machine-stack" id="toc-our-bvs1-machine-stack" class="nav-link" data-scroll-target="#our-bvs1-machine-stack"><span class="header-section-number">2.4.3</span> Our BVS1 machine stack</a></li>
+  </ul></li>
+  <li><a href="#the-toolchain-connects-development-host-and-target" id="toc-the-toolchain-connects-development-host-and-target" class="nav-link" data-scroll-target="#the-toolchain-connects-development-host-and-target"><span class="header-section-number">2.5</span> 5. The toolchain connects development host and target</a>
+  <ul class="collapse">
+  <li><a href="#object-files-are-not-yet-the-complete-program" id="toc-object-files-are-not-yet-the-complete-program" class="nav-link" data-scroll-target="#object-files-are-not-yet-the-complete-program"><span class="header-section-number">2.5.1</span> Object files are not yet the complete program</a></li>
+  </ul></li>
+  <li><a href="#when-does-an-operating-system-become-useful" id="toc-when-does-an-operating-system-become-useful" class="nav-link" data-scroll-target="#when-does-an-operating-system-become-useful"><span class="header-section-number">2.6</span> 6. When does an operating system become useful?</a></li>
+  <li><a href="#applying-the-working-definition" id="toc-applying-the-working-definition" class="nav-link" data-scroll-target="#applying-the-working-definition"><span class="header-section-number">2.7</span> 7. Applying the working definition</a></li>
+  <li><a href="#from-hello-bvs1-to-a-minimal-operating-system" id="toc-from-hello-bvs1-to-a-minimal-operating-system" class="nav-link" data-scroll-target="#from-hello-bvs1-to-a-minimal-operating-system"><span class="header-section-number">2.8</span> 8. From Hello BVS1 to a minimal operating system</a></li>
+  <li><a href="#key-ideas" id="toc-key-ideas" class="nav-link" data-scroll-target="#key-ideas"><span class="header-section-number">2.9</span> 9. Key ideas</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">2.10</span> References</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Executing Code to Operating Systems</span></h1>
+<p class="subtitle lead">Wintersemester 2026/2027</p>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Stavros Kousidis </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            ICCT
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="from-executing-code-to-operating-systems" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> From Executing Code to Operating Systems</h1>
+<p>An operating system is familiar enough that it is easy to begin with examples rather than with the problem it solves. Windows, Ubuntu, Android and macOS are recognizable operating-system environments, but naming familiar systems does not yet explain why operating systems exist.</p>
+<p>BVS1 therefore starts with a smaller question:</p>
+<blockquote class="blockquote">
+<p><strong>Can a computer execute a program without an operating system?</strong></p>
+</blockquote>
+<p>The first practical system is deliberately tiny. An RV64 target machine runs one program in QEMU and prints:</p>
+<pre class="text"><code>Hello BVS1</code></pre>
+<p>The experiment gives us a concrete machine to reason about before we introduce operating-system mechanisms.</p>
+<section id="one-program-can-run-without-a-guest-operating-system" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="one-program-can-run-without-a-guest-operating-system"><span class="header-section-number">2.1</span> 1. One program can run without a guest operating system</h2>
+<p>At the lowest level, a processor executes instructions. Those instructions operate on registers and memory and can communicate with devices.</p>
+<p>One important idea of the stored-program / Von Neumann model is that <strong>instructions and data are both kept in memory</strong>.</p>
+<p>A deliberately simplified machine model is:</p>
+<pre class="text"><code>     instructions + data
+             │
+             ▼
+          memory
+             ▲
+             │
+             ▼
+            CPU
+             │
+             ▼
+          devices</code></pre>
+<p>This model omits many details of real hardware, but it is enough for the first distinction:</p>
+<blockquote class="blockquote">
+<p><strong>CPU, memory and devices exist independently of an operating system.</strong></p>
+</blockquote>
+<p>The point here is conceptual rather than historical or microarchitectural. Modern processors may use separate instruction and data caches internally, but the important point here is that instructions and data both occupy target memory. Lecture 2 returns to this idea when the linker script makes the abstract memory model concrete.</p>
+<p>In the <code>Hello BVS1</code> experiment, QEMU provides the target machine. The target contains an RV64 CPU, memory and devices. The program is loaded and begins executing without a guest operating system.</p>
+<p>The physical computer still runs an operating system, and our Ubuntu development environment also runs an operating system. The important observation concerns the <strong>target</strong>:</p>
+<blockquote class="blockquote">
+<p><strong>Executing instructions is not, by itself, what makes an operating system necessary.</strong></p>
+</blockquote>
+<section id="interpreting-the-experiment" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="interpreting-the-experiment"><span class="header-section-number">2.1.1</span> Interpreting the experiment</h3>
+<p>The classroom experiment deliberately separates observation from explanation. Consider these statements:</p>
+<ul>
+<li>QEMU executed our program.</li>
+<li>A virtual CPU executed our program.</li>
+<li>Ubuntu executed our guest program.</li>
+<li>The target had an operating system.</li>
+<li>QEMU was already running before our guest program started.</li>
+<li>The string <code>Hello BVS1</code> existed somewhere in memory while the program was running.</li>
+</ul>
+<p>The purpose of discussing them is to expose the execution model.</p>
+<p>A precise description is:</p>
+<ul>
+<li>the Ubuntu development VM runs the QEMU process;</li>
+<li>QEMU implements the target machine;</li>
+<li>the target contains an emulated RV64 CPU, memory and devices;</li>
+<li>the RV64 program runs on that target;</li>
+<li>the target has no guest operating system.</li>
+</ul>
+<p>Saying “QEMU executed the program” is understandable in informal language, but the more useful model is that QEMU <strong>emulates the machine whose CPU executes the target instructions</strong>.</p>
+</section>
+</section>
+<section id="the-isa-connects-software-and-processor" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="the-isa-connects-software-and-processor"><span class="header-section-number">2.2</span> 2. The ISA connects software and processor</h2>
+<p>Machine code only has meaning if software and the processor agree on what each instruction means.</p>
+<p>This agreement is the <strong>Instruction Set Architecture (ISA)</strong>.</p>
+<p>An ISA specifies properties visible to machine-level software, including:</p>
+<ul>
+<li>instructions and their encodings,</li>
+<li>registers,</li>
+<li>memory-addressing rules,</li>
+<li>exceptional control transfers,</li>
+<li>privilege mechanisms.</li>
+</ul>
+<p>Different processor implementations can implement the same ISA.</p>
+<p>The ISA should therefore be distinguished from the <strong>microarchitecture</strong>:</p>
+<ul>
+<li><strong>ISA:</strong> the contract visible to software;</li>
+<li><strong>microarchitecture:</strong> how a particular processor implements that contract internally.</li>
+</ul>
+<p>For BVS1, the teaching target uses <strong>RV64</strong>, the 64-bit form of RISC-V.</p>
+<section id="why-rv64" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="why-rv64"><span class="header-section-number">2.2.1</span> Why RV64?</h3>
+<p>RISC-V is a teaching choice, not a claim that it is the best ISA for every system.</p>
+<p>It offers a comparatively regular architecture, public specifications, a modern privilege model, suitable development tools, and a well-supported QEMU <code>virt</code> machine. These properties let us expose operating-system mechanisms without making historical processor complexity the subject of the course.</p>
+</section>
+</section>
+<section id="development-host-and-target-are-different-roles" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="development-host-and-target-are-different-roles"><span class="header-section-number">2.3</span> 3. Development host and target are different roles</h2>
+<p>The machine on which software is developed does not need to use the same ISA as the machine for which the program is built.</p>
+<p>In BVS1:</p>
+<ul>
+<li>the <strong>development host</strong> is the Ubuntu <code>bvs1</code> VM in which the development tools run;</li>
+<li>the <strong>target</strong> is the RV64 machine for which we build the program.</li>
+</ul>
+<p>The development VM may itself run on an x86-64 or Arm64 host platform. The teaching target is nevertheless RV64.</p>
+<p>This gives two separate questions:</p>
+<ol type="1">
+<li>Where do the development tools execute?</li>
+<li>Which machine will execute the generated program?</li>
+</ol>
+<p>Keeping these roles separate is essential for understanding both cross-compilation and emulation.</p>
+</section>
+<section id="virtualization-and-emulation-are-different" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="virtualization-and-emulation-are-different"><span class="header-section-number">2.4</span> 4. Virtualization and emulation are different</h2>
+<p>The most useful first question is:</p>
+<blockquote class="blockquote">
+<p><strong>Can the physical CPU execute the guest or target instructions directly?</strong></p>
+</blockquote>
+<p>That question separates the roles of virtualization and emulation more clearly than the word <em>virtual machine</em> by itself.</p>
+<section id="virtualization-the-guest-instructions-already-belong-to-the-host-isa" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="virtualization-the-guest-instructions-already-belong-to-the-host-isa"><span class="header-section-number">2.4.1</span> Virtualization: the guest instructions already belong to the host ISA</h3>
+<p>In hardware-assisted virtualization, guest and host normally use the same processor ISA.</p>
+<p>A guest instruction is therefore, in the ordinary case, already an instruction that the physical CPU understands. Most non-privileged guest instructions can execute directly on the physical processor.</p>
+<p>The virtualization mechanism controls the parts that must not simply be handed to the guest, for example:</p>
+<ul>
+<li>isolation between machines,</li>
+<li>privileged processor state,</li>
+<li>access to memory and devices,</li>
+<li>transitions that require intervention by the virtualization layer.</li>
+</ul>
+<p>A simplified model is:</p>
+<pre class="text"><code>guest instruction
+       ↓
+physical CPU</code></pre>
+<p>The important point is not that virtualization performs no mediation. It is that the guest machine does not require a different instruction vocabulary from the physical CPU.</p>
+<p>In BVS1, Multipass manages the Ubuntu development VM using virtualization facilities available on the host platform. The exact backend can differ between operating systems.</p>
+</section>
+<section id="emulation-the-target-instruction-may-not-be-a-host-instruction" class="level3" data-number="2.4.2">
+<h3 data-number="2.4.2" class="anchored" data-anchor-id="emulation-the-target-instruction-may-not-be-a-host-instruction"><span class="header-section-number">2.4.2</span> Emulation: the target instruction may not be a host instruction</h3>
+<p>Emulation can reproduce a machine whose ISA differs from the host ISA.</p>
+<p>Suppose the physical processor uses x86-64 while the BVS1 target uses RV64. The physical x86-64 CPU does not directly understand an RV64 instruction.</p>
+<p>An emulator must therefore reproduce the effect of the target instruction. Conceptually:</p>
+<pre class="text"><code>RV64 target instruction
+          ↓
+        QEMU
+          ↓
+interpret / translate
+          ↓
+host operations
+          ↓
+physical CPU</code></pre>
+<p>The word <strong>interpret</strong> is useful for the conceptual distinction, but it should not be understood as a claim that an emulator must process every instruction individually. QEMU can dynamically translate blocks of target instructions into host code.</p>
+<p>The essential point is:</p>
+<blockquote class="blockquote">
+<p><strong>Virtualization can largely run guest instructions directly; emulation must reproduce what target instructions would do when the host cannot execute them directly.</strong></p>
+</blockquote>
+</section>
+<section id="our-bvs1-machine-stack" class="level3" data-number="2.4.3">
+<h3 data-number="2.4.3" class="anchored" data-anchor-id="our-bvs1-machine-stack"><span class="header-section-number">2.4.3</span> Our BVS1 machine stack</h3>
+<p>The resulting stack is:</p>
+<pre class="text"><code>physical host
+     ↓  virtualization (managed through Multipass)
+Ubuntu development VM: bvs1
+     ↓  runs
+QEMU process
+     ↓  emulates RV64
+RV64 target machine
+     ↓  executes
+Hello BVS1</code></pre>
+<p>The layers have different roles:</p>
+<ul>
+<li>the <strong>physical host</strong> provides the real CPU, memory and devices;</li>
+<li>the <strong>Ubuntu development VM</strong> is the common environment in which the course tools run;</li>
+<li><strong>Multipass</strong> manages that development VM and is not an additional machine layer;</li>
+<li><strong>QEMU</strong> is a process running inside the development VM;</li>
+<li>QEMU emulates the <strong>RV64 target machine</strong>;</li>
+<li><code>Hello BVS1</code> executes on that target.</li>
+</ul>
+<p>Only the RV64 target is the teaching machine whose operating-system mechanisms we will build. It initially contains no guest operating system.</p>
+<p>A <strong>virtual machine</strong> is the machine environment presented to software. Virtualization and emulation are different techniques that can provide such environments.</p>
+<p>QEMU itself is capable of more than the configuration used here: in other settings it can also participate in hardware-assisted virtualization. In BVS1, its relevant role is RV64 emulation.</p>
+</section>
+</section>
+<section id="the-toolchain-connects-development-host-and-target" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="the-toolchain-connects-development-host-and-target"><span class="header-section-number">2.5</span> 5. The toolchain connects development host and target</h2>
+<p>The source program is written in a human-readable programming language, but the target CPU needs RV64 machine instructions.</p>
+<p>A simplified build path is:</p>
+<pre class="text"><code>source code
+    ↓
+cross compiler / assembler
+    ↓
+object files
+    ↓
+linker
+    ↓
+RV64 executable
+    ↓
+QEMU
+    ↓
+RV64 target machine</code></pre>
+<p>The cooperating compiler, assembler, linker and binary utilities form the <strong>toolchain</strong>.</p>
+<p>A <strong>cross compiler</strong> runs on one architecture while producing code for another target architecture.</p>
+<p>QEMU has a different role: it does not translate source code into the executable. It provides the machine on which the already generated target program can run.</p>
+<section id="object-files-are-not-yet-the-complete-program" class="level3" data-number="2.5.1">
+<h3 data-number="2.5.1" class="anchored" data-anchor-id="object-files-are-not-yet-the-complete-program"><span class="header-section-number">2.5.1</span> Object files are not yet the complete program</h3>
+<p>Compilation and assembly can already produce target-specific object files. These can contain RV64 machine code, but they are not yet the complete executable. Separate pieces still have to be combined and references between them resolved.</p>
+<p>The final result of this build path is a linked RV64 ELF executable that QEMU can load for the target machine.</p>
+<p>Lecture 2 unfolds this path manually: we inspect the object files, discover what is still unresolved, and then see why linking and the target memory layout are necessary.</p>
+</section>
+</section>
+<section id="when-does-an-operating-system-become-useful" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="when-does-an-operating-system-become-useful"><span class="header-section-number">2.6</span> 6. When does an operating system become useful?</h2>
+<p>The <code>Hello BVS1</code> target can run one tiny program without a guest operating system.</p>
+<p>Now change the requirement:</p>
+<blockquote class="blockquote">
+<p><strong>The machine must run two programs.</strong></p>
+</blockquote>
+<p>New questions immediately appear:</p>
+<ul>
+<li>Which program receives the processor?</li>
+<li>Where is each program’s state kept?</li>
+<li>What happens when one program waits for a device?</li>
+<li>Can one program overwrite another program’s memory?</li>
+<li>Who coordinates access to shared devices?</li>
+<li>How does a program request a shared service?</li>
+</ul>
+<p>Increase the requirements further:</p>
+<ul>
+<li>many programs,</li>
+<li>multiple users,</li>
+<li>persistent storage,</li>
+<li>keyboard and display,</li>
+<li>networking,</li>
+<li>failures,</li>
+<li>programs that do not trust one another.</li>
+</ul>
+<p>The problem is no longer merely “execute instructions”.</p>
+<p>Now the system needs mechanisms for <strong>sharing, coordination, protection and abstraction</strong>.</p>
+<p>This gives us the working definition used in BVS1:</p>
+<blockquote class="blockquote">
+<p>An <strong>operating system</strong> is software that helps turn hardware into a usable computer system by providing abstractions, resource management, coordination, protection, and services for programs and users.</p>
+</blockquote>
+<p>This is intentionally a working definition.</p>
+<p>We will test and sharpen it as concrete mechanisms are introduced.</p>
+<p>Two classical viewpoints are already visible:</p>
+<ol type="1">
+<li><p><strong>Operating system as resource manager</strong><br>
+CPU time, memory, storage and devices are finite resources that must be shared and controlled.</p></li>
+<li><p><strong>Operating system as abstract machine</strong><br>
+Programs should not need to manipulate every hardware detail directly. The operating system can provide safer and more useful abstractions and services.</p></li>
+</ol>
+</section>
+<section id="applying-the-working-definition" class="level2" data-number="2.7">
+<h2 data-number="2.7" class="anchored" data-anchor-id="applying-the-working-definition"><span class="header-section-number">2.7</span> 7. Applying the working definition</h2>
+<p>The opening lecture deliberately asks students to classify several familiar terms before the working definition is established.</p>
+<p>After deriving the definition, the distinctions become clearer:</p>
+<ul>
+<li><strong>Windows, Ubuntu and Android</strong> are complete operating-system environments.</li>
+<li>The <strong>Linux kernel</strong> is the core used by Linux-based operating-system environments, not such an environment by itself.</li>
+<li><strong>UEFI</strong> is firmware and a firmware interface/environment.</li>
+<li><strong>QEMU</strong> is an emulator and virtualizer.</li>
+<li><strong>Docker</strong> provides container tooling built on operating-system mechanisms.</li>
+<li><strong>Firefox</strong> is an application.</li>
+</ul>
+<p>The purpose of the exercise is not to memorize labels.</p>
+<p>It is to ask which responsibilities a component actually assumes and at which layer it operates.</p>
+<p>Exercise 1 extends this idea with less obvious boundary cases such as a boot manager, Proxmox, and the deliberately provocative question “Is Emacs an operating system?”</p>
+</section>
+<section id="from-hello-bvs1-to-a-minimal-operating-system" class="level2" data-number="2.8">
+<h2 data-number="2.8" class="anchored" data-anchor-id="from-hello-bvs1-to-a-minimal-operating-system"><span class="header-section-number">2.8</span> 8. From Hello BVS1 to a minimal operating system</h2>
+<p>The course deliberately starts with a target that can do very little:</p>
+<pre class="text"><code>Hello BVS1</code></pre>
+<p>The semester question is:</p>
+<blockquote class="blockquote">
+<p><strong>What must we add to Hello BVS1 before we would call the result an operating system?</strong></p>
+</blockquote>
+<p>Initial answers may include:</p>
+<ul>
+<li>handling devices,</li>
+<li>multiple executions,</li>
+<li>scheduling,</li>
+<li>protection,</li>
+<li>memory management,</li>
+<li>system services,</li>
+<li>communication,</li>
+<li>persistent storage,</li>
+<li>users,</li>
+<li>a command interface.</li>
+</ul>
+<p>At the beginning these are hypotheses, not a checklist to memorize.</p>
+<p>We add mechanisms only when a new requirement gives us a reason for them.</p>
+<p>The practical target remains:</p>
+<blockquote class="blockquote">
+<p><strong>a small educational operating system on RV64 and QEMU <code>virt</code>, eventually providing a simple shell</strong></p>
+</blockquote>
+<p>The red thread is:</p>
+<pre class="text"><code>a machine executes code
+    ↓
+software communicates with devices
+    ↓
+events must be handled
+    ↓
+multiple programs must coexist
+    ↓
+programs compete for the CPU
+    ↓
+programs and resources need protection
+    ↓
+programs need operating-system services
+    ↓
+programs need coordination
+    ↓
+programs need communication
+    ↓
+a user needs to control programs
+    ↓
+a simple shell</code></pre>
+<p>The course is therefore not organized as a catalogue of terminology.</p>
+<p>Each new mechanism should answer a problem that the current system has acquired.</p>
+</section>
+<section id="key-ideas" class="level2" data-number="2.9">
+<h2 data-number="2.9" class="anchored" data-anchor-id="key-ideas"><span class="header-section-number">2.9</span> 9. Key ideas</h2>
+<p>Lecture 1 establishes a small number of distinctions that we will use repeatedly:</p>
+<ul>
+<li>A target processor can execute a program without a guest operating system.</li>
+<li>CPU, memory and devices exist independently of the OS.</li>
+<li>An ISA defines the machine-level contract on which software relies.</li>
+<li>Development host and target are different roles.</li>
+<li>Virtualization and emulation are different techniques.</li>
+<li>Multipass gives us the virtualized development environment; QEMU emulates our RV64 target in the BVS1 setup.</li>
+<li>A cross-toolchain produces machine code for a target ISA different from the development system.</li>
+<li>Operating systems become useful as requirements for sharing, abstraction, coordination, protection and services grow.</li>
+<li>The BVS1 system grows only when a new requirement motivates a new mechanism.</li>
+</ul>
+<p>A useful test of understanding is to explain this complete path:</p>
+<pre class="text"><code>source code
+    ↓
+cross-toolchain
+    ↓
+RV64 executable
+    ↓
+QEMU process in the development VM
+    ↓
+emulated RV64 machine
+    ↓
+observable program behaviour</code></pre>
+<p>and then explain why successful execution still does <strong>not</strong> imply that the target contains an operating system.</p>
+</section>
+<section id="references" class="level2" data-number="2.10">
+<h2 data-number="2.10" class="anchored" data-anchor-id="references"><span class="header-section-number">2.10</span> References</h2>
+<ul>
+<li>Remzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau, <em>Operating Systems: Three Easy Pieces</em>. https://pages.cs.wisc.edu/~remzi/OSTEP/</li>
+<li>Andrew S. Tanenbaum and Herbert Bos, <em>Modern Operating Systems</em>, Pearson.</li>
+<li>RISC-V International, RISC-V ISA specifications. https://docs.riscv.org/</li>
+<li>QEMU documentation, RISC-V <code>virt</code> Generic Virtual Platform. https://www.qemu.org/docs/master/system/riscv/virt.html</li>
+<li>Canonical Multipass documentation. https://documentation.ubuntu.com/multipass/</li>
+</ul>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../index.html" class="pagination-link" aria-label="BVS1 – Betriebssysteme">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">BVS1 – Betriebssysteme</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../chapters/02-source-to-execution.html" class="pagination-link" aria-label="BVS1 – Betriebssysteme">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">BVS1 – Betriebssysteme</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
