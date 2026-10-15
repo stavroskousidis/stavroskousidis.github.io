@@ -75,10 +75,13 @@ h1 em { color: var(--muted); font-style: normal; font-weight: 420; }
 .page-intro h1 { max-width: 860px; font-size: clamp(2.7rem, 5.5vw, 4.8rem); }
 
 .cccfff { display: grid; grid-template-columns: auto 1fr; gap: 2rem; align-items: start; margin: 3rem 0 7rem; padding: 2rem; border-top: 3px solid var(--ink); background: var(--panel); }
+.cccfff:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.cccfff:hover h2, .cccfff:focus-visible h2 { color: var(--accent-ink); }
 .cccfff-mark { width: max-content; padding: .7rem .9rem; background: var(--cccfff); color: #111b1d; font: 650 1rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .cccfff h2 { margin-top: .5rem; font-size: clamp(2rem, 4vw, 3.4rem); }
 .cccfff-tagline { margin-top: .7rem; font: .9rem ui-monospace, SFMono-Regular, Menlo, monospace; }
-.cccfff div > p:last-child { margin-top: 1.4rem; max-width: 65ch; color: var(--muted); }
+.cccfff-description { margin-top: 1.4rem; max-width: 65ch; color: var(--muted); }
+.cccfff-enter { display: inline-block; margin-top: 1.25rem; padding-bottom: .15rem; border-bottom: 1px solid currentColor; font-weight: 650; }
 .wide { margin: 3rem 0 6rem; }
 .note { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-bottom: 7rem; padding: 2rem 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .note p { color: var(--muted); }
