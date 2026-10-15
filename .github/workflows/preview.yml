@@ -34,7 +34,7 @@ jobs:
       - name: Summarize thesis PDFs
         run: |
           echo '### One-page thesis PDFs' >> "$GITHUB_STEP_SUMMARY"
-          echo 'Download the `thesis-pdfs` artifact below to review the three PDF announcements. The HTML site is built for validation but is not uploaded.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Download the `thesis-pdfs` artifact below to review all thesis announcements. The HTML site is built for validation but is not uploaded.' >> "$GITHUB_STEP_SUMMARY"
           echo >> "$GITHUB_STEP_SUMMARY"
           for pdf in public/pdfs/theses/*_thesis-*.pdf; do
             echo "- \`$(basename "$pdf")\`" >> "$GITHUB_STEP_SUMMARY"
