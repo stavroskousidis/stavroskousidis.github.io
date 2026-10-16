@@ -148,34 +148,31 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#from-executing-code-to-operating-systems" id="toc-from-executing-code-to-operating-systems" class="nav-link active" data-scroll-target="#from-executing-code-to-operating-systems"><span class="header-section-number">2</span> From Executing Code to Operating Systems</a>
+  <li><a href="#one-program-can-run-without-a-guest-operating-system" id="toc-one-program-can-run-without-a-guest-operating-system" class="nav-link active" data-scroll-target="#one-program-can-run-without-a-guest-operating-system"><span class="header-section-number">1.1</span> One program can run without a guest operating system</a>
   <ul class="collapse">
-  <li><a href="#one-program-can-run-without-a-guest-operating-system" id="toc-one-program-can-run-without-a-guest-operating-system" class="nav-link" data-scroll-target="#one-program-can-run-without-a-guest-operating-system"><span class="header-section-number">2.1</span> 1. One program can run without a guest operating system</a>
-  <ul class="collapse">
-  <li><a href="#interpreting-the-experiment" id="toc-interpreting-the-experiment" class="nav-link" data-scroll-target="#interpreting-the-experiment"><span class="header-section-number">2.1.1</span> Interpreting the experiment</a></li>
+  <li><a href="#interpreting-the-experiment" id="toc-interpreting-the-experiment" class="nav-link" data-scroll-target="#interpreting-the-experiment"><span class="header-section-number">1.1.1</span> Interpreting the experiment</a></li>
   </ul></li>
-  <li><a href="#the-isa-connects-software-and-processor" id="toc-the-isa-connects-software-and-processor" class="nav-link" data-scroll-target="#the-isa-connects-software-and-processor"><span class="header-section-number">2.2</span> 2. The ISA connects software and processor</a>
+  <li><a href="#the-isa-connects-software-and-processor" id="toc-the-isa-connects-software-and-processor" class="nav-link" data-scroll-target="#the-isa-connects-software-and-processor"><span class="header-section-number">1.2</span> The ISA connects software and processor</a>
   <ul class="collapse">
-  <li><a href="#why-rv64" id="toc-why-rv64" class="nav-link" data-scroll-target="#why-rv64"><span class="header-section-number">2.2.1</span> Why RV64?</a></li>
+  <li><a href="#why-rv64" id="toc-why-rv64" class="nav-link" data-scroll-target="#why-rv64"><span class="header-section-number">1.2.1</span> Why RV64?</a></li>
   </ul></li>
-  <li><a href="#development-host-and-target-are-different-roles" id="toc-development-host-and-target-are-different-roles" class="nav-link" data-scroll-target="#development-host-and-target-are-different-roles"><span class="header-section-number">2.3</span> 3. Development host and target are different roles</a></li>
-  <li><a href="#virtualization-and-emulation-are-different" id="toc-virtualization-and-emulation-are-different" class="nav-link" data-scroll-target="#virtualization-and-emulation-are-different"><span class="header-section-number">2.4</span> 4. Virtualization and emulation are different</a>
+  <li><a href="#development-host-and-target-are-different-roles" id="toc-development-host-and-target-are-different-roles" class="nav-link" data-scroll-target="#development-host-and-target-are-different-roles"><span class="header-section-number">1.3</span> Development host and target are different roles</a></li>
+  <li><a href="#virtualization-and-emulation-are-different" id="toc-virtualization-and-emulation-are-different" class="nav-link" data-scroll-target="#virtualization-and-emulation-are-different"><span class="header-section-number">1.4</span> Virtualization and emulation are different</a>
   <ul class="collapse">
-  <li><a href="#virtualization-the-guest-instructions-already-belong-to-the-host-isa" id="toc-virtualization-the-guest-instructions-already-belong-to-the-host-isa" class="nav-link" data-scroll-target="#virtualization-the-guest-instructions-already-belong-to-the-host-isa"><span class="header-section-number">2.4.1</span> Virtualization: the guest instructions already belong to the host ISA</a></li>
-  <li><a href="#emulation-the-target-instruction-may-not-be-a-host-instruction" id="toc-emulation-the-target-instruction-may-not-be-a-host-instruction" class="nav-link" data-scroll-target="#emulation-the-target-instruction-may-not-be-a-host-instruction"><span class="header-section-number">2.4.2</span> Emulation: the target instruction may not be a host instruction</a></li>
-  <li><a href="#our-bvs1-machine-stack" id="toc-our-bvs1-machine-stack" class="nav-link" data-scroll-target="#our-bvs1-machine-stack"><span class="header-section-number">2.4.3</span> Our BVS1 machine stack</a></li>
+  <li><a href="#virtualization-the-guest-instructions-already-belong-to-the-host-isa" id="toc-virtualization-the-guest-instructions-already-belong-to-the-host-isa" class="nav-link" data-scroll-target="#virtualization-the-guest-instructions-already-belong-to-the-host-isa"><span class="header-section-number">1.4.1</span> Virtualization: the guest instructions already belong to the host ISA</a></li>
+  <li><a href="#emulation-the-target-instruction-may-not-be-a-host-instruction" id="toc-emulation-the-target-instruction-may-not-be-a-host-instruction" class="nav-link" data-scroll-target="#emulation-the-target-instruction-may-not-be-a-host-instruction"><span class="header-section-number">1.4.2</span> Emulation: the target instruction may not be a host instruction</a></li>
+  <li><a href="#our-bvs1-machine-stack" id="toc-our-bvs1-machine-stack" class="nav-link" data-scroll-target="#our-bvs1-machine-stack"><span class="header-section-number">1.4.3</span> Our BVS1 machine stack</a></li>
   </ul></li>
-  <li><a href="#the-toolchain-connects-development-host-and-target" id="toc-the-toolchain-connects-development-host-and-target" class="nav-link" data-scroll-target="#the-toolchain-connects-development-host-and-target"><span class="header-section-number">2.5</span> 5. The toolchain connects development host and target</a>
+  <li><a href="#the-toolchain-connects-development-host-and-target" id="toc-the-toolchain-connects-development-host-and-target" class="nav-link" data-scroll-target="#the-toolchain-connects-development-host-and-target"><span class="header-section-number">1.5</span> The toolchain connects development host and target</a>
   <ul class="collapse">
-  <li><a href="#object-files-are-not-yet-the-complete-program" id="toc-object-files-are-not-yet-the-complete-program" class="nav-link" data-scroll-target="#object-files-are-not-yet-the-complete-program"><span class="header-section-number">2.5.1</span> Object files are not yet the complete program</a></li>
+  <li><a href="#object-files-are-not-yet-the-complete-program" id="toc-object-files-are-not-yet-the-complete-program" class="nav-link" data-scroll-target="#object-files-are-not-yet-the-complete-program"><span class="header-section-number">1.5.1</span> Object files are not yet the complete program</a></li>
   </ul></li>
-  <li><a href="#when-does-an-operating-system-become-useful" id="toc-when-does-an-operating-system-become-useful" class="nav-link" data-scroll-target="#when-does-an-operating-system-become-useful"><span class="header-section-number">2.6</span> 6. When does an operating system become useful?</a></li>
-  <li><a href="#applying-the-working-definition" id="toc-applying-the-working-definition" class="nav-link" data-scroll-target="#applying-the-working-definition"><span class="header-section-number">2.7</span> 7. Applying the working definition</a></li>
-  <li><a href="#from-hello-bvs1-to-a-minimal-operating-system" id="toc-from-hello-bvs1-to-a-minimal-operating-system" class="nav-link" data-scroll-target="#from-hello-bvs1-to-a-minimal-operating-system"><span class="header-section-number">2.8</span> 8. From Hello BVS1 to a minimal operating system</a></li>
-  <li><a href="#key-ideas" id="toc-key-ideas" class="nav-link" data-scroll-target="#key-ideas"><span class="header-section-number">2.9</span> 9. Key ideas</a></li>
+  <li><a href="#when-does-an-operating-system-become-useful" id="toc-when-does-an-operating-system-become-useful" class="nav-link" data-scroll-target="#when-does-an-operating-system-become-useful"><span class="header-section-number">1.6</span> When does an operating system become useful?</a></li>
+  <li><a href="#applying-the-working-definition" id="toc-applying-the-working-definition" class="nav-link" data-scroll-target="#applying-the-working-definition"><span class="header-section-number">1.7</span> Applying the working definition</a></li>
+  <li><a href="#from-hello-bvs1-to-a-minimal-operating-system" id="toc-from-hello-bvs1-to-a-minimal-operating-system" class="nav-link" data-scroll-target="#from-hello-bvs1-to-a-minimal-operating-system"><span class="header-section-number">1.8</span> From Hello BVS1 to a minimal operating system</a></li>
+  <li><a href="#key-ideas" id="toc-key-ideas" class="nav-link" data-scroll-target="#key-ideas"><span class="header-section-number">1.9</span> Key ideas</a></li>
   <li><a href="#related-exercise" id="toc-related-exercise" class="nav-link" data-scroll-target="#related-exercise">Related Exercise</a></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">2.10</span> References</a></li>
-  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
     </div>
@@ -215,8 +212,6 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="from-executing-code-to-operating-systems" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> From Executing Code to Operating Systems</h1>
 <p>An operating system is familiar enough that it is easy to begin with examples rather than with the problem it solves. Windows, Ubuntu, Android and macOS are recognizable operating-system environments, but naming familiar systems does not yet explain why operating systems exist.</p>
 <p>BVS1 therefore starts with a smaller question:</p>
 <blockquote class="blockquote">
@@ -225,8 +220,8 @@ ul.task-list li input[type="checkbox"] {
 <p>The first practical system is deliberately tiny. An RV64 target machine runs one program in QEMU and prints:</p>
 <pre class="text"><code>Hello BVS1</code></pre>
 <p>The experiment gives us a concrete machine to reason about before we introduce operating-system mechanisms.</p>
-<section id="one-program-can-run-without-a-guest-operating-system" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="one-program-can-run-without-a-guest-operating-system"><span class="header-section-number">2.1</span> 1. One program can run without a guest operating system</h2>
+<section id="one-program-can-run-without-a-guest-operating-system" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="one-program-can-run-without-a-guest-operating-system"><span class="header-section-number">1.1</span> One program can run without a guest operating system</h2>
 <p>At the lowest level, a processor executes instructions. Those instructions operate on registers and memory and can communicate with devices.</p>
 <p>One important idea of the stored-program / Von Neumann model is that <strong>instructions and data are both kept in memory</strong>.</p>
 <p>A deliberately simplified machine model is:</p>
@@ -251,8 +246,8 @@ ul.task-list li input[type="checkbox"] {
 <blockquote class="blockquote">
 <p><strong>Executing instructions is not, by itself, what makes an operating system necessary.</strong></p>
 </blockquote>
-<section id="interpreting-the-experiment" class="level3" data-number="2.1.1">
-<h3 data-number="2.1.1" class="anchored" data-anchor-id="interpreting-the-experiment"><span class="header-section-number">2.1.1</span> Interpreting the experiment</h3>
+<section id="interpreting-the-experiment" class="level3" data-number="1.1.1">
+<h3 data-number="1.1.1" class="anchored" data-anchor-id="interpreting-the-experiment"><span class="header-section-number">1.1.1</span> Interpreting the experiment</h3>
 <p>The classroom experiment deliberately separates observation from explanation. Consider these statements:</p>
 <ul>
 <li>QEMU executed our program.</li>
@@ -274,8 +269,8 @@ ul.task-list li input[type="checkbox"] {
 <p>Saying “QEMU executed the program” is understandable in informal language, but the more useful model is that QEMU <strong>emulates the machine whose CPU executes the target instructions</strong>.</p>
 </section>
 </section>
-<section id="the-isa-connects-software-and-processor" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="the-isa-connects-software-and-processor"><span class="header-section-number">2.2</span> 2. The ISA connects software and processor</h2>
+<section id="the-isa-connects-software-and-processor" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="the-isa-connects-software-and-processor"><span class="header-section-number">1.2</span> The ISA connects software and processor</h2>
 <p>Machine code only has meaning if software and the processor agree on what each instruction means.</p>
 <p>This agreement is the <strong>Instruction Set Architecture (ISA)</strong>.</p>
 <p>An ISA specifies properties visible to machine-level software, including:</p>
@@ -293,14 +288,14 @@ ul.task-list li input[type="checkbox"] {
 <li><strong>microarchitecture:</strong> how a particular processor implements that contract internally.</li>
 </ul>
 <p>For BVS1, the teaching target uses <strong>RV64</strong>, the 64-bit form of RISC-V.</p>
-<section id="why-rv64" class="level3" data-number="2.2.1">
-<h3 data-number="2.2.1" class="anchored" data-anchor-id="why-rv64"><span class="header-section-number">2.2.1</span> Why RV64?</h3>
+<section id="why-rv64" class="level3" data-number="1.2.1">
+<h3 data-number="1.2.1" class="anchored" data-anchor-id="why-rv64"><span class="header-section-number">1.2.1</span> Why RV64?</h3>
 <p>RISC-V is a teaching choice, not a claim that it is the best ISA for every system.</p>
 <p>It offers a comparatively regular architecture, public specifications, a modern privilege model, suitable development tools, and a well-supported QEMU <code>virt</code> machine. These properties let us expose operating-system mechanisms without making historical processor complexity the subject of the course.</p>
 </section>
 </section>
-<section id="development-host-and-target-are-different-roles" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="development-host-and-target-are-different-roles"><span class="header-section-number">2.3</span> 3. Development host and target are different roles</h2>
+<section id="development-host-and-target-are-different-roles" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="development-host-and-target-are-different-roles"><span class="header-section-number">1.3</span> Development host and target are different roles</h2>
 <p>The machine on which software is developed does not need to use the same ISA as the machine for which the program is built.</p>
 <p>In BVS1:</p>
 <ul>
@@ -315,15 +310,15 @@ ul.task-list li input[type="checkbox"] {
 </ol>
 <p>Keeping these roles separate is essential for understanding both cross-compilation and emulation.</p>
 </section>
-<section id="virtualization-and-emulation-are-different" class="level2" data-number="2.4">
-<h2 data-number="2.4" class="anchored" data-anchor-id="virtualization-and-emulation-are-different"><span class="header-section-number">2.4</span> 4. Virtualization and emulation are different</h2>
+<section id="virtualization-and-emulation-are-different" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="virtualization-and-emulation-are-different"><span class="header-section-number">1.4</span> Virtualization and emulation are different</h2>
 <p>The most useful first question is:</p>
 <blockquote class="blockquote">
 <p><strong>Can the physical CPU execute the guest or target instructions directly?</strong></p>
 </blockquote>
 <p>That question separates the roles of virtualization and emulation more clearly than the word <em>virtual machine</em> by itself.</p>
-<section id="virtualization-the-guest-instructions-already-belong-to-the-host-isa" class="level3" data-number="2.4.1">
-<h3 data-number="2.4.1" class="anchored" data-anchor-id="virtualization-the-guest-instructions-already-belong-to-the-host-isa"><span class="header-section-number">2.4.1</span> Virtualization: the guest instructions already belong to the host ISA</h3>
+<section id="virtualization-the-guest-instructions-already-belong-to-the-host-isa" class="level3" data-number="1.4.1">
+<h3 data-number="1.4.1" class="anchored" data-anchor-id="virtualization-the-guest-instructions-already-belong-to-the-host-isa"><span class="header-section-number">1.4.1</span> Virtualization: the guest instructions already belong to the host ISA</h3>
 <p>In hardware-assisted virtualization, guest and host normally use the same processor ISA.</p>
 <p>A guest instruction is therefore, in the ordinary case, already an instruction that the physical CPU understands. Most non-privileged guest instructions can execute directly on the physical processor.</p>
 <p>The virtualization mechanism controls the parts that must not simply be handed to the guest, for example:</p>
@@ -340,8 +335,8 @@ physical CPU</code></pre>
 <p>The important point is not that virtualization performs no mediation. It is that the guest machine does not require a different instruction vocabulary from the physical CPU.</p>
 <p>In BVS1, Multipass manages the Ubuntu development VM using virtualization facilities available on the host platform. The exact backend can differ between operating systems.</p>
 </section>
-<section id="emulation-the-target-instruction-may-not-be-a-host-instruction" class="level3" data-number="2.4.2">
-<h3 data-number="2.4.2" class="anchored" data-anchor-id="emulation-the-target-instruction-may-not-be-a-host-instruction"><span class="header-section-number">2.4.2</span> Emulation: the target instruction may not be a host instruction</h3>
+<section id="emulation-the-target-instruction-may-not-be-a-host-instruction" class="level3" data-number="1.4.2">
+<h3 data-number="1.4.2" class="anchored" data-anchor-id="emulation-the-target-instruction-may-not-be-a-host-instruction"><span class="header-section-number">1.4.2</span> Emulation: the target instruction may not be a host instruction</h3>
 <p>Emulation can reproduce a machine whose ISA differs from the host ISA.</p>
 <p>Suppose the physical processor uses x86-64 while the BVS1 target uses RV64. The physical x86-64 CPU does not directly understand an RV64 instruction.</p>
 <p>An emulator must therefore reproduce the effect of the target instruction. Conceptually:</p>
@@ -360,8 +355,8 @@ physical CPU</code></pre>
 <p><strong>Virtualization can largely run guest instructions directly; emulation must reproduce what target instructions would do when the host cannot execute them directly.</strong></p>
 </blockquote>
 </section>
-<section id="our-bvs1-machine-stack" class="level3" data-number="2.4.3">
-<h3 data-number="2.4.3" class="anchored" data-anchor-id="our-bvs1-machine-stack"><span class="header-section-number">2.4.3</span> Our BVS1 machine stack</h3>
+<section id="our-bvs1-machine-stack" class="level3" data-number="1.4.3">
+<h3 data-number="1.4.3" class="anchored" data-anchor-id="our-bvs1-machine-stack"><span class="header-section-number">1.4.3</span> Our BVS1 machine stack</h3>
 <p>The resulting stack is:</p>
 <pre class="text"><code>physical host
      ↓  virtualization (managed through Multipass)
@@ -386,8 +381,8 @@ Hello BVS1</code></pre>
 <p>QEMU itself is capable of more than the configuration used here: in other settings it can also participate in hardware-assisted virtualization. In BVS1, its relevant role is RV64 emulation.</p>
 </section>
 </section>
-<section id="the-toolchain-connects-development-host-and-target" class="level2" data-number="2.5">
-<h2 data-number="2.5" class="anchored" data-anchor-id="the-toolchain-connects-development-host-and-target"><span class="header-section-number">2.5</span> 5. The toolchain connects development host and target</h2>
+<section id="the-toolchain-connects-development-host-and-target" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="the-toolchain-connects-development-host-and-target"><span class="header-section-number">1.5</span> The toolchain connects development host and target</h2>
 <p>The source program is written in a human-readable programming language, but the target CPU needs RV64 machine instructions.</p>
 <p>A simplified build path is:</p>
 <pre class="text"><code>source code
@@ -406,15 +401,15 @@ RV64 target machine</code></pre>
 <p>The cooperating compiler, assembler, linker and binary utilities form the <strong>toolchain</strong>.</p>
 <p>A <strong>cross compiler</strong> runs on one architecture while producing code for another target architecture.</p>
 <p>QEMU has a different role: it does not translate source code into the executable. It provides the machine on which the already generated target program can run.</p>
-<section id="object-files-are-not-yet-the-complete-program" class="level3" data-number="2.5.1">
-<h3 data-number="2.5.1" class="anchored" data-anchor-id="object-files-are-not-yet-the-complete-program"><span class="header-section-number">2.5.1</span> Object files are not yet the complete program</h3>
+<section id="object-files-are-not-yet-the-complete-program" class="level3" data-number="1.5.1">
+<h3 data-number="1.5.1" class="anchored" data-anchor-id="object-files-are-not-yet-the-complete-program"><span class="header-section-number">1.5.1</span> Object files are not yet the complete program</h3>
 <p>Compilation and assembly can already produce target-specific object files. These can contain RV64 machine code, but they are not yet the complete executable. Separate pieces still have to be combined and references between them resolved.</p>
 <p>The final result of this build path is a linked RV64 ELF executable that QEMU can load for the target machine.</p>
 <p>Lecture 2 unfolds this path manually: we inspect the object files, discover what is still unresolved, and then see why linking and the target memory layout are necessary.</p>
 </section>
 </section>
-<section id="when-does-an-operating-system-become-useful" class="level2" data-number="2.6">
-<h2 data-number="2.6" class="anchored" data-anchor-id="when-does-an-operating-system-become-useful"><span class="header-section-number">2.6</span> 6. When does an operating system become useful?</h2>
+<section id="when-does-an-operating-system-become-useful" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="when-does-an-operating-system-become-useful"><span class="header-section-number">1.6</span> When does an operating system become useful?</h2>
 <p>The <code>Hello BVS1</code> target can run one tiny program without a guest operating system.</p>
 <p>Now change the requirement:</p>
 <blockquote class="blockquote">
@@ -455,8 +450,8 @@ CPU time, memory, storage and devices are finite resources that must be shared a
 Programs should not need to manipulate every hardware detail directly. The operating system can provide safer and more useful abstractions and services.</p></li>
 </ol>
 </section>
-<section id="applying-the-working-definition" class="level2" data-number="2.7">
-<h2 data-number="2.7" class="anchored" data-anchor-id="applying-the-working-definition"><span class="header-section-number">2.7</span> 7. Applying the working definition</h2>
+<section id="applying-the-working-definition" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="applying-the-working-definition"><span class="header-section-number">1.7</span> Applying the working definition</h2>
 <p>The opening lecture deliberately asks students to classify several familiar terms before the working definition is established.</p>
 <p>After deriving the definition, the distinctions become clearer:</p>
 <ul>
@@ -471,8 +466,8 @@ Programs should not need to manipulate every hardware detail directly. The opera
 <p>It is to ask which responsibilities a component actually assumes and at which layer it operates.</p>
 <p>Exercise 1 extends this idea with less obvious boundary cases such as a boot manager, Proxmox, and the deliberately provocative question “Is Emacs an operating system?”</p>
 </section>
-<section id="from-hello-bvs1-to-a-minimal-operating-system" class="level2" data-number="2.8">
-<h2 data-number="2.8" class="anchored" data-anchor-id="from-hello-bvs1-to-a-minimal-operating-system"><span class="header-section-number">2.8</span> 8. From Hello BVS1 to a minimal operating system</h2>
+<section id="from-hello-bvs1-to-a-minimal-operating-system" class="level2" data-number="1.8">
+<h2 data-number="1.8" class="anchored" data-anchor-id="from-hello-bvs1-to-a-minimal-operating-system"><span class="header-section-number">1.8</span> From Hello BVS1 to a minimal operating system</h2>
 <p>The course deliberately starts with a target that can do very little:</p>
 <pre class="text"><code>Hello BVS1</code></pre>
 <p>The semester question is:</p>
@@ -523,8 +518,8 @@ a simple shell</code></pre>
 <p>The course is therefore not organized as a catalogue of terminology.</p>
 <p>Each new mechanism should answer a problem that the current system has acquired.</p>
 </section>
-<section id="key-ideas" class="level2" data-number="2.9">
-<h2 data-number="2.9" class="anchored" data-anchor-id="key-ideas"><span class="header-section-number">2.9</span> 9. Key ideas</h2>
+<section id="key-ideas" class="level2" data-number="1.9">
+<h2 data-number="1.9" class="anchored" data-anchor-id="key-ideas"><span class="header-section-number">1.9</span> Key ideas</h2>
 <p>Lecture 1 establishes a small number of distinctions that we will use repeatedly:</p>
 <ul>
 <li>A target processor can execute a program without a guest operating system.</li>
@@ -555,8 +550,8 @@ observable program behaviour</code></pre>
 <h2 class="unnumbered anchored" data-anchor-id="related-exercise">Related Exercise</h2>
 <p><a href="../exercises/BVS1-Exercise-01-From-Source-to-First-Instructions-WS26-27.pdf"><strong>Exercise 01 — From Source to First Instructions</strong></a> also consolidates concepts from this lecture, especially the development-host/target distinction and virtualization versus emulation. Its main placement is after Lecture 02, where it also applies the toolchain and startup material.</p>
 </section>
-<section id="references" class="level2" data-number="2.10">
-<h2 data-number="2.10" class="anchored" data-anchor-id="references"><span class="header-section-number">2.10</span> References</h2>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
 <ul>
 <li>Remzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau, <em>Operating Systems: Three Easy Pieces</em>. <a href="https://pages.cs.wisc.edu/~remzi/OSTEP/" class="uri">https://pages.cs.wisc.edu/~remzi/OSTEP/</a></li>
 <li>Andrew S. Tanenbaum and Herbert Bos, <em>Modern Operating Systems</em>, 5th ed., Pearson, 2023. ISBN 978-0-13-761888-0. <a href="https://www.pearson.com/en-us/subject-catalog/p/modern-operating-systems/P200000003295/9780137618880" class="uri">https://www.pearson.com/en-us/subject-catalog/p/modern-operating-systems/P200000003295/9780137618880</a></li>
@@ -566,7 +561,6 @@ observable program behaviour</code></pre>
 </ul>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
