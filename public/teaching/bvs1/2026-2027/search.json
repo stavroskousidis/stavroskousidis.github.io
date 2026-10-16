@@ -274,7 +274,17 @@
     "href": "downloads.html#lecture-slides",
     "title": "Downloads",
     "section": "Lecture Slides",
-    "text": "Lecture Slides\n\n01 — Introduction\n02 — From Source to Executables: Towards Processes\n\nThe HTML version you are currently reading is the primary online version of the course material.",
+    "text": "Lecture Slides\n\n01 — Introduction\n02 — From Source to Executables: Towards Processes",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Downloads</span>"
+    ]
+  },
+  {
+    "objectID": "downloads.html#handouts",
+    "href": "downloads.html#handouts",
+    "title": "Downloads",
+    "section": "Handouts",
+    "text": "Handouts\n\nDevelopment Environment\nEditing Source Files in Ubuntu — nano and Vim\nUbuntu Shell — Command-Line Cheat Sheet\nLab Organization\n\nThe HTML version you are currently reading is the primary online version of the course material.",
     "crumbs": [
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>Downloads</span>"
     ]
