@@ -8,7 +8,7 @@
 
 <meta name="author" content="Stavros Kousidis">
 
-<title>2&nbsp; From Source to Process – BVS1 – Betriebssysteme</title>
+<title>2&nbsp; From Source to Executables: Towards Processes – BVS1 – Betriebssysteme</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -124,7 +124,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/02-source-to-process.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">BVS1 – Betriebssysteme</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/02-source-to-executables.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">From Source to Executables: Towards Processes</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -163,14 +163,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/02-source-to-process.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">BVS1 – Betriebssysteme</span></span></a>
+  <a href="../chapters/02-source-to-executables.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">From Source to Executables: Towards Processes</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../downloads.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">BVS1 – Betriebssysteme</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Downloads</span></span></a>
   </div>
 </li>
     </ul>
@@ -183,16 +183,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#from-source-code-to-target-specific-object-code" id="toc-from-source-code-to-target-specific-object-code" class="nav-link active" data-scroll-target="#from-source-code-to-target-specific-object-code"><span class="header-section-number">2.1</span> 1. From source code to target-specific object code</a></li>
-  <li><a href="#why-object-files-still-need-a-linker" id="toc-why-object-files-still-need-a-linker" class="nav-link" data-scroll-target="#why-object-files-still-need-a-linker"><span class="header-section-number">2.2</span> 2. Why object files still need a linker</a></li>
-  <li><a href="#from-the-stored-program-idea-to-a-concrete-memory-layout" id="toc-from-the-stored-program-idea-to-a-concrete-memory-layout" class="nav-link" data-scroll-target="#from-the-stored-program-idea-to-a-concrete-memory-layout"><span class="header-section-number">2.3</span> 3. From the stored-program idea to a concrete memory layout</a></li>
-  <li><a href="#linking-produces-the-program-qemu-can-load" id="toc-linking-produces-the-program-qemu-can-load" class="nav-link" data-scroll-target="#linking-produces-the-program-qemu-can-load"><span class="header-section-number">2.4</span> 4. Linking produces the program QEMU can load</a></li>
-  <li><a href="#why-execution-starts-before-main" id="toc-why-execution-starts-before-main" class="nav-link" data-scroll-target="#why-execution-starts-before-main"><span class="header-section-number">2.5</span> 5. Why execution starts before <code>main</code></a></li>
-  <li><a href="#the-whole-path-and-what-make-hides" id="toc-the-whole-path-and-what-make-hides" class="nav-link" data-scroll-target="#the-whole-path-and-what-make-hides"><span class="header-section-number">2.6</span> 6. The whole path, and what Make hides</a></li>
-  <li><a href="#change-rebuild-observe" id="toc-change-rebuild-observe" class="nav-link" data-scroll-target="#change-rebuild-observe"><span class="header-section-number">2.7</span> 7. Change, rebuild, observe</a></li>
-  <li><a href="#why-an-executing-program-is-not-yet-a-process" id="toc-why-an-executing-program-is-not-yet-a-process" class="nav-link" data-scroll-target="#why-an-executing-program-is-not-yet-a-process"><span class="header-section-number">2.8</span> 8. Why an executing program is not yet a process</a></li>
-  <li><a href="#yield-exit-resume-and-restart" id="toc-yield-exit-resume-and-restart" class="nav-link" data-scroll-target="#yield-exit-resume-and-restart"><span class="header-section-number">2.9</span> 9. Yield, exit, resume, and restart</a></li>
-  <li><a href="#the-question-that-leads-to-execution-context" id="toc-the-question-that-leads-to-execution-context" class="nav-link" data-scroll-target="#the-question-that-leads-to-execution-context"><span class="header-section-number">2.10</span> 10. The question that leads to execution context</a></li>
+  <li><a href="#from-source-to-executables-towards-processes" id="toc-from-source-to-executables-towards-processes" class="nav-link active" data-scroll-target="#from-source-to-executables-towards-processes"><span class="header-section-number">3</span> From Source to Executables: Towards Processes</a>
+  <ul class="collapse">
+  <li><a href="#from-source-code-to-target-specific-object-code" id="toc-from-source-code-to-target-specific-object-code" class="nav-link" data-scroll-target="#from-source-code-to-target-specific-object-code"><span class="header-section-number">3.1</span> 1. From source code to target-specific object code</a></li>
+  <li><a href="#why-object-files-still-need-a-linker" id="toc-why-object-files-still-need-a-linker" class="nav-link" data-scroll-target="#why-object-files-still-need-a-linker"><span class="header-section-number">3.2</span> 2. Why object files still need a linker</a></li>
+  <li><a href="#from-the-stored-program-idea-to-a-concrete-memory-layout" id="toc-from-the-stored-program-idea-to-a-concrete-memory-layout" class="nav-link" data-scroll-target="#from-the-stored-program-idea-to-a-concrete-memory-layout"><span class="header-section-number">3.3</span> 3. From the stored-program idea to a concrete memory layout</a></li>
+  <li><a href="#linking-produces-the-program-qemu-can-load" id="toc-linking-produces-the-program-qemu-can-load" class="nav-link" data-scroll-target="#linking-produces-the-program-qemu-can-load"><span class="header-section-number">3.4</span> 4. Linking produces the program QEMU can load</a></li>
+  <li><a href="#why-execution-starts-before-main" id="toc-why-execution-starts-before-main" class="nav-link" data-scroll-target="#why-execution-starts-before-main"><span class="header-section-number">3.5</span> 5. Why execution starts before <code>main</code></a></li>
+  <li><a href="#the-whole-path-and-what-make-hides" id="toc-the-whole-path-and-what-make-hides" class="nav-link" data-scroll-target="#the-whole-path-and-what-make-hides"><span class="header-section-number">3.6</span> 6. The whole path, and what Make hides</a></li>
+  <li><a href="#change-rebuild-observe" id="toc-change-rebuild-observe" class="nav-link" data-scroll-target="#change-rebuild-observe"><span class="header-section-number">3.7</span> 7. Change, rebuild, observe</a></li>
+  <li><a href="#why-an-executing-program-is-not-yet-a-process" id="toc-why-an-executing-program-is-not-yet-a-process" class="nav-link" data-scroll-target="#why-an-executing-program-is-not-yet-a-process"><span class="header-section-number">3.8</span> 8. Why an executing program is not yet a process</a></li>
+  <li><a href="#yield-exit-resume-and-restart" id="toc-yield-exit-resume-and-restart" class="nav-link" data-scroll-target="#yield-exit-resume-and-restart"><span class="header-section-number">3.9</span> 9. Yield, exit, resume, and restart</a></li>
+  <li><a href="#the-question-that-leads-to-execution-context" id="toc-the-question-that-leads-to-execution-context" class="nav-link" data-scroll-target="#the-question-that-leads-to-execution-context"><span class="header-section-number">3.10</span> 10. The question that leads to execution context</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">3.11</span> References</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -201,7 +205,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">From Source to Process</span></h1>
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">From Source to Executables: Towards Processes</span></h1>
 <p class="subtitle lead">Wintersemester 2026/2027</p>
 </div>
 
@@ -232,14 +236,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<section id="from-source-to-executables-towards-processes" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> From Source to Executables: Towards Processes</h1>
 <p>Lecture 1 showed that an RV64 target can execute a small program without a guest operating system. Lecture 2 asks how that execution comes into existence and why, for an operating system, simply starting a program is not enough.</p>
 <p>The path is:</p>
 <pre class="text"><code>source → objects → linked ELF → memory → _start → main</code></pre>
 <p>and then:</p>
 <pre class="text"><code>executing program → OS-managed execution → process</code></pre>
 <p>The build tools are therefore not the final topic. We unfold them once because they make the transition from source code to a running machine state visible.</p>
-<section id="from-source-code-to-target-specific-object-code" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="from-source-code-to-target-specific-object-code"><span class="header-section-number">2.1</span> 1. From source code to target-specific object code</h2>
+<section id="from-source-code-to-target-specific-object-code" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="from-source-code-to-target-specific-object-code"><span class="header-section-number">3.1</span> 1. From source code to target-specific object code</h2>
 <p>We first compile <code>main.c</code> without linking:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> build/manual</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -254,8 +260,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">riscv64-unknown-elf-gcc</span> <span class="at">-march</span><span class="op">=</span>rv64imac <span class="at">-mabi</span><span class="op">=</span>lp64 <span class="dt">\</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-mcmodel</span><span class="op">=</span>medany <span class="at">-c</span> start.S <span class="at">-o</span> build/manual/start.o</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="why-object-files-still-need-a-linker" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="why-object-files-still-need-a-linker"><span class="header-section-number">2.2</span> 2. Why object files still need a linker</h2>
+<section id="why-object-files-still-need-a-linker" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="why-object-files-still-need-a-linker"><span class="header-section-number">3.2</span> 2. Why object files still need a linker</h2>
 <p>Using <code>nm</code> (“name list”) lets us inspect the symbols in the two objects:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">riscv64-unknown-elf-nm</span> build/manual/start.o</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">riscv64-unknown-elf-nm</span> build/manual/main.o</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -268,8 +274,8 @@ main.o  defines main</code></pre>
 <p>The important concept is not the letters printed by <code>nm</code>, but the relationship between separately translated pieces. One object can provide a symbol while another refers to it. The linker connects those pieces.</p>
 <p>The unresolved <code>_stack_top</code> also reveals a second responsibility of the linker: it must establish where the program lives in target memory.</p>
 </section>
-<section id="from-the-stored-program-idea-to-a-concrete-memory-layout" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="from-the-stored-program-idea-to-a-concrete-memory-layout"><span class="header-section-number">2.3</span> 3. From the stored-program idea to a concrete memory layout</h2>
+<section id="from-the-stored-program-idea-to-a-concrete-memory-layout" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="from-the-stored-program-idea-to-a-concrete-memory-layout"><span class="header-section-number">3.3</span> 3. From the stored-program idea to a concrete memory layout</h2>
 <p>Lecture 1 used the abstract model:</p>
 <pre class="text"><code>instructions + data
         ↓
@@ -300,8 +306,8 @@ _stack_top = .;</code></pre>
 <p>Here <code>.</code> is the linker’s current output address. After 16 KiB have been reserved for the initial stack, that address is named <code>_stack_top</code>.</p>
 <p>Students do not need to write linker scripts in BVS1. The important idea is that the linker does not merely join files; it constructs one final address space in which the pieces can refer to one another.</p>
 </section>
-<section id="linking-produces-the-program-qemu-can-load" class="level2" data-number="2.4">
-<h2 data-number="2.4" class="anchored" data-anchor-id="linking-produces-the-program-qemu-can-load"><span class="header-section-number">2.4</span> 4. Linking produces the program QEMU can load</h2>
+<section id="linking-produces-the-program-qemu-can-load" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="linking-produces-the-program-qemu-can-load"><span class="header-section-number">3.4</span> 4. Linking produces the program QEMU can load</h2>
 <p>We link the two objects using the course layout:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">riscv64-unknown-elf-gcc</span> <span class="at">-nostdlib</span> <span class="at">-nostartfiles</span> <span class="at">-no-pie</span> <span class="dt">\</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-T</span> linker.ld build/manual/start.o build/manual/main.o <span class="dt">\</span></span>
@@ -314,8 +320,8 @@ _stack_top = .;</code></pre>
 </ul>
 <p>The resulting ELF is what QEMU receives. QEMU does not compile or link the program; it provides the emulated RV64 machine and loads the already-built image.</p>
 </section>
-<section id="why-execution-starts-before-main" class="level2" data-number="2.5">
-<h2 data-number="2.5" class="anchored" data-anchor-id="why-execution-starts-before-main"><span class="header-section-number">2.5</span> 5. Why execution starts before <code>main</code></h2>
+<section id="why-execution-starts-before-main" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="why-execution-starts-before-main"><span class="header-section-number">3.5</span> 5. Why execution starts before <code>main</code></h2>
 <p>The linker script declares:</p>
 <pre class="ld"><code>ENTRY(_start)</code></pre>
 <p>and <code>_start</code> is defined in <code>start.S</code>:</p>
@@ -329,8 +335,8 @@ _stack_top = .;</code></pre>
 <p>Then <code>call main</code> transfers control to <code>main</code> and remembers where execution should return. We deliberately do not open the full calling convention yet. The fact that a return point must somehow be preserved becomes important in Lecture 3.</p>
 <p>The local label <code>1:</code> and <code>1b</code> only express the final fallback loop: if <code>main</code> returns, execution remains there.</p>
 </section>
-<section id="the-whole-path-and-what-make-hides" class="level2" data-number="2.6">
-<h2 data-number="2.6" class="anchored" data-anchor-id="the-whole-path-and-what-make-hides"><span class="header-section-number">2.6</span> 6. The whole path, and what Make hides</h2>
+<section id="the-whole-path-and-what-make-hides" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="the-whole-path-and-what-make-hides"><span class="header-section-number">3.6</span> 6. The whole path, and what Make hides</h2>
 <p>Running the ELF manually:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">qemu-system-riscv64</span> <span class="at">-machine</span> virt <span class="at">-m</span> 128M <span class="at">-smp</span> 1 <span class="at">-nographic</span> <span class="dt">\</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-bios</span> none <span class="at">-kernel</span> build/manual/hello-bvs1.elf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -348,8 +354,8 @@ linker.ld ───────────────────────�
 <p>Make automates this workflow. It decides when a target is out of date and runs the corresponding recipe. The GCC driver performs the translation steps and invokes the linker. QEMU provides the machine on which the result executes.</p>
 <p>Doing the path manually once is useful because the automation then has a visible meaning rather than being a black box.</p>
 </section>
-<section id="change-rebuild-observe" class="level2" data-number="2.7">
-<h2 data-number="2.7" class="anchored" data-anchor-id="change-rebuild-observe"><span class="header-section-number">2.7</span> 7. Change, rebuild, observe</h2>
+<section id="change-rebuild-observe" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="change-rebuild-observe"><span class="header-section-number">3.7</span> 7. Change, rebuild, observe</h2>
 <p>If only the string in <code>main.c</code> changes, we can predict the consequences before rebuilding:</p>
 <ul>
 <li><code>main.o</code> must change;</li>
@@ -364,8 +370,8 @@ linker.ld ───────────────────────�
 </blockquote>
 <p>That pattern will be reused when the changes are no longer only strings, but operating-system mechanisms.</p>
 </section>
-<section id="why-an-executing-program-is-not-yet-a-process" class="level2" data-number="2.8">
-<h2 data-number="2.8" class="anchored" data-anchor-id="why-an-executing-program-is-not-yet-a-process"><span class="header-section-number">2.8</span> 8. Why an executing program is not yet a process</h2>
+<section id="why-an-executing-program-is-not-yet-a-process" class="level2" data-number="3.8">
+<h2 data-number="3.8" class="anchored" data-anchor-id="why-an-executing-program-is-not-yet-a-process"><span class="header-section-number">3.8</span> 8. Why an executing program is not yet a process</h2>
 <p>Our current target has one execution:</p>
 <pre class="text"><code>_start
   ↓
@@ -389,8 +395,8 @@ for (;;) {}</code></pre>
              └──────── yield ────────┘</code></pre>
 <p>A yielded process is still runnable. A finished process is not.</p>
 </section>
-<section id="yield-exit-resume-and-restart" class="level2" data-number="2.9">
-<h2 data-number="2.9" class="anchored" data-anchor-id="yield-exit-resume-and-restart"><span class="header-section-number">2.9</span> 9. Yield, exit, resume, and restart</h2>
+<section id="yield-exit-resume-and-restart" class="level2" data-number="3.9">
+<h2 data-number="3.9" class="anchored" data-anchor-id="yield-exit-resume-and-restart"><span class="header-section-number">3.9</span> 9. Yield, exit, resume, and restart</h2>
 <p>Yield and exit both transfer control back to the operating system, but they have different meanings.</p>
 <ul>
 <li><strong>yield</strong>: the execution is not finished and must be able to continue later;</li>
@@ -405,8 +411,8 @@ for (;;) {}</code></pre>
 <p>After <code>process_yield()</code>, the operating system has control. When the process runs again, it must continue with <code>uart_puts("B\n")</code>. Printing <code>A</code> again would mean that we restarted the execution instead of resuming it.</p>
 <p>This is the conceptual step that makes the next lecture necessary.</p>
 </section>
-<section id="the-question-that-leads-to-execution-context" class="level2" data-number="2.10">
-<h2 data-number="2.10" class="anchored" data-anchor-id="the-question-that-leads-to-execution-context"><span class="header-section-number">2.10</span> 10. The question that leads to execution context</h2>
+<section id="the-question-that-leads-to-execution-context" class="level2" data-number="3.10">
+<h2 data-number="3.10" class="anchored" data-anchor-id="the-question-that-leads-to-execution-context"><span class="header-section-number">3.10</span> 10. The question that leads to execution context</h2>
 <p>To resume correctly, something about the paused execution must survive:</p>
 <pre class="text"><code>process runs
      ↓
@@ -427,8 +433,21 @@ continue exactly where it stopped</code></pre>
 <blockquote class="blockquote">
 <p><strong>What machine state makes resume possible?</strong></p>
 </blockquote>
+</section>
+<section id="references" class="level2" data-number="3.11">
+<h2 data-number="3.11" class="anchored" data-anchor-id="references"><span class="header-section-number">3.11</span> References</h2>
+<ul>
+<li>RISC-V International, <em>RISC-V ABIs Specification</em>. https://riscv-non-isa.github.io/riscv-elf-psabi-doc/</li>
+<li>GNU Compiler Collection, <em>RISC-V Options</em>. https://gcc.gnu.org/onlinedocs/gcc/RISC-V-Options.html</li>
+<li>GNU Binutils, <em>The GNU linker (ld)</em>, especially the sections on linker scripts, symbols, <code>MEMORY</code>, and <code>SECTIONS</code>. https://sourceware.org/binutils/docs/ld.html</li>
+<li>GNU Binutils, <em>nm</em>. https://sourceware.org/binutils/docs/binutils/nm.html</li>
+<li>QEMU documentation, <em>RISC-V System Emulator</em>. https://www.qemu.org/docs/master/system/target-riscv.html</li>
+<li>QEMU documentation, <em><code>virt</code> Generic Virtual Platform</em>. https://www.qemu.org/docs/master/system/riscv/virt.html</li>
+<li>Remzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau, <em>Operating Systems: Three Easy Pieces</em>, especially the process chapters. https://pages.cs.wisc.edu/~remzi/OSTEP/</li>
+</ul>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -839,8 +858,8 @@ continue exactly where it stopped</code></pre>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../downloads.html" class="pagination-link" aria-label="BVS1 – Betriebssysteme">
-        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">BVS1 – Betriebssysteme</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../downloads.html" class="pagination-link" aria-label="Downloads">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Downloads</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

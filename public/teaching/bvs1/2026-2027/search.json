@@ -124,149 +124,159 @@
     "href": "chapters/01-introduction.html#references",
     "title": "1  From Executing Code to Operating Systems",
     "section": "2.10 References",
-    "text": "2.10 References\n\nRemzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau, Operating Systems: Three Easy Pieces. https://pages.cs.wisc.edu/~remzi/OSTEP/\nAndrew S. Tanenbaum and Herbert Bos, Modern Operating Systems, Pearson.\nRISC-V International, RISC-V ISA specifications. https://docs.riscv.org/\nQEMU documentation, RISC-V virt Generic Virtual Platform. https://www.qemu.org/docs/master/system/riscv/virt.html\nCanonical Multipass documentation. https://documentation.ubuntu.com/multipass/",
+    "text": "2.10 References\n\nRemzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau, Operating Systems: Three Easy Pieces. https://pages.cs.wisc.edu/~remzi/OSTEP/\nAndrew S. Tanenbaum and Herbert Bos, Modern Operating Systems, 5th ed., Pearson, 2023. ISBN 978-0-13-761888-0. https://www.pearson.com/en-us/subject-catalog/p/modern-operating-systems/P200000003295/9780137618880\nRISC-V International, RISC-V Ratified Specifications Library. https://docs.riscv.org/\nQEMU Project, RISC-V virt Generic Virtual Platform. https://www.qemu.org/docs/master/system/riscv/virt.html\nCanonical, Multipass Documentation. https://documentation.ubuntu.com/multipass/",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>From Executing Code to Operating Systems</span>"
     ]
   },
   {
-    "objectID": "chapters/02-source-to-process.html",
-    "href": "chapters/02-source-to-process.html",
-    "title": "2  From Source to Process",
+    "objectID": "chapters/02-source-to-executables.html",
+    "href": "chapters/02-source-to-executables.html",
+    "title": "2  From Source to Executables: Towards Processes",
     "section": "",
-    "text": "2.1 1. From source code to target-specific object code\nLecture 1 showed that an RV64 target can execute a small program without a guest operating system. Lecture 2 asks how that execution comes into existence and why, for an operating system, simply starting a program is not enough.\nThe path is:\nand then:\nThe build tools are therefore not the final topic. We unfold them once because they make the transition from source code to a running machine state visible.\nWe first compile main.c without linking:\nThe important option is -c: stop before linking.\nInspecting the result with\nshows that main.o is already a RISC-V ELF object.\nThis distinction matters: the compiler has already translated C into code for our target ISA. The object file is therefore not architecture-neutral. But it is also not yet a complete program. Separate pieces can still refer to one another, and their final addresses have not yet been established.\nThe startup assembly is translated in the same way:",
+    "text": "3 From Source to Executables: Towards Processes\nLecture 1 showed that an RV64 target can execute a small program without a guest operating system. Lecture 2 asks how that execution comes into existence and why, for an operating system, simply starting a program is not enough.\nThe path is:\nand then:\nThe build tools are therefore not the final topic. We unfold them once because they make the transition from source code to a running machine state visible.",
     "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>From Source to Executables: Towards Processes</span>"
     ]
   },
   {
-    "objectID": "chapters/02-source-to-process.html#from-source-code-to-target-specific-object-code",
-    "href": "chapters/02-source-to-process.html#from-source-code-to-target-specific-object-code",
-    "title": "2  From Source to Process",
-    "section": "",
-    "text": "mkdir -p build/manual\n\nriscv64-unknown-elf-gcc -march=rv64imac -mabi=lp64 \\\n  -mcmodel=medany -msmall-data-limit=0 -c main.c -o build/manual/main.o\n\n\nfile build/manual/main.o\n\n\n\nriscv64-unknown-elf-gcc -march=rv64imac -mabi=lp64 \\\n  -mcmodel=medany -c start.S -o build/manual/start.o",
+    "objectID": "chapters/02-source-to-executables.html#from-source-code-to-target-specific-object-code",
+    "href": "chapters/02-source-to-executables.html#from-source-code-to-target-specific-object-code",
+    "title": "2  From Source to Executables: Towards Processes",
+    "section": "3.1 1. From source code to target-specific object code",
+    "text": "3.1 1. From source code to target-specific object code\nWe first compile main.c without linking:\nmkdir -p build/manual\n\nriscv64-unknown-elf-gcc -march=rv64imac -mabi=lp64 \\\n  -mcmodel=medany -msmall-data-limit=0 -c main.c -o build/manual/main.o\nThe important option is -c: stop before linking.\nInspecting the result with\nfile build/manual/main.o\nshows that main.o is already a RISC-V ELF object.\nThis distinction matters: the compiler has already translated C into code for our target ISA. The object file is therefore not architecture-neutral. But it is also not yet a complete program. Separate pieces can still refer to one another, and their final addresses have not yet been established.\nThe startup assembly is translated in the same way:\nriscv64-unknown-elf-gcc -march=rv64imac -mabi=lp64 \\\n  -mcmodel=medany -c start.S -o build/manual/start.o",
     "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>From Source to Executables: Towards Processes</span>"
     ]
   },
   {
-    "objectID": "chapters/02-source-to-process.html#why-object-files-still-need-a-linker",
-    "href": "chapters/02-source-to-process.html#why-object-files-still-need-a-linker",
-    "title": "2  From Source to Process",
-    "section": "2.2 2. Why object files still need a linker",
-    "text": "2.2 2. Why object files still need a linker\nUsing nm (“name list”) lets us inspect the symbols in the two objects:\nriscv64-unknown-elf-nm build/manual/start.o\nriscv64-unknown-elf-nm build/manual/main.o\nFor the symbols relevant here, we can read the result as:\nstart.o defines _start\nstart.o needs   main\nstart.o needs   _stack_top\n\nmain.o  defines main\nThe important concept is not the letters printed by nm, but the relationship between separately translated pieces. One object can provide a symbol while another refers to it. The linker connects those pieces.\nThe unresolved _stack_top also reveals a second responsibility of the linker: it must establish where the program lives in target memory.",
+    "objectID": "chapters/02-source-to-executables.html#why-object-files-still-need-a-linker",
+    "href": "chapters/02-source-to-executables.html#why-object-files-still-need-a-linker",
+    "title": "2  From Source to Executables: Towards Processes",
+    "section": "3.2 2. Why object files still need a linker",
+    "text": "3.2 2. Why object files still need a linker\nUsing nm (“name list”) lets us inspect the symbols in the two objects:\nriscv64-unknown-elf-nm build/manual/start.o\nriscv64-unknown-elf-nm build/manual/main.o\nFor the symbols relevant here, we can read the result as:\nstart.o defines _start\nstart.o needs   main\nstart.o needs   _stack_top\n\nmain.o  defines main\nThe important concept is not the letters printed by nm, but the relationship between separately translated pieces. One object can provide a symbol while another refers to it. The linker connects those pieces.\nThe unresolved _stack_top also reveals a second responsibility of the linker: it must establish where the program lives in target memory.",
     "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>From Source to Executables: Towards Processes</span>"
     ]
   },
   {
-    "objectID": "chapters/02-source-to-process.html#from-the-stored-program-idea-to-a-concrete-memory-layout",
-    "href": "chapters/02-source-to-process.html#from-the-stored-program-idea-to-a-concrete-memory-layout",
-    "title": "2  From Source to Process",
-    "section": "2.3 3. From the stored-program idea to a concrete memory layout",
-    "text": "2.3 3. From the stored-program idea to a concrete memory layout\nLecture 1 used the abstract model:\ninstructions + data\n        ↓\n      memory\n        ↕\n       CPU\nOur real program now contains different kinds of bytes that need concrete places:\nRV64 memory from 0x80000000\n\n+----------------------------------------------------------+\n| .text    _start, main, ...      | instructions          |\n| .rodata  \"Hello BVS1\\n\"         | constant data         |\n| .data                           | initialized data      |\n| .bss                            | zero-initialized data |\n| C stack  (top: _stack_top)      | runtime data          |\n+----------------------------------------------------------+\nThese roles are not properties that memory itself knows. They arise from the executable layout and from how the program and CPU use the addresses.\nThe course-provided linker.ld makes that layout concrete:\nENTRY(_start)\n\nMEMORY {\n    RAM (rwx) : ORIGIN = 0x80000000, LENGTH = 128M\n}\n\n. = ALIGN(16);\n. += 16K;\n_stack_top = .;\nHere . is the linker’s current output address. After 16 KiB have been reserved for the initial stack, that address is named _stack_top.\nStudents do not need to write linker scripts in BVS1. The important idea is that the linker does not merely join files; it constructs one final address space in which the pieces can refer to one another.",
+    "objectID": "chapters/02-source-to-executables.html#from-the-stored-program-idea-to-a-concrete-memory-layout",
+    "href": "chapters/02-source-to-executables.html#from-the-stored-program-idea-to-a-concrete-memory-layout",
+    "title": "2  From Source to Executables: Towards Processes",
+    "section": "3.3 3. From the stored-program idea to a concrete memory layout",
+    "text": "3.3 3. From the stored-program idea to a concrete memory layout\nLecture 1 used the abstract model:\ninstructions + data\n        ↓\n      memory\n        ↕\n       CPU\nOur real program now contains different kinds of bytes that need concrete places:\nRV64 memory from 0x80000000\n\n+----------------------------------------------------------+\n| .text    _start, main, ...      | instructions          |\n| .rodata  \"Hello BVS1\\n\"         | constant data         |\n| .data                           | initialized data      |\n| .bss                            | zero-initialized data |\n| C stack  (top: _stack_top)      | runtime data          |\n+----------------------------------------------------------+\nThese roles are not properties that memory itself knows. They arise from the executable layout and from how the program and CPU use the addresses.\nThe course-provided linker.ld makes that layout concrete:\nENTRY(_start)\n\nMEMORY {\n    RAM (rwx) : ORIGIN = 0x80000000, LENGTH = 128M\n}\n\n. = ALIGN(16);\n. += 16K;\n_stack_top = .;\nHere . is the linker’s current output address. After 16 KiB have been reserved for the initial stack, that address is named _stack_top.\nStudents do not need to write linker scripts in BVS1. The important idea is that the linker does not merely join files; it constructs one final address space in which the pieces can refer to one another.",
     "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>From Source to Executables: Towards Processes</span>"
     ]
   },
   {
-    "objectID": "chapters/02-source-to-process.html#linking-produces-the-program-qemu-can-load",
-    "href": "chapters/02-source-to-process.html#linking-produces-the-program-qemu-can-load",
-    "title": "2  From Source to Process",
-    "section": "2.4 4. Linking produces the program QEMU can load",
-    "text": "2.4 4. Linking produces the program QEMU can load\nWe link the two objects using the course layout:\nriscv64-unknown-elf-gcc -nostdlib -nostartfiles -no-pie \\\n  -T linker.ld build/manual/start.o build/manual/main.o \\\n  -o build/manual/hello-bvs1.elf\nAt this point the linker has:\n\ncombined the objects;\nresolved the symbol references;\nestablished the final memory layout.\n\nThe resulting ELF is what QEMU receives. QEMU does not compile or link the program; it provides the emulated RV64 machine and loads the already-built image.",
+    "objectID": "chapters/02-source-to-executables.html#linking-produces-the-program-qemu-can-load",
+    "href": "chapters/02-source-to-executables.html#linking-produces-the-program-qemu-can-load",
+    "title": "2  From Source to Executables: Towards Processes",
+    "section": "3.4 4. Linking produces the program QEMU can load",
+    "text": "3.4 4. Linking produces the program QEMU can load\nWe link the two objects using the course layout:\nriscv64-unknown-elf-gcc -nostdlib -nostartfiles -no-pie \\\n  -T linker.ld build/manual/start.o build/manual/main.o \\\n  -o build/manual/hello-bvs1.elf\nAt this point the linker has:\n\ncombined the objects;\nresolved the symbol references;\nestablished the final memory layout.\n\nThe resulting ELF is what QEMU receives. QEMU does not compile or link the program; it provides the emulated RV64 machine and loads the already-built image.",
     "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>From Source to Executables: Towards Processes</span>"
     ]
   },
   {
-    "objectID": "chapters/02-source-to-process.html#why-execution-starts-before-main",
-    "href": "chapters/02-source-to-process.html#why-execution-starts-before-main",
-    "title": "2  From Source to Process",
-    "section": "2.5 5. Why execution starts before main",
-    "text": "2.5 5. Why execution starts before main\nThe linker script declares:\nENTRY(_start)\nand _start is defined in start.S:\n_start:\n    la   sp, _stack_top\n    call main\n1:\n    j    1b\nThis small fragment exposes an important boundary between machine startup and ordinary C code.\nBefore main can run, startup code establishes at least the execution environment that C expects. Here that means setting sp, the stack pointer, to the address denoted by _stack_top.\nThen call main transfers control to main and remembers where execution should return. We deliberately do not open the full calling convention yet. The fact that a return point must somehow be preserved becomes important in Lecture 3.\nThe local label 1: and 1b only express the final fallback loop: if main returns, execution remains there.",
+    "objectID": "chapters/02-source-to-executables.html#why-execution-starts-before-main",
+    "href": "chapters/02-source-to-executables.html#why-execution-starts-before-main",
+    "title": "2  From Source to Executables: Towards Processes",
+    "section": "3.5 5. Why execution starts before main",
+    "text": "3.5 5. Why execution starts before main\nThe linker script declares:\nENTRY(_start)\nand _start is defined in start.S:\n_start:\n    la   sp, _stack_top\n    call main\n1:\n    j    1b\nThis small fragment exposes an important boundary between machine startup and ordinary C code.\nBefore main can run, startup code establishes at least the execution environment that C expects. Here that means setting sp, the stack pointer, to the address denoted by _stack_top.\nThen call main transfers control to main and remembers where execution should return. We deliberately do not open the full calling convention yet. The fact that a return point must somehow be preserved becomes important in Lecture 3.\nThe local label 1: and 1b only express the final fallback loop: if main returns, execution remains there.",
     "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>From Source to Executables: Towards Processes</span>"
     ]
   },
   {
-    "objectID": "chapters/02-source-to-process.html#the-whole-path-and-what-make-hides",
-    "href": "chapters/02-source-to-process.html#the-whole-path-and-what-make-hides",
-    "title": "2  From Source to Process",
-    "section": "2.6 6. The whole path, and what Make hides",
-    "text": "2.6 6. The whole path, and what Make hides\nRunning the ELF manually:\nqemu-system-riscv64 -machine virt -m 128M -smp 1 -nographic \\\n  -bios none -kernel build/manual/hello-bvs1.elf\nreconstructs the complete path:\nmain.c    → compile  → main.o  ──┐\n                                 │\nstart.S   → assemble → start.o ──┼─→ link → hello-bvs1.elf\n                                 │                ↓\nlinker.ld ───────────────────────┘               QEMU\n                                                  ↓\n                                                 RV64\n                                                  ↓\n                                              Hello BVS1\nCompilation, assembly, linking, and QEMU itself run in the Ubuntu development VM. The final RV64 instructions execute in the emulated target.\nMake automates this workflow. It decides when a target is out of date and runs the corresponding recipe. The GCC driver performs the translation steps and invokes the linker. QEMU provides the machine on which the result executes.\nDoing the path manually once is useful because the automation then has a visible meaning rather than being a black box.",
+    "objectID": "chapters/02-source-to-executables.html#the-whole-path-and-what-make-hides",
+    "href": "chapters/02-source-to-executables.html#the-whole-path-and-what-make-hides",
+    "title": "2  From Source to Executables: Towards Processes",
+    "section": "3.6 6. The whole path, and what Make hides",
+    "text": "3.6 6. The whole path, and what Make hides\nRunning the ELF manually:\nqemu-system-riscv64 -machine virt -m 128M -smp 1 -nographic \\\n  -bios none -kernel build/manual/hello-bvs1.elf\nreconstructs the complete path:\nmain.c    → compile  → main.o  ──┐\n                                 │\nstart.S   → assemble → start.o ──┼─→ link → hello-bvs1.elf\n                                 │                ↓\nlinker.ld ───────────────────────┘               QEMU\n                                                  ↓\n                                                 RV64\n                                                  ↓\n                                              Hello BVS1\nCompilation, assembly, linking, and QEMU itself run in the Ubuntu development VM. The final RV64 instructions execute in the emulated target.\nMake automates this workflow. It decides when a target is out of date and runs the corresponding recipe. The GCC driver performs the translation steps and invokes the linker. QEMU provides the machine on which the result executes.\nDoing the path manually once is useful because the automation then has a visible meaning rather than being a black box.",
     "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>From Source to Executables: Towards Processes</span>"
     ]
   },
   {
-    "objectID": "chapters/02-source-to-process.html#change-rebuild-observe",
-    "href": "chapters/02-source-to-process.html#change-rebuild-observe",
-    "title": "2  From Source to Process",
-    "section": "2.7 7. Change, rebuild, observe",
-    "text": "2.7 7. Change, rebuild, observe\nIf only the string in main.c changes, we can predict the consequences before rebuilding:\n\nmain.o must change;\nstart.o does not;\nthe final ELF must be linked again;\nlinker.ld does not change;\nQEMU itself does not change.\n\nThis small exercise is about maintaining a causal model of the system:\n\npredict → change → build → run → observe → explain\n\nThat pattern will be reused when the changes are no longer only strings, but operating-system mechanisms.",
+    "objectID": "chapters/02-source-to-executables.html#change-rebuild-observe",
+    "href": "chapters/02-source-to-executables.html#change-rebuild-observe",
+    "title": "2  From Source to Executables: Towards Processes",
+    "section": "3.7 7. Change, rebuild, observe",
+    "text": "3.7 7. Change, rebuild, observe\nIf only the string in main.c changes, we can predict the consequences before rebuilding:\n\nmain.o must change;\nstart.o does not;\nthe final ELF must be linked again;\nlinker.ld does not change;\nQEMU itself does not change.\n\nThis small exercise is about maintaining a causal model of the system:\n\npredict → change → build → run → observe → explain\n\nThat pattern will be reused when the changes are no longer only strings, but operating-system mechanisms.",
     "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>From Source to Executables: Towards Processes</span>"
     ]
   },
   {
-    "objectID": "chapters/02-source-to-process.html#why-an-executing-program-is-not-yet-a-process",
-    "href": "chapters/02-source-to-process.html#why-an-executing-program-is-not-yet-a-process",
-    "title": "2  From Source to Process",
-    "section": "2.8 8. Why an executing program is not yet a process",
-    "text": "2.8 8. Why an executing program is not yet a process\nOur current target has one execution:\n_start\n  ↓\nmain\n  ↓\nprint\n  ↓\nfor (;;) {}\nOnce it starts, nothing inside our target can currently stop it, regain control, and later continue it.\nThat is the new requirement. An operating system must be able to manage an execution rather than merely start it.\nFor our first model:\n\nA process is an execution that the operating system can manage.\n\nFor Checkpoint 1, “manage” means only:\ncreate → run → yield → resume → exit\nThis is intentionally much smaller than a complete Unix process model. We do not yet need address spaces, files, process IDs, or scheduling policies.\nThe minimum lifecycle is:\ncreate ──→ READY ──run / resume──→ RUNNING ──exit──→ FINISHED\n             ↑                       │\n             └──────── yield ────────┘\nA yielded process is still runnable. A finished process is not.",
+    "objectID": "chapters/02-source-to-executables.html#why-an-executing-program-is-not-yet-a-process",
+    "href": "chapters/02-source-to-executables.html#why-an-executing-program-is-not-yet-a-process",
+    "title": "2  From Source to Executables: Towards Processes",
+    "section": "3.8 8. Why an executing program is not yet a process",
+    "text": "3.8 8. Why an executing program is not yet a process\nOur current target has one execution:\n_start\n  ↓\nmain\n  ↓\nprint\n  ↓\nfor (;;) {}\nOnce it starts, nothing inside our target can currently stop it, regain control, and later continue it.\nThat is the new requirement. An operating system must be able to manage an execution rather than merely start it.\nFor our first model:\n\nA process is an execution that the operating system can manage.\n\nFor Checkpoint 1, “manage” means only:\ncreate → run → yield → resume → exit\nThis is intentionally much smaller than a complete Unix process model. We do not yet need address spaces, files, process IDs, or scheduling policies.\nThe minimum lifecycle is:\ncreate ──→ READY ──run / resume──→ RUNNING ──exit──→ FINISHED\n             ↑                       │\n             └──────── yield ────────┘\nA yielded process is still runnable. A finished process is not.",
     "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>From Source to Executables: Towards Processes</span>"
     ]
   },
   {
-    "objectID": "chapters/02-source-to-process.html#yield-exit-resume-and-restart",
-    "href": "chapters/02-source-to-process.html#yield-exit-resume-and-restart",
-    "title": "2  From Source to Process",
-    "section": "2.9 9. Yield, exit, resume, and restart",
-    "text": "2.9 9. Yield, exit, resume, and restart\nYield and exit both transfer control back to the operating system, but they have different meanings.\n\nyield: the execution is not finished and must be able to continue later;\nexit: the execution is finished and must never continue.\n\nThe distinction becomes visible in this intended interface:\nuart_puts(\"A\\n\");\nprocess_yield();\nuart_puts(\"B\\n\");\nprocess_exit();\nprocess_yield() and process_exit() are not library functions we already have. They are functions our minimal operating system still has to implement.\nAfter process_yield(), the operating system has control. When the process runs again, it must continue with uart_puts(\"B\\n\"). Printing A again would mean that we restarted the execution instead of resuming it.\nThis is the conceptual step that makes the next lecture necessary.",
+    "objectID": "chapters/02-source-to-executables.html#yield-exit-resume-and-restart",
+    "href": "chapters/02-source-to-executables.html#yield-exit-resume-and-restart",
+    "title": "2  From Source to Executables: Towards Processes",
+    "section": "3.9 9. Yield, exit, resume, and restart",
+    "text": "3.9 9. Yield, exit, resume, and restart\nYield and exit both transfer control back to the operating system, but they have different meanings.\n\nyield: the execution is not finished and must be able to continue later;\nexit: the execution is finished and must never continue.\n\nThe distinction becomes visible in this intended interface:\nuart_puts(\"A\\n\");\nprocess_yield();\nuart_puts(\"B\\n\");\nprocess_exit();\nprocess_yield() and process_exit() are not library functions we already have. They are functions our minimal operating system still has to implement.\nAfter process_yield(), the operating system has control. When the process runs again, it must continue with uart_puts(\"B\\n\"). Printing A again would mean that we restarted the execution instead of resuming it.\nThis is the conceptual step that makes the next lecture necessary.",
     "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>From Source to Executables: Towards Processes</span>"
     ]
   },
   {
-    "objectID": "chapters/02-source-to-process.html#the-question-that-leads-to-execution-context",
-    "href": "chapters/02-source-to-process.html#the-question-that-leads-to-execution-context",
-    "title": "2  From Source to Process",
-    "section": "2.10 10. The question that leads to execution context",
-    "text": "2.10 10. The question that leads to execution context\nTo resume correctly, something about the paused execution must survive:\nprocess runs\n     ↓\nyield\n     ↓\nOS regains control\n     ↓\nresume\n     ↓\ncontinue exactly where it stopped\nWhat must be preserved so this can work?\nAt this point it is enough to suspect that some machine state must survive the pause. Lecture 3 determines exactly what that state is.\nThe final path of Lecture 2 is therefore:\nsource → objects → linked ELF → memory → _start → main\nfollowed by:\nexecuting program → OS-managed execution → process\nThe remaining question is:\n\nWhat machine state makes resume possible?",
+    "objectID": "chapters/02-source-to-executables.html#the-question-that-leads-to-execution-context",
+    "href": "chapters/02-source-to-executables.html#the-question-that-leads-to-execution-context",
+    "title": "2  From Source to Executables: Towards Processes",
+    "section": "3.10 10. The question that leads to execution context",
+    "text": "3.10 10. The question that leads to execution context\nTo resume correctly, something about the paused execution must survive:\nprocess runs\n     ↓\nyield\n     ↓\nOS regains control\n     ↓\nresume\n     ↓\ncontinue exactly where it stopped\nWhat must be preserved so this can work?\nAt this point it is enough to suspect that some machine state must survive the pause. Lecture 3 determines exactly what that state is.\nThe final path of Lecture 2 is therefore:\nsource → objects → linked ELF → memory → _start → main\nfollowed by:\nexecuting program → OS-managed execution → process\nThe remaining question is:\n\nWhat machine state makes resume possible?",
     "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>From Source to Executables: Towards Processes</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-source-to-executables.html#references",
+    "href": "chapters/02-source-to-executables.html#references",
+    "title": "2  From Source to Executables: Towards Processes",
+    "section": "3.11 References",
+    "text": "3.11 References\n\nRISC-V International, RISC-V ABIs Specification. https://riscv-non-isa.github.io/riscv-elf-psabi-doc/\nGNU Compiler Collection, RISC-V Options. https://gcc.gnu.org/onlinedocs/gcc/RISC-V-Options.html\nGNU Binutils, The GNU linker (ld), especially the sections on linker scripts, symbols, MEMORY, and SECTIONS. https://sourceware.org/binutils/docs/ld.html\nGNU Binutils, nm. https://sourceware.org/binutils/docs/binutils/nm.html\nQEMU documentation, RISC-V System Emulator. https://www.qemu.org/docs/master/system/target-riscv.html\nQEMU documentation, virt Generic Virtual Platform. https://www.qemu.org/docs/master/system/riscv/virt.html\nRemzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau, Operating Systems: Three Easy Pieces, especially the process chapters. https://pages.cs.wisc.edu/~remzi/OSTEP/",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>From Source to Executables: Towards Processes</span>"
     ]
   },
   {
     "objectID": "downloads.html",
     "href": "downloads.html",
-    "title": "3  Downloads",
+    "title": "Downloads",
     "section": "",
-    "text": "3.1 Course Script\nStudent-facing material for Wintersemester 2026/2027 is available here.",
+    "text": "Course Script\nStudent-facing material for Wintersemester 2026/2027 is available here.",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Downloads</span>"
     ]
   },
   {
     "objectID": "downloads.html#course-script",
     "href": "downloads.html#course-script",
-    "title": "3  Downloads",
+    "title": "Downloads",
     "section": "",
     "text": "Download the complete course script (PDF)",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Downloads</span>"
     ]
   },
   {
     "objectID": "downloads.html#lecture-slides",
     "href": "downloads.html#lecture-slides",
-    "title": "3  Downloads",
-    "section": "3.2 Lecture Slides",
-    "text": "3.2 Lecture Slides\n\n01 — Introduction\n02 — From Source to Process\n\nThe HTML version you are currently reading is the primary online version of the course material.",
+    "title": "Downloads",
+    "section": "Lecture Slides",
+    "text": "Lecture Slides\n\n01 — Introduction\n02 — From Source to Executables: Towards Processes\n\nThe HTML version you are currently reading is the primary online version of the course material.",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>BVS1 – Betriebssysteme</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Downloads</span>"
     ]
   }
 ]
