@@ -120,6 +120,16 @@
     ]
   },
   {
+    "objectID": "chapters/01-introduction.html#related-exercise",
+    "href": "chapters/01-introduction.html#related-exercise",
+    "title": "1  From Executing Code to Operating Systems",
+    "section": "Related Exercise",
+    "text": "Related Exercise\nExercise 01 — From Source to First Instructions also consolidates concepts from this lecture, especially the development-host/target distinction and virtualization versus emulation. Its main placement is after Lecture 02, where it also applies the toolchain and startup material.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>From Executing Code to Operating Systems</span>"
+    ]
+  },
+  {
     "objectID": "chapters/01-introduction.html#references",
     "href": "chapters/01-introduction.html#references",
     "title": "1  From Executing Code to Operating Systems",
@@ -240,6 +250,16 @@
     ]
   },
   {
+    "objectID": "chapters/02-source-to-executables.html#related-exercise",
+    "href": "chapters/02-source-to-executables.html#related-exercise",
+    "title": "2  From Source to Executables: Towards Processes",
+    "section": "Related Exercise",
+    "text": "Related Exercise\nExercise 01 — From Source to First Instructions is the exercise associated with this lecture. It reconstructs the host/target layers, follows the source-to-executable path, inspects symbols and startup code, and prepares the transition toward the first process.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>From Source to Executables: Towards Processes</span>"
+    ]
+  },
+  {
     "objectID": "chapters/02-source-to-executables.html#references",
     "href": "chapters/02-source-to-executables.html#references",
     "title": "2  From Source to Executables: Towards Processes",
@@ -275,6 +295,16 @@
     "title": "Downloads",
     "section": "Lecture Slides",
     "text": "Lecture Slides\n\n01 — Introduction\n02 — From Source to Executables: Towards Processes",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Downloads</span>"
+    ]
+  },
+  {
+    "objectID": "downloads.html#exercises",
+    "href": "downloads.html#exercises",
+    "title": "Downloads",
+    "section": "Exercises",
+    "text": "Exercises\n\nExercise 01 — From Source to First Instructions",
     "crumbs": [
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>Downloads</span>"
     ]
