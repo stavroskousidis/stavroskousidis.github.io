@@ -20,6 +20,16 @@
     ]
   },
   {
+    "objectID": "index.html#license",
+    "href": "index.html#license",
+    "title": "BVS1 – Betriebssysteme",
+    "section": "License",
+    "text": "License\nExcept where otherwise noted, the student-facing BVS1 teaching materials are © 2026 Stavros Kousidis and licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).\nThird-party material remains subject to its respective license or copyright terms. The separately distributed BVS1 software repository teaching-bvs1-code remains licensed under the MIT License.",
+    "crumbs": [
+      "BVS1 – Betriebssysteme"
+    ]
+  },
+  {
     "objectID": "chapters/01-introduction.html",
     "href": "chapters/01-introduction.html",
     "title": "1  From Executing Code to Operating Systems",
@@ -314,7 +324,17 @@
     "href": "downloads.html#handouts",
     "title": "Downloads",
     "section": "Handouts",
-    "text": "Handouts\n\nDevelopment Environment\nEditing Source Files in Ubuntu — nano and Vim\nUbuntu Shell — Command-Line Cheat Sheet\nLab Organization\n\nThe HTML version you are currently reading is the primary online version of the course material.",
+    "text": "Handouts\n\nDevelopment Environment\nEditing Source Files in Ubuntu — nano and Vim\nUbuntu Shell — Command-Line Cheat Sheet\nLab Organization",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Downloads</span>"
+    ]
+  },
+  {
+    "objectID": "downloads.html#license",
+    "href": "downloads.html#license",
+    "title": "Downloads",
+    "section": "License",
+    "text": "License\nExcept where otherwise noted, the student-facing BVS1 teaching material is © 2026 Stavros Kousidis and licensed under CC BY 4.0. Third-party material remains subject to its respective terms.\nThe HTML version you are currently reading is the primary online version of the course material.",
     "crumbs": [
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>Downloads</span>"
     ]
