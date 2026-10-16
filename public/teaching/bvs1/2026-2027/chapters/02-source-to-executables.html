@@ -250,7 +250,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> build/manual</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">riscv64-unknown-elf-gcc</span> <span class="at">-march</span><span class="op">=</span>rv64imac <span class="at">-mabi</span><span class="op">=</span>lp64 <span class="dt">\</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-mcmodel</span><span class="op">=</span>medany <span class="at">-msmall-data-limit</span><span class="op">=</span>0 <span class="at">-c</span> main.c <span class="at">-o</span> build/manual/main.o</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-mcmodel</span><span class="op">=</span>medany <span class="at">-msmall-data-limit</span><span class="op">=</span>0 <span class="dt">\</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">-c</span> main.c <span class="dt">\</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">-o</span> build/manual/main.o</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The important option is <code>-c</code>: stop before linking.</p>
 <p>Inspecting the result with</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">file</span> build/manual/main.o</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -338,8 +340,9 @@ _stack_top = .;</code></pre>
 <section id="the-whole-path-and-what-make-hides" class="level2" data-number="3.6">
 <h2 data-number="3.6" class="anchored" data-anchor-id="the-whole-path-and-what-make-hides"><span class="header-section-number">3.6</span> 6. The whole path, and what Make hides</h2>
 <p>Running the ELF manually:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">qemu-system-riscv64</span> <span class="at">-machine</span> virt <span class="at">-m</span> 128M <span class="at">-smp</span> 1 <span class="at">-nographic</span> <span class="dt">\</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-bios</span> none <span class="at">-kernel</span> build/manual/hello-bvs1.elf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">qemu-system-riscv64</span> <span class="at">-machine</span> virt <span class="at">-m</span> 128M <span class="dt">\</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-smp</span> 1 <span class="at">-nographic</span> <span class="at">-bios</span> none <span class="dt">\</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-kernel</span> build/manual/hello-bvs1.elf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>reconstructs the complete path:</p>
 <pre class="text"><code>main.c    → compile  → main.o  ──┐
                                  │
