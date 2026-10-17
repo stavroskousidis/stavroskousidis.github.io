@@ -253,6 +253,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Inspecting the result with</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">file</span> build/manual/main.o</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>shows that <code>main.o</code> is already a RISC-V ELF object.</p>
+<p>ELF (<strong>Executable and Linkable Format</strong>) is the binary file format we use here for both object files and the final executable.</p>
 <p>This distinction matters: the compiler has already translated C into code for our target ISA. The object file is therefore not architecture-neutral. But it is also not yet a complete program. Separate pieces can still refer to one another, and their final addresses have not yet been established.</p>
 <p>The startup assembly is translated in the same way:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">riscv64-unknown-elf-gcc</span> <span class="at">-march</span><span class="op">=</span>rv64imac <span class="at">-mabi</span><span class="op">=</span>lp64 <span class="dt">\</span></span>
@@ -260,6 +261,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="why-object-files-still-need-a-linker" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="why-object-files-still-need-a-linker"><span class="header-section-number">2.2</span> Why object files still need a linker</h2>
+<p>A <strong>symbol</strong> is a name used to refer to a program entity or location, such as a function or a linker-defined address.</p>
 <p>Using <code>nm</code> (“name list”) lets us inspect the symbols in the two objects:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">riscv64-unknown-elf-nm</span> build/manual/start.o</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">riscv64-unknown-elf-nm</span> build/manual/main.o</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -290,6 +292,7 @@ main.o  defines main</code></pre>
 | .bss                            | zero-initialized data |
 | C stack  (top: _stack_top)      | runtime data          |
 +----------------------------------------------------------+</code></pre>
+<p>The <strong>stack</strong> is runtime memory used during function calls, for example for local state and saved call information. The register <code>sp</code> is the stack pointer; <code>_stack_top</code> names the initial top address of this stack.</p>
 <p>These roles are not properties that memory itself knows. They arise from the executable layout and from how the program and CPU use the addresses.</p>
 <p>The course-provided <code>linker.ld</code> makes that layout concrete:</p>
 <pre class="ld"><code>ENTRY(_start)
@@ -363,6 +366,7 @@ linker.ld ───────────────────────�
 <li><code>linker.ld</code> does not change;</li>
 <li>QEMU itself does not change.</li>
 </ul>
+<p>These are the logical dependencies. A concrete Makefile may encode them at a coarser granularity and therefore rebuild more than the minimum set of intermediate files.</p>
 <p>This small exercise is about maintaining a causal model of the system:</p>
 <blockquote class="blockquote">
 <p><strong>predict → change → build → run → observe → explain</strong></p>
