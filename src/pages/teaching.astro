@@ -1,11 +1,28 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import course from '../data/bvs1-semesters.json';
+
+const { courseTitle, current } = course;
 ---
 
-<BaseLayout title="Teaching · Stavros Kousidis">
+<BaseLayout
+  title="Teaching · Stavros Kousidis"
+  description="Courses and teaching material by Stavros Kousidis at TH Köln, ICCT."
+>
   <section class="page-intro">
     <p class="kicker">Teaching</p>
-    <h1>Teaching material is under construction.</h1>
-    <p class="lede">Course pages and lecture material will be added here as they become available.</p>
+    <h1>Courses and teaching material.</h1>
+    <p class="lede">Course pages collect the current material together with semester-specific snapshots.</p>
+  </section>
+
+  <section class="link-list">
+    <a href="/teaching/bvs1/">
+      <div>
+        <small>Current course · {current.label}</small>
+        <h2>{courseTitle}</h2>
+        <p>Course website, HTML script, downloadable PDF script, lecture slides, exercises, and handouts.</p>
+      </div>
+      <span aria-hidden="true">→</span>
+    </a>
   </section>
 </BaseLayout>
