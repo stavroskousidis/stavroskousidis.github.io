@@ -217,7 +217,7 @@ ul.task-list li input[type="checkbox"] {
 <blockquote class="blockquote">
 <p><strong>Can a computer execute a program without an operating system?</strong></p>
 </blockquote>
-<p>The first practical system is deliberately tiny. An RV64 target machine runs one program in QEMU and prints:</p>
+<p>The first practical system is deliberately tiny. We use QEMU to provide a machine with an <strong>RV64 (64-bit RISC-V)</strong> CPU. This is our <strong>target</strong>: the machine for which we build the program. It runs one program and prints:</p>
 <pre class="text"><code>Hello BVS1</code></pre>
 <p>The experiment gives us a concrete machine to reason about before we introduce operating-system mechanisms.</p>
 <section id="one-program-can-run-without-a-guest-operating-system" class="level2" data-number="1.1">
@@ -240,7 +240,7 @@ ul.task-list li input[type="checkbox"] {
 <blockquote class="blockquote">
 <p><strong>CPU, memory and devices exist independently of an operating system.</strong></p>
 </blockquote>
-<p>The point here is conceptual rather than historical or microarchitectural. Modern processors may use separate instruction and data caches internally, but the important point here is that instructions and data both occupy target memory. Lecture 2 returns to this idea when the linker script makes the abstract memory model concrete.</p>
+<p>The point here is conceptual rather than historical or microarchitectural. Modern processors may use separate instruction and data caches internally, but the important point here is that instructions and data both occupy target memory. Lecture 2 returns to this idea and makes the abstract memory model concrete.</p>
 <p>In the <code>Hello BVS1</code> experiment, QEMU provides the target machine. The target contains an RV64 CPU, memory and devices. The program is loaded and begins executing without a guest operating system.</p>
 <p>The physical computer still runs an operating system, and our Ubuntu development environment also runs an operating system. The important observation concerns the <strong>target</strong>:</p>
 <blockquote class="blockquote">
@@ -308,7 +308,7 @@ ul.task-list li input[type="checkbox"] {
 <li>Where do the development tools execute?</li>
 <li>Which machine will execute the generated program?</li>
 </ol>
-<p>Keeping these roles separate is essential for understanding both cross-compilation and emulation.</p>
+<p>Keeping these roles separate will matter when we build code on one machine for another and when we examine emulation.</p>
 </section>
 <section id="virtualization-and-emulation-are-different" class="level2" data-number="1.4">
 <h2 data-number="1.4" class="anchored" data-anchor-id="virtualization-and-emulation-are-different"><span class="header-section-number">1.4</span> Virtualization and emulation are different</h2>
@@ -362,7 +362,7 @@ physical CPU</code></pre>
      ↓  virtualization (managed through Multipass)
 Ubuntu development VM: bvs1
      ↓  runs
-QEMU process
+QEMU
      ↓  emulates RV64
 RV64 target machine
      ↓  executes
@@ -372,7 +372,7 @@ Hello BVS1</code></pre>
 <li>the <strong>physical host</strong> provides the real CPU, memory and devices;</li>
 <li>the <strong>Ubuntu development VM</strong> is the common environment in which the course tools run;</li>
 <li><strong>Multipass</strong> manages that development VM and is not an additional machine layer;</li>
-<li><strong>QEMU</strong> is a process running inside the development VM;</li>
+<li><strong>QEMU</strong> runs as a normal program inside the development VM;</li>
 <li>QEMU emulates the <strong>RV64 target machine</strong>;</li>
 <li><code>Hello BVS1</code> executes on that target.</li>
 </ul>
@@ -384,6 +384,8 @@ Hello BVS1</code></pre>
 <section id="the-toolchain-connects-development-host-and-target" class="level2" data-number="1.5">
 <h2 data-number="1.5" class="anchored" data-anchor-id="the-toolchain-connects-development-host-and-target"><span class="header-section-number">1.5</span> The toolchain connects development host and target</h2>
 <p>The source program is written in a human-readable programming language, but the target CPU needs RV64 machine instructions.</p>
+<p>The <strong>toolchain</strong> is the set of cooperating build tools. The compiler and assembler translate source into target machine code. They produce <strong>object files</strong>: target-specific intermediate files that still need to be combined. The <strong>linker</strong> combines those objects and resolves references between them.</p>
+<p>These build products use <strong>ELF (Executable and Linkable Format)</strong>, a binary format used here for both object files and the final executable.</p>
 <p>A simplified build path is:</p>
 <pre class="text"><code>source code
     ↓
@@ -398,8 +400,7 @@ RV64 executable
 QEMU
     ↓
 RV64 target machine</code></pre>
-<p>The cooperating compiler, assembler, linker and binary utilities form the <strong>toolchain</strong>.</p>
-<p>A <strong>cross compiler</strong> runs on one architecture while producing code for another target architecture.</p>
+<p>A <strong>cross compiler</strong> runs on one architecture while producing code for another target architecture. This is <strong>cross-compilation</strong>.</p>
 <p>QEMU has a different role: it does not translate source code into the executable. It provides the machine on which the already generated target program can run.</p>
 <section id="object-files-are-not-yet-the-complete-program" class="level3" data-number="1.5.1">
 <h3 data-number="1.5.1" class="anchored" data-anchor-id="object-files-are-not-yet-the-complete-program"><span class="header-section-number">1.5.1</span> Object files are not yet the complete program</h3>
