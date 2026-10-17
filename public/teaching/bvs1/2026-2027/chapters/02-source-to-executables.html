@@ -193,6 +193,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#why-an-executing-program-is-not-yet-a-process" id="toc-why-an-executing-program-is-not-yet-a-process" class="nav-link" data-scroll-target="#why-an-executing-program-is-not-yet-a-process"><span class="header-section-number">2.8</span> Why an executing program is not yet a process</a></li>
   <li><a href="#yield-exit-resume-and-restart" id="toc-yield-exit-resume-and-restart" class="nav-link" data-scroll-target="#yield-exit-resume-and-restart"><span class="header-section-number">2.9</span> Yield, exit, resume, and restart</a></li>
   <li><a href="#the-question-that-leads-to-execution-context" id="toc-the-question-that-leads-to-execution-context" class="nav-link" data-scroll-target="#the-question-that-leads-to-execution-context"><span class="header-section-number">2.10</span> The question that leads to execution context</a></li>
+  <li><a href="#key-ideas" id="toc-key-ideas" class="nav-link" data-scroll-target="#key-ideas"><span class="header-section-number">2.11</span> Key ideas</a></li>
   <li><a href="#related-exercise" id="toc-related-exercise" class="nav-link" data-scroll-target="#related-exercise">Related Exercise</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
@@ -437,6 +438,28 @@ continue exactly where it stopped</code></pre>
 <blockquote class="blockquote">
 <p><strong>What machine state makes resume possible?</strong></p>
 </blockquote>
+</section>
+<section id="key-ideas" class="level2" data-number="2.11">
+<h2 data-number="2.11" class="anchored" data-anchor-id="key-ideas"><span class="header-section-number">2.11</span> Key ideas</h2>
+<p>Lecture 2 connects the build path to the first process abstraction:</p>
+<ul>
+<li>Compilation and assembly produce target-specific object files.</li>
+<li>ELF is the binary format we use for both object files and the final executable.</li>
+<li>Symbols name program entities or locations; the linker resolves references between separately translated pieces.</li>
+<li>The linker also establishes the final memory layout of the program.</li>
+<li>The stack is runtime memory used during function calls, and <code>sp</code> is the stack pointer.</li>
+<li>Execution begins in startup code at <code>_start</code>, which establishes the initial environment before entering C.</li>
+<li>QEMU loads the already-built ELF into the emulated RV64 target; it does not compile or link the program.</li>
+<li>Make automates the build workflow, while the compiler, assembler, and linker perform the translation steps.</li>
+<li>A process is an execution that the operating system can manage through <code>create → run → yield → resume → exit</code>.</li>
+<li><code>yield</code> and <code>exit</code> both return control to the operating system, but only a yielded execution may continue later.</li>
+<li>Resuming means continuing where execution stopped, not restarting from the beginning.</li>
+</ul>
+<p>A useful test of understanding is to explain both chains:</p>
+<pre class="text"><code>source → object files → linked ELF → memory → _start → main</code></pre>
+<p>and</p>
+<pre class="text"><code>executing program → OS-managed execution → process</code></pre>
+<p>and then explain why resuming a process requires some machine state to survive the pause.</p>
 </section>
 <section id="related-exercise" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="related-exercise">Related Exercise</h2>
