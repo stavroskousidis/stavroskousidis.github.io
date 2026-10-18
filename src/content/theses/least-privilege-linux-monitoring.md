@@ -4,6 +4,7 @@ summary: "Design and evaluate an isolated AI-assisted Linux security monitor wit
 researchQuestion: "How can an AI-based security monitoring agent be isolated from a monitored Linux system while retaining sufficient information to detect and analyze security-relevant events?"
 level: "Bachelor"
 status: "Open"
+featured: true
 researchDirection: "Secure Monitoring with Untrusted AI Agents"
 published: "2026-10-15"
 tags: ["Linux Security", "Least Privilege", "Sandboxing", "LLM Security"]

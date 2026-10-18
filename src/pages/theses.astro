@@ -3,10 +3,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ThesisCard from '../components/ThesisCard.astro';
 import { profile } from '../data/site';
 import { getCollection } from 'astro:content';
+import { compareThesesByLevelAndPublication } from '../lib/theses';
 
 const theses = (await getCollection('theses'))
   .filter((topic) => topic.data.status !== 'Assigned')
-  .sort((a, b) => a.data.level.localeCompare(b.data.level));
+  .sort(compareThesesByLevelAndPublication);
 ---
 
 <BaseLayout

@@ -4,6 +4,7 @@ summary: "Investigate whether certificate discovery, authentication and key-sele
 researchQuestion: "Under which certificate, capability and migration conditions can OpenPGP mail clients silently lose post-quantum protection, and which selection policies prevent such downgrades?"
 level: "Master"
 status: "Open"
+featured: true
 researchDirection: "Post-Quantum OpenPGP and Cryptographic Infrastructure"
 published: "2026-10-18"
 tags: ["OpenPGP", "Post-Quantum Cryptography", "Downgrade Resistance", "Certificate Authentication", "E-Mail Security"]

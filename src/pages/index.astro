@@ -4,10 +4,9 @@ import ThesisCard from '../components/ThesisCard.astro';
 import NoteCard from '../components/NoteCard.astro';
 import { profile } from '../data/site';
 import { getCollection } from 'astro:content';
+import { selectHomepageTheses } from '../lib/theses';
 
-const theses = (await getCollection('theses'))
-  .filter((topic) => topic.data.status !== 'Assigned')
-  .sort((a, b) => a.data.level.localeCompare(b.data.level));
+const theses = selectHomepageTheses(await getCollection('theses'));
 
 const notes = (await getCollection('notes', ({ data }) => !data.draft))
   .sort((a, b) => b.data.published.localeCompare(a.data.published))
@@ -30,12 +29,12 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
 
   <section class="section">
     <div class="section-heading">
-      <div><p class="kicker">Student research</p><h2>Bachelor's and Master's theses</h2></div>
+      <div><p class="kicker">Student research</p><h2>Featured thesis opportunities</h2></div>
       <a class="text-link" href="/theses">Supervision &amp; topics <span aria-hidden="true">→</span></a>
     </div>
     {
       theses.length > 0 ? (
-        <div class="card-grid">{theses.slice(0, 2).map((thesis) => <ThesisCard entry={thesis} />)}</div>
+        <div class="card-grid">{theses.map((thesis) => <ThesisCard entry={thesis} />)}</div>
       ) : (
         <p class="muted">
           Learn about thesis supervision, expectations, and how to get started.
