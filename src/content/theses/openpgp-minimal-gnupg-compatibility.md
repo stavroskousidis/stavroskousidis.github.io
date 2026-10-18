@@ -24,7 +24,7 @@ The thesis asks how much of that compatibility surface is actually required. The
        |             |              |
      GPGME          GPGME          CLI
        |             |              |
-       +------ observed calls -------+
+       +------ observed calls ------+
                      |
               minimal contract
 ```
