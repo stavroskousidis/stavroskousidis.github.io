@@ -26,6 +26,7 @@ const theses = defineCollection({
     researchDirection: z.string(),
     published: z.string(),
     updated: z.string().optional(),
+    featured: z.boolean().default(false),
     tags: z.array(z.string()).default([])
   })
 });
