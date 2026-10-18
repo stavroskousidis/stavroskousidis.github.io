@@ -11,9 +11,9 @@ tags: ["OpenPGP", "Post-Quantum Cryptography", "Sequoia", "GPGME", "Compatibilit
 
 ## Description
 
-The current Fedora proof of concept shows three distinct integration paths: KMail and Claws Mail use GPGME, while Evolution uses Camel's GnuPG-compatible command-line integration. All three ultimately reach Sequoia Chameleon and Sequoia OpenPGP / Keystore. This compatibility approach enables RFC 9980 experiments without modifying every mail client, but it also preserves interfaces and runtime assumptions originally designed around GnuPG.
+The Fedora proof of concept exposes three integration paths: KMail and Claws Mail use GPGME, while Evolution uses Camel's GnuPG-compatible command-line integration. All three ultimately reach Sequoia Chameleon. This enables RFC 9980 experiments without modifying every mail client, but retains interfaces originally designed around GnuPG.
 
-The goal of this thesis is not to reimplement GnuPG. You will derive experimentally the smallest compatibility contract needed by the three clients and investigate how much of that contract can be provided by a focused Sequoia-based implementation.
+The thesis asks how much of that compatibility surface is actually required. The goal is not to reimplement GnuPG, but to derive and test the smallest contract needed by the selected clients.
 
 ```text
               required interface
@@ -31,13 +31,13 @@ The goal of this thesis is not to reimplement GnuPG. You will derive experimenta
 
 ## Scope and evaluation
 
-Instrument the three clients in the existing Fedora test environment using process tracing, Chameleon logging or comparable mechanisms. Record the commands, options, status output, `gpgconf` lookups and error paths actually exercised during certificate listing and selection, signing, verification, encryption and decryption. Include the RFC 9980 algorithms ML-DSA-65+Ed25519 (30) and ML-KEM-768+X25519 (35).
+Instrument KMail, Claws Mail and Evolution in the existing Fedora test environment. Trace the commands, options, status output, `gpgconf` lookups and error paths exercised during certificate selection, signing, verification, encryption and decryption, including RFC 9980 algorithms 30 and 35.
 
-From these observations, specify a minimal interface and implement a bounded prototype or shim covering the identified subset. Compare it with the current Chameleon setup using reproducible positive and negative tests. Clearly distinguish requirements observed for the selected clients from general GnuPG compatibility.
+From the observations, specify a minimal interface and implement a bounded prototype or shim for the identified subset. Compare it with the current Chameleon setup using reproducible positive and negative tests, for example missing certificates, invalid signatures and decryption failures. Clearly distinguish requirements observed for these clients from general GnuPG compatibility.
 
 ## Expected outcome
 
-An empirical compatibility specification, a working prototype for the identified interface subset, and a reproducible evaluation showing which GnuPG-compatible components are necessary, optional or avoidable for the selected OpenPGP mail workflows.
+An empirical compatibility specification, a working prototype for the identified subset, and evidence showing which GnuPG-compatible interfaces are necessary, optional or avoidable for the selected OpenPGP mail workflows.
 
 ## Starting points
 
