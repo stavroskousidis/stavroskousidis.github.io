@@ -11,32 +11,31 @@ tags: ["KMail", "Akonadi", "Information Retrieval", "Evidence Integrity", "Syste
 
 ## Description
 
-Email search is trustworthy only if users can tell what was searched and where each result came from. A search may silently miss relevant messages because they were never downloaded, indexing failed, or the index has become stale. This thesis develops a bounded, read-only search prototype integrated with KMail's Akonadi infrastructure. The goal is **verifiable search**, not another AI chatbot.
+An email search may silently miss messages that were not downloaded, could not be indexed, or became stale. This thesis develops a **trustworthy, read-only search prototype** integrated with KMail's Akonadi infrastructure. The goal is verifiable retrieval, not an AI chatbot.
 
 ## Scope and evaluation
 
-Define a precise searchable corpus (for example, locally accessible messages in selected Akonadi collections at a synchronization checkpoint). Distinguish *index completeness* from *retrieval effectiveness*: even a complete index may fail to retrieve relevant messages.
+Define a precise searchable corpus (e.g., locally accessible messages in selected Akonadi collections). Distinguish **index completeness** from **retrieval effectiveness**: even a complete index can miss relevant answers.
 
-Implement full-text search with a coverage report that distinguishes indexed, pending, unavailable, encrypted-but-not-indexed, failed, and stale items. Each result must identify its original message and, where possible, the matching passage. Investigate navigation from the results into KMail; a companion UI is acceptable if direct plugin integration proves impractical.
+Implement full-text search and coverage reporting for indexed, pending, unavailable, encrypted, failed, and stale items. Link each result to its source message and matching passage where possible. A companion interface is acceptable if native plugin integration proves impractical.
 
-Maintain the index incrementally when messages arrive, change, move, or disappear. Evaluate consistency and recovery under controlled synchronization delays, deletions, and interruptions. Use reproducible test mailboxes with known expected results; measure coverage, query correctness, reference integrity, indexing throughput, latency, memory use, and index size as the archive grows.
+Keep the index synchronized as messages arrive, change, move, or disappear; recover from interrupted processing. Test with reproducible mailboxes and known expected results. Measure coverage, reference correctness, failure detection, query latency, index size, and resource use at increasing archive sizes.
 
-Private keys and decrypted message bodies must not enter a persistent plaintext index by default. Clearly report content excluded for security reasons.
+Do not persistently index decrypted private correspondence or cryptographic keys by default; make security-related exclusions visible.
 
 ## Expected outcome
 
-A documented integration architecture, a working search prototype, repeatable consistency tests, and an experimental evaluation of correctness, failure visibility, and scalability. Semantic search and LLMs are **not** required.
+A documented KMail/Akonadi integration, working search prototype, automated consistency tests, and a quantitative evaluation of reliability and scalability. Semantic search and LLMs are not required.
 
 ## Mandatory open-source publication
 
-**This topic is available only to students who agree, before thesis registration, to publish all newly developed software, tests, and reproducibility tooling under an agreed [OSI-approved open-source license](https://opensource.org/licenses) by project completion.** The exact license is chosen with the supervisor in advance and must respect KDE and third-party license compatibility; a KDE-compatible GPL license is a likely choice for the client plugin. Development may use a private repository. **No credentials, private correspondence, cryptographic keys, or third-party confidential data may be published.** If you cannot or do not wish to meet the open-source requirement, **please choose another thesis topic**.
+**To take this topic, students must agree before registration to publish all thesis-developed software, tests, and reproducibility tooling under a supervisor-agreed [OSI-approved open-source license](https://opensource.org/licenses).** Choose a license compatible with KDE and dependencies (typically GPL for a KMail plugin). Work may remain private during development. Never publish keys, credentials, or confidential mail. **If you cannot or do not wish to publish your code as open source, choose another topic.**
 
 ## Starting points
 
-- [Akonadi framework and APIs](https://api.kde.org/).
-- [SQLite FTS5](https://www.sqlite.org/fts5.html).
+- [Akonadi API](https://api.kde.org/); [SQLite FTS5](https://www.sqlite.org/fts5.html).
 - [KDE licensing policy](https://community.kde.org/Policies/Licensing_Policy).
 
 ## Related research
 
-A complementary [Master's thesis on confidential agentic email search](/theses/confidential-agentic-email-search/) investigates hybrid retrieval and disclosure boundaries. The topics are independently executable.
+The complementary [Master's topic](/theses/confidential-agentic-email-search/) investigates agentic retrieval and confidentiality. Both topics are independently feasible.
