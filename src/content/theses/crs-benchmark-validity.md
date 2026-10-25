@@ -21,6 +21,8 @@ Select a feasible subset of publicly documented vulnerability tasks and record t
 
 A preliminary feasibility study should determine whether the chosen CRS can be deployed within the available resources.
 
+**Artifact licensing note:** Before fixing the benchmark, check the licenses and redistribution rights for benchmark code, agent/model components, vulnerable software snapshots, and datasets. Publish independently developed evaluation scripts under an agreed license; where third-party artifacts cannot be redistributed, document how authorized users can obtain them instead.
+
 ## Expected outcome
 
 A reproducible evaluation protocol, experimental results, and a critical assessment of the validity and limitations of benchmark-based CRS comparisons.
