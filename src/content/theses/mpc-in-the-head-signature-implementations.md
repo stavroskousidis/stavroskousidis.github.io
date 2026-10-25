@@ -21,6 +21,8 @@ Reproduce a well-defined subset of the candidates' public reference measurements
 
 Any analysis of side-channel behavior must identify the observable leakage model and distinguish preliminary measurements from evidence of exploitable leakage. Establish the feasibility and stability of the available implementations before fixing the comparison.
 
+**Licensing note:** Before selecting reference implementations, record their licenses and third-party notices. Distinguish independent benchmark tooling from modifications to the reference code, and respect applicable reuse and redistribution conditions. Publish reproducibility scripts under an agreed license; do not assume all reference implementations share one license.
+
 ## Expected outcome
 
 A reproducible comparison, an explanation of observed trade-offs grounded in the candidate designs, and a critical discussion of security claims, measurement limits and remaining questions.
