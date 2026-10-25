@@ -37,9 +37,7 @@ Derive a minimal interface, implement a bounded shim, and compare it with Chamel
 
 ## Expected outcome
 
-An empirical compatibility specification, a working prototype, and evidence of necessary, optional or avoidable interfaces.
-
-**Open-source publication is mandatory for this topic.** Agree before registration on an OSI-approved license compatible with any reused Chameleon code; assess independently developed components separately. Publish thesis-developed code and tests by project completion. If unwilling to do so, choose another topic. See the [publication policy](/theses/publication-and-licensing/).
+An empirical compatibility specification, a working prototype, and evidence of necessary, optional or avoidable interfaces. **Open-source publication of the developed code, tests, and reproducibility tools is mandatory**, under an agreed OSI-approved license. Modified Chameleon code must comply with its upstream license; independent shims require separate assessment. Agree before registration or choose another topic. See the [publication policy](/theses/publication-and-licensing/).
 
 ## Starting points
 
