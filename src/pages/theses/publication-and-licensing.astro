@@ -1,0 +1,110 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Publication, licensing & intellectual property · Stavros Kousidis"
+  description="Publication expectations for thesis software, open-source licensing, commercial use, and arrangements for industry collaborations."
+>
+  <article class="note-page">
+    <header class="note-header">
+      <p class="kicker">Thesis supervision · Publication policy</p>
+      <h1>Publication, licensing &amp; intellectual property.</h1>
+      <p class="lede">
+        Open source is the usual starting point for thesis-developed software.
+        Commercial use is welcome; confidentiality and proprietary requirements
+        need to be resolved before a thesis begins.
+      </p>
+      <p class="publication-back">
+        <a class="text-link" href="/theses/#open-source-and-ip">← Back to supervision expectations</a>
+      </p>
+    </header>
+
+    <div class="note-body">
+      <h2>Why open source?</h2>
+      <p>
+        Reusable software makes technical results easier to inspect, reproduce, improve,
+        and build upon. For theses that develop software, I normally expect newly
+        developed code, tests, and reproducibility tools to be released publicly
+        by project completion. You can use a private repository while developing.
+        This is a supervision expectation, not a claim that every university thesis
+        is subject to one universal license.
+      </p>
+
+      <h2>Can open-source software be used commercially?</h2>
+      <p>
+        <strong>Yes. Open source does not mean non-commercial.</strong> Open-source
+        software may be sold, used in commercial products, and offered as part of
+        paid services. The important distinction is between <em>commercial use</em>
+        and <em>proprietary redistribution</em>. Some licenses permit proprietary
+        derivatives, while copyleft licenses impose conditions when modified or
+        combined software is distributed. The obligations depend on the particular
+        license and how software components interact.
+      </p>
+
+      <h2>Which license should I use?</h2>
+      <p>
+        The <a href="https://opensource.org/">Open Source Initiative (OSI)</a>
+        reviews licenses against the
+        <a href="https://opensource.org/osd">Open Source Definition</a>. We agree
+        on an appropriate <a href="https://opensource.org/licenses">OSI-approved license</a>
+        before thesis registration. It must be compatible with the licenses of
+        dependencies and any existing project to which you contribute.
+        For example, a KDE-related component may need a KDE-compatible license.
+        A license's exact version, compatibility, and obligations matter more than
+        a generic label such as “GPL”.
+      </p>
+
+      <h2>What changes in an industry collaboration?</h2>
+      <p>
+        A company may have legitimate confidentiality, intellectual-property,
+        or proprietary-development requirements. An exception to the usual
+        publication expectation may be possible, but it must be explicitly
+        agreed with the student, supervisor, and relevant institutional or
+        industry representatives <strong>before registration</strong>. The
+        arrangement must comply with applicable university requirements and
+        preserve the ability to examine and independently assess the thesis.
+        A topic with an explicit mandatory open-source condition may not
+        accommodate such an exception.
+      </p>
+
+      <h2>What if an existing open-source license conflicts?</h2>
+      <p>
+        No agreement with a partner can remove obligations owed under an existing
+        third-party license. In particular, distributing a derivative of copyleft
+        software under incompatible proprietary terms may not be permitted.
+        Possible solutions include choosing a compatible architecture or license,
+        obtaining additional permission from rights holders, or changing the
+        research scope. If no lawful and academically viable arrangement is
+        possible, <strong>that thesis topic cannot proceed in the proposed form</strong>.
+      </p>
+
+      <h2>What must remain private?</h2>
+      <p>
+        Open-source code publication does <strong>not</strong> require publishing
+        the thesis manuscript, third-party datasets, confidential business
+        information, private correspondence, credentials, cryptographic keys,
+        or sensitive vulnerability details. Use synthetic or authorized data in
+        reproducible examples. Rights to publish code or other results must be
+        clarified with relevant contributors and rights holders.
+      </p>
+
+      <h2>Before you register</h2>
+      <p>
+        We determine the intended software deliverables, upstream licenses,
+        publication scope and timing, rights to release the work, and any
+        justified confidentiality restrictions. If a specific
+        <a href="/theses/">thesis topic</a> states stricter publication
+        requirements, those take precedence over this general expectation.
+      </p>
+
+      <p>
+        For general orientation, see the
+        <a href="https://opensource.org/faq">OSI FAQ</a> and, for KDE-related
+        contributions, the <a href="https://community.kde.org/Policies/Licensing_Policy">KDE licensing policy</a>.
+        The specific arrangements for a thesis should be agreed with the relevant parties;
+        this page does not replace legal or institutional review.
+      </p>
+    </div>
+  </article>
+</BaseLayout>
