@@ -39,7 +39,7 @@ function Pandoc(doc)
   end
   local footer = pandoc.read(
     "**Contact:** [stavros.kousidis@th-koeln.de](mailto:stavros.kousidis@th-koeln.de)  " ..
-    "\n**Code publication:** open source by default; exceptions require prior agreement ([policy](https://stavroskousidis.github.io/theses/#open-source-and-ip)).",
+    "\n**Code publication:** open source by default; exceptions require prior agreement ([policy](https://stavroskousidis.github.io/theses/publication-and-licensing/)).",
     "markdown"
   )
   for _, block in ipairs(footer.blocks) do
