@@ -113,36 +113,25 @@ const theses = (await getCollection('theses'))
           including AI-assisted material. Follow the applicable academic integrity rules.
         </p>
       </article>
-      <article id="open-source-and-ip">
-        <p class="kicker">07 · Open source &amp; intellectual property</p>
-        <h3>Agree on publication before you begin.</h3>
-        <p>
-          For theses involving software, I normally expect newly developed code, tests,
-          and reproducibility tools to be publicly released by project completion under
-          a license approved by the <a href="https://opensource.org/licenses">Open Source Initiative (OSI)</a>.
-          The license must be compatible with third-party software and agreed before registration.
-          Private development repositories are fine; confidential data, keys, credentials,
-          and sensitive vulnerability information must not be published.
-        </p>
-        <p>
-          <strong>Note: Open source does not mean non-commercial.</strong>
-          Open-source software can be used commercially, sold, and offered through paid
-          services, subject to the license terms. Commercial use is different from
-          distributing proprietary derivatives: some licenses, particularly copyleft
-          licenses, impose conditions on redistributed modifications. See the
-          <a href="https://opensource.org/faq">OSI explanation of commercial use</a>.
-        </p>
-        <p>
-          Industry collaborations may justify proprietary or confidential outcomes, but
-          any exception needs an explicit agreement with the relevant parties before
-          registration, consistent with university requirements and independent assessment.
-          Such agreements cannot override existing open-source licenses. Depending on the
-          license, distributing modified or combined software under proprietary terms may
-          be prohibited. If a conflict cannot be resolved, we must adjust the scope or
-          choose another topic. Topic-specific publication requirements take precedence.
-        </p>
-      </article>
+
     </div>
+    <aside class="thesis-publication" id="open-source-and-ip" aria-labelledby="publication-title">
+      <div>
+        <p class="kicker">Open source &amp; intellectual property</p>
+        <h3 id="publication-title">Make your work reusable.</h3>
+      </div>
+      <div class="thesis-publication-copy">
+        <p>
+          I normally expect thesis-developed software to be released under an open-source license.
+          Open source does not exclude commercial use. Proprietary or confidential outcomes,
+          especially in industry collaborations, require agreement before registration and must
+          respect existing licenses. Some topics require open-source publication without exception.
+        </p>
+        <a class="text-link" href="/theses/publication-and-licensing/">
+          Read the publication and licensing policy <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </aside>
   </section>
 
   <section class="section" aria-labelledby="getting-started">
