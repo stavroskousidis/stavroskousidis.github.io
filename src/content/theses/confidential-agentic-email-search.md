@@ -29,7 +29,7 @@ A threat model, policy-controlled retrieval prototype, and experimental comparis
 
 ## Mandatory open-source publication
 
-**Participation requires agreeing before registration to publish all thesis-developed code, tests, and reproducibility tooling under a supervisor-agreed [OSI-approved open-source license](https://opensource.org/licenses).** KDE-compatible GPL may suit client components; AGPL may suit a separately licensed network service. Development may remain private, but never publish keys or confidential mail. **If unwilling or unable to publish the code as open source, choose another topic.**
+**Participation requires agreeing before registration to publish all thesis-developed code, tests, and reproducibility tooling under a supervisor-agreed license approved by the [Open Source Initiative (OSI)](https://opensource.org/licenses).** OSI checks licenses against the [Open Source Definition](https://opensource.org/osd), including the freedom to use, modify, and share software. KDE-compatible GPL may suit client components; AGPL may suit a separately licensed network service. Development may remain private, but never publish keys or confidential mail. **If unwilling or unable to publish the code as open source, choose another topic.**
 
 ## Starting points
 
