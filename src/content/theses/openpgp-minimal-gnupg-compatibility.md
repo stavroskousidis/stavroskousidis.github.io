@@ -39,6 +39,10 @@ From the observations, specify a minimal interface and implement a bounded proto
 
 An empirical compatibility specification, a working prototype for the identified subset, and evidence showing which GnuPG-compatible interfaces are necessary, optional or avoidable for the selected OpenPGP mail workflows.
 
+## Mandatory open-source publication
+
+This topic requires publication of newly developed code, tests, and reproducibility tools under an agreed OSI-approved license by project completion. Modifications of Sequoia Chameleon must comply with its upstream license; an independent compatibility shim requires separate assessment. Agree on the implementation boundary and license before registration. Students unwilling to publish their code as open source must choose another topic. See the [publication policy](/theses/publication-and-licensing/).
+
 ## Starting points
 
 - [Post-quantum OpenPGP on Fedora 45: shared setup](/notes/pq-openpgp-fedora-45-base/).
