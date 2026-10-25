@@ -175,6 +175,11 @@ code { font: .77rem/1.8 ui-monospace, SFMono-Regular, Menlo, monospace; overflow
 .thesis-guidelines h3, .thesis-steps h3 { margin-top: 1.15rem; font-size: clamp(1.4rem, 2.4vw, 2rem); }
 .thesis-guidelines article > p:last-child, .thesis-steps article > p { margin-top: 1rem; max-width: 68ch; color: var(--muted); }
 .thesis-guidelines strong { color: var(--ink); }
+.thesis-publication { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.5fr); gap: 1.75rem; margin-top: 1rem; padding: 1.8rem; border-top: 3px solid var(--ink); background: var(--panel); }
+.thesis-publication h3 { margin-top: 1.15rem; font-size: clamp(1.5rem, 2.4vw, 2rem); }
+.thesis-publication-copy p { max-width: 75ch; color: var(--muted); }
+.thesis-publication-copy .text-link { margin-top: 1rem; }
+.publication-back { margin-top: 2rem; }
 .thesis-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
 .thesis-steps article { border-top: 1px solid var(--line); padding-top: 1.3rem; }
 .thesis-step-number { color: var(--muted); font: 650 .8rem ui-monospace, monospace; }
@@ -185,6 +190,7 @@ code { font: .77rem/1.8 ui-monospace, SFMono-Regular, Menlo, monospace; overflow
 
 @media (max-width: 850px) {
   .thesis-guidelines, .thesis-steps { grid-template-columns: 1fr; }
+  .thesis-publication { grid-template-columns: 1fr; gap: 1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
