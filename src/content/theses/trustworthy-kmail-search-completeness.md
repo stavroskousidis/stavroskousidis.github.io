@@ -29,7 +29,7 @@ A documented KMail/Akonadi integration, working search prototype, automated cons
 
 ## Mandatory open-source publication
 
-**To take this topic, students must agree before registration to publish all thesis-developed software, tests, and reproducibility tooling under a supervisor-agreed [OSI-approved open-source license](https://opensource.org/licenses).** Choose a license compatible with KDE and dependencies (typically GPL for a KMail plugin). Work may remain private during development. Never publish keys, credentials, or confidential mail. **If you cannot or do not wish to publish your code as open source, choose another topic.**
+**To take this topic, students must agree before registration to publish all thesis-developed software, tests, and reproducibility tooling under a supervisor-agreed license approved by the [Open Source Initiative (OSI)](https://opensource.org/licenses).** OSI checks licenses against the [Open Source Definition](https://opensource.org/osd), including the freedom to use, modify, and share software. Choose a license compatible with KDE and dependencies (typically GPL for a KMail plugin). Work may remain private during development. Never publish keys, credentials, or confidential mail. **If you cannot or do not wish to publish your code as open source, choose another topic.**
 
 ## Starting points
 
