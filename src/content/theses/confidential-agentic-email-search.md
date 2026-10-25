@@ -11,36 +11,31 @@ tags: ["OpenPGP", "Agentic AI", "Hybrid Retrieval", "Trust Boundaries", "Privacy
 
 ## Description
 
-AI agents can find discussions and reconstruct decisions across large archives, but **where may decryption, indexing, and reasoning occur without leaking confidential information?** This thesis investigates **evidence-grounded, read-only email retrieval** using KMail/Akonadi as an integration case study. Original messages, not generated answers, remain the evidence.
+AI agents can reconstruct discussions across email archives. But **where may decryption, indexing, retrieval, and reasoning occur without disclosing confidential information?** This thesis examines evidence-grounded search over potentially OpenPGP-encrypted email, with KMail/Akonadi as an integration case study. Original messages remain the source of truth.
 
 ## Scope and evaluation
 
-Prototype lexical and semantic **hybrid search**, with traceable source passages and optional answer synthesis. Distinguish **index coverage**, **retrieval relevance**, and **answer faithfulness**; report missing or conflicting evidence.
+Build a read-only prototype combining lexical and semantic **hybrid retrieval**, optional answer synthesis, and citations to original messages. Distinguish **index completeness**, relevance, and evidential support; expose missing or conflicting evidence.
 
-Compare at least two of these architectures:
+Compare at least two trust architectures: **local** processing (including decryption and inference), **on-premises** processing (organizational infrastructure becomes trusted), and a **remote agent** restricted to a local policy-enforcing search broker.
 
-- **Local:** decrypt, index, retrieve, and optionally infer on the user's device.
-- **On-premises:** organizational infrastructure processes selected content, becoming an explicit part of the trusted environment.
-- **Remote agent:** an external agent accesses a local policy-controlled search broker, receiving only authorized results.
+**Encryption boundary:** Private keys remain inside the trusted cryptographic component. Decrypted messages, attachments, embeddings, and summaries stay local by default. Transferring any derived content requires explicit authorization and leakage analysis; even metadata and identifiers may disclose information. A remote agent cannot freely analyze confidential plaintext while learning nothing about it.
 
-**Encryption boundary:** Private keys remain in the trusted cryptographic component. Decrypted bodies and attachments, embeddings, keywords, and summaries stay local by default. Transferring any of them requires a specific authorization and leak analysis; even metadata and result identifiers can reveal information. A remote agent cannot freely analyze confidential plaintext while learning nothing about it.
-
-Threat-model malicious email instructions (prompt injection), tool misuse, unauthorized queries, and repeated-query leakage. Evaluate retrieval (e.g., Recall@k, nDCG), evidence/citation accuracy, attempted disclosure, latency, and scalability using synthetic or authorized test data.
+Threat-model prompt injection in emails, excessive agent privileges, unauthorized tool calls, and repeated-query leakage. Using synthetic or authorized test data, compare retrieval quality (Recall@k, nDCG), citation correctness, disclosure attempts, latency, and scalability.
 
 ## Expected outcome
 
-A threat model, enforced trust-boundary architecture, working prototype, and experimental comparison of useful search capabilities against achievable confidentiality guarantees. No new AI model or finished KMail plugin is required.
+A threat model, policy-controlled retrieval prototype, and experimental comparison of achievable functionality and security guarantees. No new AI model or completed KMail plugin is required.
 
 ## Mandatory open-source publication
 
-**To take this topic, students must agree before registration to publish all thesis-developed software, tests, and reproducibility tooling under a supervisor-agreed [OSI-approved open-source license](https://opensource.org/licenses).** Respect component dependencies: KDE-compatible GPL may suit the client; AGPL may suit a separately licensed network service. Work may remain private during development. Never publish confidential mail, keys, or credentials. **If you cannot or do not wish to publish your code as open source, choose another topic.**
+**Participation requires agreeing before registration to publish all thesis-developed code, tests, and reproducibility tooling under a supervisor-agreed [OSI-approved open-source license](https://opensource.org/licenses).** KDE-compatible GPL may suit client components; AGPL may suit a separately licensed network service. Development may remain private, but never publish keys or confidential mail. **If unwilling or unable to publish the code as open source, choose another topic.**
 
 ## Starting points
 
 - [RFC 9580: OpenPGP](https://www.rfc-editor.org/rfc/rfc9580).
-- [OWASP RAG Security](https://cheatsheetseries.owasp.org/cheatsheets/RAG_Security_Cheat_Sheet.html).
-- [KDE licensing policy](https://community.kde.org/Policies/Licensing_Policy).
+- [OWASP RAG security](https://cheatsheetseries.owasp.org/cheatsheets/RAG_Security_Cheat_Sheet.html).
 
 ## Related research
 
-The [Bachelor's topic](/theses/trustworthy-kmail-search-completeness/) covers index completeness and integration; neither thesis depends on the other.
+The [Bachelor's topic](/theses/trustworthy-kmail-search-completeness/) investigates index integrity. Both topics are independently feasible.
