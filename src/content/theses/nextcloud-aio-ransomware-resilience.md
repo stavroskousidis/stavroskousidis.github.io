@@ -21,6 +21,8 @@ Build an isolated deployment using synthetic data. Reproduce two or three contro
 
 Experiments must remain inside the laboratory. No real ransomware or attacks against third-party systems are required.
 
+**Licensing note:** Nextcloud AIO and Nextcloud Server use AGPL-3.0. Simply deploying and testing them does not place independent test tools under the AGPL. Modifications to covered components must comply with applicable AGPL obligations, potentially including source availability for network users. Determine the license boundary before modifying upstream code; the [general publication policy](/theses/publication-and-licensing/) applies to independent tools.
+
 ## Expected outcome
 
 A reproducible Nextcloud AIO test environment, a threat model, measured containment and recovery results, and practical recommendations justified by the experiments.
