@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "BVS1 – Betriebssysteme",
     "section": "",
-    "text": "Course Overview\nThis site contains the teaching material for BVS1 – Betriebssysteme at TH Köln, ICCT, for Wintersemester 2026/2027 · TH Köln · ICCT. The course is attended by students from multiple Bachelor programmes.\nThe course provides two aligned representations: concise lecture-specific Beamer slides for classroom interaction, and a reader-oriented chapter source used for both the PDF script and the HTML course.",
+    "text": "Course Overview\nThis site contains the teaching material for BVS1 – Betriebssysteme at TH Köln, ICCT, for Winter Semester 2026/2027 · TH Köln · ICCT. The course is attended by students from multiple Bachelor programmes.\nThe course provides two aligned representations: concise lecture-specific Beamer slides for classroom interaction, and a reader-oriented chapter source used for both the PDF script and the HTML course.",
     "crumbs": [
       "BVS1 – Betriebssysteme"
     ]
@@ -24,7 +24,7 @@
     "href": "index.html#license",
     "title": "BVS1 – Betriebssysteme",
     "section": "License",
-    "text": "License\nExcept where otherwise noted, the student-facing BVS1 teaching materials are © 2026 Stavros Kousidis and licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).\nThird-party material remains subject to its respective license or copyright terms. The separately distributed BVS1 software repository teaching-bvs1-code remains licensed under the MIT License.",
+    "text": "License\nExcept where otherwise noted, the student-facing BVS1 teaching materials are © 2026 Stavros Kousidis and licensed under Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0).\nThird-party material remains subject to its respective license or copyright terms. The separately distributed BVS1 software repository teaching-bvs1-code remains licensed under the MIT License.",
     "crumbs": [
       "BVS1 – Betriebssysteme"
     ]
@@ -134,7 +134,7 @@
     "href": "chapters/01-introduction.html#related-exercise",
     "title": "1  From Executing Code to Operating Systems",
     "section": "Related Exercise",
-    "text": "Related Exercise\nExercise 01 — From Source to First Instructions also consolidates concepts from this lecture, especially the development-host/target distinction and virtualization versus emulation. Its main placement is after Lecture 02, where it also applies the toolchain and startup material.",
+    "text": "Related Exercise\nExercise 1 — From Source to First Instructions also consolidates concepts from this lecture, especially the development-host/target distinction and virtualization versus emulation. Its main placement is after Lecture 2, where it also applies the toolchain and startup material.",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>From Executing Code to Operating Systems</span>"
     ]
@@ -274,7 +274,7 @@
     "href": "chapters/02-source-to-executables.html#related-exercise",
     "title": "2  From Source to Executables: Towards Processes",
     "section": "Related Exercise",
-    "text": "Related Exercise\nExercise 01 — From Source to First Instructions is the exercise associated with this lecture. It reconstructs the host/target layers, follows the source-to-executable path, inspects symbols and startup code, and prepares the transition toward the first process.",
+    "text": "Related Exercise\nExercise 1 — From Source to First Instructions is the exercise associated with this lecture. It reconstructs the host/target layers, follows the source-to-executable path, inspects symbols and startup code, and prepares the transition toward the first process.",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>From Source to Executables: Towards Processes</span>"
     ]
@@ -290,13 +290,183 @@
     ]
   },
   {
+    "objectID": "chapters/03-first-process.html",
+    "href": "chapters/03-first-process.html",
+    "title": "3  First Process: Stop and Continue",
+    "section": "",
+    "text": "3.1 C pointer notation: a reminder\nLecture 2 ended with a requirement: run an execution, regain control, and continue that same execution later. Two questions follow: what must survive the pause, and how do we build that?\nOur working definition is:\nIn BVS1, our minimal operating system will do the managing. For our first process, managing means:\nThis is the simplified lifecycle used for Checkpoint 1, rather than a general definition of every process’s lifetime. To stop and continue the same execution, our process needs an entry function, its own stack, saved CPU register state (its context), and lifecycle information: state and exit status.\nThis chapter builds those parts into one resumable execution. Creation prepares it without running its code; run starts or resumes it; yield returns control while preserving the ability to continue; exit finishes it.\nThe process representation will be a C struct. These expressions distinguish an object, its address, and a pointer to it:\nHere p is the object, &p is its address, and q stores that address. In the declaration, * makes q a pointer; in an expression, *q dereferences the pointer to access the object.\np.state accesses the object’s state directly. (*q).state accesses the same member through the pointer; q-&gt;state is shorthand for that expression. The same notation lets us access a nested member such as q-&gt;context.sp once the context has been added.\nFor function pointers, storing a function and calling it are different operations:\nIn the assignment, worker converts to a pointer to that function, so the first line stores where to call. It does not call worker. The second line calls it through the stored pointer; worker() would call the function directly.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>First Process: Stop and Continue</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-first-process.html#c-pointer-notation-a-reminder",
+    "href": "chapters/03-first-process.html#c-pointer-notation-a-reminder",
+    "title": "3  First Process: Stop and Continue",
+    "section": "",
+    "text": "struct process p;\nstruct process *q = &p;\n\n\n\np.entry = worker;\np.entry();",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>First Process: Stop and Continue</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-first-process.html#building-the-process-object",
+    "href": "chapters/03-first-process.html#building-the-process-object",
+    "title": "3  First Process: Stop and Continue",
+    "section": "3.2 Building the process object",
+    "text": "3.2 Building the process object\nWe first give the execution a concrete representation. The following struct fragments add one part at a time; the complete definition follows after we establish what must be saved in a context.\n\n3.2.1 Entry function\nAn entry function is where a new process begins its work. For example:\nvoid worker(void) { /* process-specific work */ }\nThe process must remember which function to enter. Its first field is therefore a function pointer:\nstruct process {\n    void (*entry)(void);\n};\nRead void (*entry)(void) as: entry is a pointer to a function taking no arguments and returning void. Repeating that declaration is awkward, so a typedef gives the pointer type a name:\ntypedef void (*process_entry_t)(void);\nThe field can now be written process_entry_t entry;. This names the same function-pointer type; it does not declare or call an entry function.\n\n\n3.2.2 Owned stack storage\nThe process also reserves memory for its own call stack:\n#define STACK_SIZE 4096\n\nstruct process {\n    process_entry_t entry;\n    uint8_t stack[STACK_SIZE];\n};\nuint8_t, defined by &lt;stdint.h&gt;, is an unsigned 8-bit integer type. This array is raw byte storage, not a character string. At this point, treat it simply as memory owned by the process; we will explain its use below.\n\n\n3.2.3 Lifecycle information\nThe manager needs to know whether the process may run and, once it finishes, which exit status it produced:\nenum process_state { READY, RUNNING, FINISHED };\n\nstruct process {\n    process_entry_t entry;\n    uint8_t stack[STACK_SIZE];\n    enum process_state state;\n    int exit_status;\n};\nAn enum supplies named alternatives for the state. READY means the process may run, RUNNING means it is executing, and FINISHED means it must not run again. exit_status records the result once it finishes.\n\n\n3.2.4 What is still missing?\nWe can now remember where to start, where call data can live, whether the process may run, and how it finished. But suppose execution pauses here:\nhelper();\nprocess_yield();\n/* continue here later */\nThese fields do not yet tell us how to continue at exactly that point. We need to understand both the stack’s runtime data and the CPU register values that make that data usable.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>First Process: Stop and Continue</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-first-process.html#understanding-the-process-stack",
+    "href": "chapters/03-first-process.html#understanding-the-process-stack",
+    "title": "3  First Process: Stop and Continue",
+    "section": "3.3 Understanding the process stack",
+    "text": "3.3 Understanding the process stack\nThe process needs owned stack storage: memory that remains associated with the process while the operating system executes elsewhere.\nThe process’s machine instructions are not copied onto that stack. They remain in the program’s .text section. The stack contains runtime data associated with active calls—for example saved register values, return information, some local variables, and temporary values when needed. Not every local variable is stored on the stack; the compiler may keep values in registers.\nThe array reserves storage; sp, the CPU’s stack-pointer register, selects the current position in that storage. Array indices increase toward higher addresses, while the RV64 C stack grows toward lower addresses:\n                  stack grows this way\n                         &lt;-----\n\nlower addresses                            higher addresses\n&stack[0]               sp                &stack[STACK_SIZE]\n    v                   v                           v\n    +-----------------------------------------------+\n    |                   | -- used stack ------------|\n    +-----------------------------------------------+\n&stack[STACK_SIZE] is the address just past the array’s last byte. A fresh process starts with an appropriately aligned sp at the high end; stack use then extends toward lower addresses. Reserving the array alone does not change the CPU’s active stack pointer.\nNested calls belong to the same execution and use the same process stack. For example:\nvoid helper(int *x) { (*x)++; }\nvoid worker(void) { int n = 1; helper(&n); }\nConceptually, while helper() is active:\n                           sp\nlower addresses            v               higher addresses\n    +-----------------------------------------------+\n    |             | helper frame | worker frame | - |\n    +-----------------------------------------------+\nThe helper frame and worker frame labels denote runtime data associated with the active calls. The stack does not contain the machine instructions of helper() or worker(): the CPU executes those instructions from the .text section of the program’s memory layout.\nThe newer call uses space toward the lower-address end of the used stack. This is a schematic picture, not an exact compiler-generated layout: the compiler may inline calls or keep values in registers.\nIf the process yields from a nested call, that call chain’s stack data must remain intact while the OS uses its own stack. Resuming requires the process’s saved sp as well as the preserved storage.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>First Process: Stop and Continue</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-first-process.html#continuation-where-should-execution-return",
+    "href": "chapters/03-first-process.html#continuation-where-should-execution-return",
+    "title": "3  First Process: Stop and Continue",
+    "section": "3.4 Continuation: where should execution return?",
+    "text": "3.4 Continuation: where should execution return?\nLecture 2 showed the startup fragment:\ncall main\nA RISC-V call remembers the location to which execution should later return. That location is stored in ra, the return-address register.\nAn ordinary return therefore already contains a useful idea:\ncall function\n    |\n    v\nfunction executes\n    |\n    v\nret\n    |\n    v\ncontinue at address stored in ra\nIf a process yields and is later resumed, the operating system must preserve some representation of the place where execution should continue. Preserving ra makes that idea concrete.\nThe stack data must survive too, and the process must recover the stack position recorded in sp. Restoring a continuation with the OS stack would not continue the same call chain.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>First Process: Stop and Continue</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-first-process.html#context",
+    "href": "chapters/03-first-process.html#context",
+    "title": "3  First Process: Stop and Continue",
+    "section": "3.5 Context",
+    "text": "3.5 Context\nAt a pause, some execution state is still in CPU registers. Another execution can overwrite those values even when the process stack remains intact. The saved CPU register state needed to continue the execution is its context.\nFor the cooperative CP1 mechanism, the provided representation is:\nstruct context {\n    uintptr_t ra;    // continuation address\n    uintptr_t sp;    // current stack position\n    uintptr_t s[12]; // saved s0 through s11\n};\nuintptr_t, defined by &lt;stdint.h&gt;, is an unsigned integer type, not a pointer type. It can hold the integer representation of a pointer value and later be converted back without losing that value. In our RV64 toolchain it is 64 bits wide. We use it for saved register-sized values such as ra and sp, which contain addresses during normal execution. Students are not expected to study the complete family of fixed-width integer types here.\nThe array s holds the RISC-V callee-saved registers s0 through s11: s[0] stores s0, through s[11] storing s11. A calling convention is the agreement that lets separately compiled functions cooperate about how registers are used. A callee-saved register is one whose value a called function must preserve for its caller. Preserving those required registers allows an ordinary C function call to cross the context-switch boundary safely.\nStudents do not need to memorize that register list or derive the complete assembly routine from the ABI. For CP1 they should be able to explain why ra and sp matter and why some additional register state must also survive.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>First Process: Stop and Continue</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-first-process.html#the-complete-process-object",
+    "href": "chapters/03-first-process.html#the-complete-process-object",
+    "title": "3  First Process: Stop and Continue",
+    "section": "3.6 The complete process object",
+    "text": "3.6 The complete process object\nThe saved context supplies the missing part. Together, entry, stack, context, and lifecycle information represent our managed execution.\nThe public representation used by Lecture 3, Exercise 2, and Checkpoint 1 is:\nstruct process {\n    process_entry_t entry;\n    uint8_t stack[STACK_SIZE];\n    struct context context;\n    enum process_state state;\n    int exit_status;\n};\nThe five fields have distinct roles:\n\nentry: where a new process begins;\nstack: process-owned raw byte storage for its call stack;\ncontext: saved CPU register state needed to continue execution;\nstate: whether the process is READY, RUNNING, or FINISHED;\nexit_status: the result recorded when the process finishes.\n\nExercise 2 uses this exact field order because its precompiled process library was built against this representation. Checkpoint 1 keeps the same interface and representation while students provide the implementation.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>First Process: Stop and Continue</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-first-process.html#the-provided-context-switch-boundary",
+    "href": "chapters/03-first-process.html#the-provided-context-switch-boundary",
+    "title": "3  First Process: Stop and Continue",
+    "section": "3.7 The provided context-switch boundary",
+    "text": "3.7 The provided context-switch boundary\nThe course provides a function implemented in RISC-V assembly, with this C declaration:\nvoid context_switch(\n    struct context *current_context,\n    const struct context *next_context);\ncurrent_context points to storage where the running execution’s registers will be saved. next_context points to the saved registers to restore. The const qualifier says the function does not modify the context object through next_context. Either context may belong to the OS execution or the process execution.\nA context switch in this part of BVS1 means:\n\nsave the current execution context;\nrestore another saved context;\ncontinue the restored execution.\n\nThe assembly below shows the matching save and restore operations. The ellipses stand for the corresponding operations on s1 through s10:\nsd ra,    0(a0)\nsd sp,    8(a0)\nsd s0,   16(a0)\n...\nsd s11, 104(a0)\n\nld ra,    0(a1)\nld sp,    8(a1)\nld s0,   16(a1)\n...\nld s11, 104(a1)\n\nret\nsd (store doubleword) copies a 64-bit register value into memory; ld (load doubleword) copies a 64-bit value from memory into a register. In sd s0, 16(a0), the destination is the address in a0 plus 16 bytes. The offsets follow the context layout: ra at byte 0, sp at byte 8, and the twelve saved s registers at bytes 16 through 104.\nAfter the loads, ret uses the newly restored ra. The switch therefore changes both the stack that is active and the location at which execution continues.\nThe stored fields and the restored fields match: ra, sp, and all twelve entries of s. The process needs both its stack memory and these saved register values to continue the same execution.\nThe function arguments current_context and next_context arrive in the RISC-V argument registers a0 and a1. These registers are caller-saved: their previous values are not part of the state that an ordinary C call promises to preserve. In this cooperative switch they are used to locate the two context structures; the persistent saved context is ra, sp, and s0-s11.\nThe same operation works in both directions:\nOS running                         process running\n    |                                   |\n    | save OS context                   | save process context\n    | restore process context           | restore OS context\n    v                                   v\nprocess running                       OS running\nThere is no scheduler here. CP1 contains only one process.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>First Process: Stop and Continue</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-first-process.html#implementation-boundary",
+    "href": "chapters/03-first-process.html#implementation-boundary",
+    "title": "3  First Process: Stop and Continue",
+    "section": "3.8 Implementation boundary",
+    "text": "3.8 Implementation boundary\nThe course provides the machinery whose complexity is incidental to the CP1 competence:\n\nexisting startup and linker support;\nUART output already available in the starter;\nthe context representation;\nthe RV64 context-switch assembly boundary.\n\nStudents construct the process abstraction and lifecycle in C:\n\nprocess representation;\nowned stack;\nfirst-run context;\nentry handling;\nrun;\nyield;\nexit;\nobservable resume behaviour.\n\nCP1 does not require timer interrupts, preemption, several runnable processes, a scheduler, privilege separation, virtual memory, dynamic loading, or dynamic allocation.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>First Process: Stop and Continue</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-first-process.html#public-process-interface",
+    "href": "chapters/03-first-process.html#public-process-interface",
+    "title": "3  First Process: Stop and Continue",
+    "section": "3.9 Public process interface",
+    "text": "3.9 Public process interface\nThe first-process abstraction uses this public C interface:\nvoid process_create(struct process *process,\n                    process_entry_t entry);\nvoid process_run(struct process *process);\nvoid process_yield(void);\nvoid process_exit(int status);\nExercise 2 links this interface against a provided implementation. Checkpoint 1 keeps the same interface but replaces that implementation with student-written C code.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>First Process: Stop and Continue</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-first-process.html#the-lifecycle-in-c",
+    "href": "chapters/03-first-process.html#the-lifecycle-in-c",
+    "title": "3  First Process: Stop and Continue",
+    "section": "3.10 The lifecycle in C",
+    "text": "3.10 The lifecycle in C\nLecture 2 introduced:\ncreate -&gt; run -&gt; yield -&gt; resume -&gt; exit\nLecture 3 now connects each semantic step to the minimum implementation work.\n\n3.10.1 Create / prepare\nPreparing a process means constructing a valid first-run state:\nremember entry function\n        |\nchoose process stack top\n        |\nprepare initial context\n        |\nstate = READY\nNo process code has executed yet.\nA process that has already yielded has a saved continuation. A new process does not.\nThe restore mechanism nevertheless expects a context containing a stack pointer and a continuation. The solution is to prepare an initial context before the process first runs.\nIts initial stack pointer is placed at the aligned high end of its owned stack array.\nThe initial continuation is a small bootstrap function, called process_start(): an internal function used to enter a process for the first time. It is an implementation detail, not another public process operation.\nConceptually:\ninitial sp -&gt; aligned high end of process.stack\ninitial ra -&gt; process_start -&gt; process.entry()\nThe first restore followed by ret therefore enters process_start() while using the process’s own stack.\nprocess_start() calls the process entry function. If that function returns normally, process_start() calls process_exit(0). Returning from the entry function therefore finishes the process with status 0 and transfers control back to the OS.\nLater resumes do not use the prepared bootstrap address again. A yield saves the real continuation from the running process, so the next restore continues after the context-switch call inside the yield path.\nThis is an important simplification:\n\nFirst start and later resume use the same low-level restore mechanism.\n\n\n\n3.10.2 Run and resume\nThe OS keeps a pointer named current_process to identify the process whose execution currently owns the CPU. process_yield() and process_exit() take no process argument: they use this pointer to find the object whose state and context they must update.\nprocess_run(p) performs these steps:\nreject p if its state is FINISHED\nset current_process to p\nset p's state to RUNNING\ncontext switch from OS to p\nThe FINISHED check belongs to process_run(): a saved context does not by itself grant permission to run again.\nThe same run operation can support two cases:\n\na READY process that has never run starts through its prepared bootstrap context;\na READY process that yielded earlier resumes through the context saved by that yield.\n\nThe required behaviour is resume. A separate process_resume() API is not necessary.\n\n\n3.10.3 Yield\nFor CP1:\n\nyield means that the running process voluntarily returns control to the operating system while remaining able to resume later.\n\nUsing current_process, yield marks the process READY, saves its current context, and restores the OS context.\nWhen the operating system later runs that process again, execution continues after the context-switch call inside the yield path.\n\n\n3.10.4 Exit\nFor CP1:\n\nexit means that the process finishes, records a result, and returns control to the operating system.\n\nUsing current_process, exit records the status in the process object, marks it FINISHED, and switches from the process context back to the OS context.\nA finished process must not be resumed.\nYield and exit can use the same low-level control-transfer boundary, but their lifecycle meaning is different.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>First Process: Stop and Continue</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-first-process.html#the-complete-cp1-observation",
+    "href": "chapters/03-first-process.html#the-complete-cp1-observation",
+    "title": "3  First Process: Stop and Continue",
+    "section": "3.11 The complete CP1 observation",
+    "text": "3.11 The complete CP1 observation\nExercise 2 and Checkpoint 1 use the same small permutation program. Its observable behaviour is:\nprocess: before yield: VBS1\nos: process yielded\nprocess: result: VB1S\nos: process exited\nThe interesting evidence is not the strings themselves. The output demonstrates that:\n\nthe process starts using its own execution context;\nworker() calls permute(), which modifies process-local data and yields before returning;\nthe operating system regains control while that call chain remains suspended;\nthe same permute() invocation later continues after process_yield();\nthe local array progresses from VBS1 to VB1S, showing that the same execution state survived;\nthe process exits with status 0 and becomes FINISHED;\nthe operating system regains control again and must not resume the finished process.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>First Process: Stop and Continue</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-first-process.html#why-cp1-deliberately-uses-yield",
+    "href": "chapters/03-first-process.html#why-cp1-deliberately-uses-yield",
+    "title": "3  First Process: Stop and Continue",
+    "section": "3.12 Why CP1 deliberately uses yield",
+    "text": "3.12 Why CP1 deliberately uses yield\nCP1 needs a control transfer that gives the operating system control without finishing the process.\nA timer interrupt would already introduce the preemption mechanism needed later for CP2. Blocking or sleeping would require an additional condition that makes the process runnable again. An ordinary C return would not expose the requirement to preserve and later restore a continuation.\nA cooperative yield is therefore the smallest mechanism that makes resumability observable.\nIt also creates the next operating-system problem cleanly:\n\nWhat if a process never yields?\n\nThat question motivates timer-driven preemption on the way to CP2.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>First Process: Stop and Continue</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-first-process.html#check-your-model",
+    "href": "chapters/03-first-process.html#check-your-model",
+    "title": "3  First Process: Stop and Continue",
+    "section": "3.13 Check your model",
+    "text": "3.13 Check your model\nUse these questions to check the distinction between restarting, resuming, and finishing:\n\nWhat breaks if we call the entry function again after yield instead of restoring the saved context?\nWhat breaks if we restore ra but not sp and s0-s11?\nWhat breaks if process_run() allows a FINISHED process to execute again?\n\nA successful explanation should connect each failure to the process representation: calling entry again restarts its work, restoring only part of the context cannot preserve the same execution, and restoring a finished process violates its lifecycle state.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>First Process: Stop and Continue</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-first-process.html#key-ideas",
+    "href": "chapters/03-first-process.html#key-ideas",
+    "title": "3  First Process: Stop and Continue",
+    "section": "3.14 Key ideas",
+    "text": "3.14 Key ideas\n\nA process is a managed execution.\nOur process representation combines an entry function, owned stack storage, CPU context, lifecycle state, and exit status.\nThe stack is process-owned memory for the runtime data of active function calls. Function instructions remain in .text.\nA context is the saved CPU register state needed to continue the same execution.\nLifecycle state says whether an execution may run; context says how it continues.\nA context switch saves the current CPU register state and restores the next one. The same mechanism transfers control in both directions between OS and process.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>First Process: Stop and Continue</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-first-process.html#related-exercise-and-checkpoint",
+    "href": "chapters/03-first-process.html#related-exercise-and-checkpoint",
+    "title": "3  First Process: Stop and Continue",
+    "section": "Related Exercise and Checkpoint",
+    "text": "Related Exercise and Checkpoint\nExercise 2 — Using Your First Process lets you use the process abstraction before implementing it yourself.\nCheckpoint 1 — I Have a Process is the corresponding implementation milestone.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>First Process: Stop and Continue</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-first-process.html#references",
+    "href": "chapters/03-first-process.html#references",
+    "title": "3  First Process: Stop and Continue",
+    "section": "References",
+    "text": "References\n\nRISC-V International, RISC-V ABIs Specification. https://riscv-non-isa.github.io/riscv-elf-psabi-doc/\nRemzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau, Operating Systems: Three Easy Pieces, especially the process chapters. https://pages.cs.wisc.edu/~remzi/OSTEP/\nRuss Cox, Frans Kaashoek, Robert Morris et al., xv6: a simple, Unix-like teaching operating system and xv6-riscv source, used here only as a comparative reference for low-level context switching. https://pdos.csail.mit.edu/6.S081/2020/xv6/book-riscv-rev1.pdf",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>First Process: Stop and Continue</span>"
+    ]
+  },
+  {
     "objectID": "downloads.html",
     "href": "downloads.html",
     "title": "Downloads",
     "section": "",
-    "text": "Course Script\nStudent-facing material for Wintersemester 2026/2027 is available here.",
+    "text": "Course Script\nStudent-facing material for Winter Semester 2026/2027 is available here.",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Downloads</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Downloads</span>"
     ]
   },
   {
@@ -306,7 +476,7 @@
     "section": "",
     "text": "Download the complete course script (PDF)",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Downloads</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Downloads</span>"
     ]
   },
   {
@@ -314,9 +484,9 @@
     "href": "downloads.html#lecture-slides",
     "title": "Downloads",
     "section": "Lecture Slides",
-    "text": "Lecture Slides\n\n01 — Introduction\n02 — From Source to Executables: Towards Processes",
+    "text": "Lecture Slides\n\n01 — Introduction\n02 — From Source to Executables: Towards Processes\n03 — First Process: Stop and Continue",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Downloads</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Downloads</span>"
     ]
   },
   {
@@ -324,9 +494,29 @@
     "href": "downloads.html#exercises",
     "title": "Downloads",
     "section": "Exercises",
-    "text": "Exercises\n\nExercise 01 — From Source to First Instructions",
+    "text": "Exercises\n\nExercise 1 — From Source to First Instructions\nExercise 2 — Using Your First Process",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Downloads</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Downloads</span>"
+    ]
+  },
+  {
+    "objectID": "downloads.html#checkpoints",
+    "href": "downloads.html#checkpoints",
+    "title": "Downloads",
+    "section": "Checkpoints",
+    "text": "Checkpoints\n\nCheckpoint 1 — I Have a Process",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Downloads</span>"
+    ]
+  },
+  {
+    "objectID": "downloads.html#lab",
+    "href": "downloads.html#lab",
+    "title": "Downloads",
+    "section": "Lab",
+    "text": "Lab\n\nLab 0 — Common Development Environment",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Downloads</span>"
     ]
   },
   {
@@ -336,7 +526,7 @@
     "section": "Handouts",
     "text": "Handouts\n\nDevelopment Environment\nEditing Source Files in Ubuntu — nano and Vim\nUbuntu Shell — Command-Line Cheat Sheet\nLab Organization",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Downloads</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Downloads</span>"
     ]
   },
   {
@@ -344,9 +534,9 @@
     "href": "downloads.html#license",
     "title": "Downloads",
     "section": "License",
-    "text": "License\nExcept where otherwise noted, the student-facing BVS1 teaching material is © 2026 Stavros Kousidis and licensed under CC BY 4.0. Third-party material remains subject to its respective terms.\nThe HTML version you are currently reading is the primary online version of the course material.",
+    "text": "License\nExcept where otherwise noted, the student-facing BVS1 teaching material is © 2026 Stavros Kousidis and licensed under CC BY-SA 4.0. Third-party material remains subject to its respective terms.\nThe HTML version you are currently reading is the primary online version of the course material.",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Downloads</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Downloads</span>"
     ]
   }
 ]

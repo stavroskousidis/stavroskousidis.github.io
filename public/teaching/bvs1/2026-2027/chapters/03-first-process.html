@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Stavros Kousidis">
+
+<title>3&nbsp; First Process: Stop and Continue – BVS1 – Betriebssysteme</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../downloads.html" rel="next">
+<link href="../chapters/02-source-to-executables.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-18bef4473ac32dd4d7bfa1551215542a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/03-first-process.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">First Process: Stop and Continue</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">BVS1 – Betriebssysteme</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">BVS1 – Betriebssysteme</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/01-introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Executing Code to Operating Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/02-source-to-executables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">From Source to Executables: Towards Processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/03-first-process.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">First Process: Stop and Continue</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../downloads.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Downloads</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#c-pointer-notation-a-reminder" id="toc-c-pointer-notation-a-reminder" class="nav-link active" data-scroll-target="#c-pointer-notation-a-reminder"><span class="header-section-number">3.1</span> C pointer notation: a reminder</a></li>
+  <li><a href="#building-the-process-object" id="toc-building-the-process-object" class="nav-link" data-scroll-target="#building-the-process-object"><span class="header-section-number">3.2</span> Building the process object</a>
+  <ul class="collapse">
+  <li><a href="#entry-function" id="toc-entry-function" class="nav-link" data-scroll-target="#entry-function"><span class="header-section-number">3.2.1</span> Entry function</a></li>
+  <li><a href="#owned-stack-storage" id="toc-owned-stack-storage" class="nav-link" data-scroll-target="#owned-stack-storage"><span class="header-section-number">3.2.2</span> Owned stack storage</a></li>
+  <li><a href="#lifecycle-information" id="toc-lifecycle-information" class="nav-link" data-scroll-target="#lifecycle-information"><span class="header-section-number">3.2.3</span> Lifecycle information</a></li>
+  <li><a href="#what-is-still-missing" id="toc-what-is-still-missing" class="nav-link" data-scroll-target="#what-is-still-missing"><span class="header-section-number">3.2.4</span> What is still missing?</a></li>
+  </ul></li>
+  <li><a href="#understanding-the-process-stack" id="toc-understanding-the-process-stack" class="nav-link" data-scroll-target="#understanding-the-process-stack"><span class="header-section-number">3.3</span> Understanding the process stack</a></li>
+  <li><a href="#continuation-where-should-execution-return" id="toc-continuation-where-should-execution-return" class="nav-link" data-scroll-target="#continuation-where-should-execution-return"><span class="header-section-number">3.4</span> Continuation: where should execution return?</a></li>
+  <li><a href="#context" id="toc-context" class="nav-link" data-scroll-target="#context"><span class="header-section-number">3.5</span> Context</a></li>
+  <li><a href="#the-complete-process-object" id="toc-the-complete-process-object" class="nav-link" data-scroll-target="#the-complete-process-object"><span class="header-section-number">3.6</span> The complete process object</a></li>
+  <li><a href="#the-provided-context-switch-boundary" id="toc-the-provided-context-switch-boundary" class="nav-link" data-scroll-target="#the-provided-context-switch-boundary"><span class="header-section-number">3.7</span> The provided context-switch boundary</a></li>
+  <li><a href="#implementation-boundary" id="toc-implementation-boundary" class="nav-link" data-scroll-target="#implementation-boundary"><span class="header-section-number">3.8</span> Implementation boundary</a></li>
+  <li><a href="#public-process-interface" id="toc-public-process-interface" class="nav-link" data-scroll-target="#public-process-interface"><span class="header-section-number">3.9</span> Public process interface</a></li>
+  <li><a href="#the-lifecycle-in-c" id="toc-the-lifecycle-in-c" class="nav-link" data-scroll-target="#the-lifecycle-in-c"><span class="header-section-number">3.10</span> The lifecycle in C</a>
+  <ul class="collapse">
+  <li><a href="#create-prepare" id="toc-create-prepare" class="nav-link" data-scroll-target="#create-prepare"><span class="header-section-number">3.10.1</span> Create / prepare</a></li>
+  <li><a href="#run-and-resume" id="toc-run-and-resume" class="nav-link" data-scroll-target="#run-and-resume"><span class="header-section-number">3.10.2</span> Run and resume</a></li>
+  <li><a href="#yield" id="toc-yield" class="nav-link" data-scroll-target="#yield"><span class="header-section-number">3.10.3</span> Yield</a></li>
+  <li><a href="#exit" id="toc-exit" class="nav-link" data-scroll-target="#exit"><span class="header-section-number">3.10.4</span> Exit</a></li>
+  </ul></li>
+  <li><a href="#the-complete-cp1-observation" id="toc-the-complete-cp1-observation" class="nav-link" data-scroll-target="#the-complete-cp1-observation"><span class="header-section-number">3.11</span> The complete CP1 observation</a></li>
+  <li><a href="#why-cp1-deliberately-uses-yield" id="toc-why-cp1-deliberately-uses-yield" class="nav-link" data-scroll-target="#why-cp1-deliberately-uses-yield"><span class="header-section-number">3.12</span> Why CP1 deliberately uses yield</a></li>
+  <li><a href="#check-your-model" id="toc-check-your-model" class="nav-link" data-scroll-target="#check-your-model"><span class="header-section-number">3.13</span> Check your model</a></li>
+  <li><a href="#key-ideas" id="toc-key-ideas" class="nav-link" data-scroll-target="#key-ideas"><span class="header-section-number">3.14</span> Key ideas</a></li>
+  <li><a href="#related-exercise-and-checkpoint" id="toc-related-exercise-and-checkpoint" class="nav-link" data-scroll-target="#related-exercise-and-checkpoint">Related Exercise and Checkpoint</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">First Process: Stop and Continue</span></h1>
+<p class="subtitle lead">Winter Semester 2026/2027</p>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Stavros Kousidis </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            ICCT
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Lecture 2 ended with a requirement: run an execution, regain control, and continue that same execution later. Two questions follow: <strong>what must survive the pause, and how do we build that?</strong></p>
+<p>Our working definition is:</p>
+<blockquote class="blockquote">
+<p><strong>A process is an execution that can be managed.</strong></p>
+</blockquote>
+<p>In BVS1, our minimal operating system will do the managing. For our first process, managing means:</p>
+<pre class="text"><code>create -&gt; run -&gt; yield -&gt; resume -&gt; exit</code></pre>
+<p>This is the simplified lifecycle used for Checkpoint 1, rather than a general definition of every process’s lifetime. To stop and continue the same execution, our process needs an entry function, its own stack, saved CPU register state (its context), and lifecycle information: state and exit status.</p>
+<p>This chapter builds those parts into one resumable execution. Creation prepares it without running its code; run starts or resumes it; yield returns control while preserving the ability to continue; exit finishes it.</p>
+<section id="c-pointer-notation-a-reminder" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="c-pointer-notation-a-reminder"><span class="header-section-number">3.1</span> C pointer notation: a reminder</h2>
+<p>The process representation will be a C struct. These expressions distinguish an object, its address, and a pointer to it:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> process p<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> process <span class="op">*</span>q <span class="op">=</span> <span class="op">&amp;</span>p<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Here <code>p</code> is the object, <code>&amp;p</code> is its address, and <code>q</code> stores that address. In the declaration, <code>*</code> makes <code>q</code> a pointer; in an expression, <code>*q</code> dereferences the pointer to access the object.</p>
+<p><code>p.state</code> accesses the object’s state directly. <code>(*q).state</code> accesses the same member through the pointer; <code>q-&gt;state</code> is shorthand for that expression. The same notation lets us access a nested member such as <code>q-&gt;context.sp</code> once the context has been added.</p>
+<p>For function pointers, storing a function and calling it are different operations:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>p<span class="op">.</span>entry <span class="op">=</span> worker<span class="op">;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>p<span class="op">.</span>entry<span class="op">();</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>In the assignment, <code>worker</code> converts to a pointer to that function, so the first line stores where to call. It does not call <code>worker</code>. The second line calls it through the stored pointer; <code>worker()</code> would call the function directly.</p>
+</section>
+<section id="building-the-process-object" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="building-the-process-object"><span class="header-section-number">3.2</span> Building the process object</h2>
+<p>We first give the execution a concrete representation. The following struct fragments add one part at a time; the complete definition follows after we establish what must be saved in a context.</p>
+<section id="entry-function" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="entry-function"><span class="header-section-number">3.2.1</span> Entry function</h3>
+<p>An entry function is where a new process begins its work. For example:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> worker<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span> <span class="co">/* process-specific work */</span> <span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The process must remember which function to enter. Its first field is therefore a function pointer:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> process <span class="op">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">void</span> <span class="op">(*</span>entry<span class="op">)(</span><span class="dt">void</span><span class="op">);</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Read <code>void (*entry)(void)</code> as: <code>entry</code> is a pointer to a function taking no arguments and returning <code>void</code>. Repeating that declaration is awkward, so a <code>typedef</code> gives the pointer type a name:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="dt">void</span> <span class="op">(*</span>process_entry_t<span class="op">)(</span><span class="dt">void</span><span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The field can now be written <code>process_entry_t entry;</code>. This names the same function-pointer type; it does not declare or call an entry function.</p>
+</section>
+<section id="owned-stack-storage" class="level3" data-number="3.2.2">
+<h3 data-number="3.2.2" class="anchored" data-anchor-id="owned-stack-storage"><span class="header-section-number">3.2.2</span> Owned stack storage</h3>
+<p>The process also reserves memory for its own call stack:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define STACK_SIZE </span><span class="dv">4096</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> process <span class="op">{</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    process_entry_t entry<span class="op">;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint8_t</span> stack<span class="op">[</span>STACK_SIZE<span class="op">];</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>uint8_t</code>, defined by <code>&lt;stdint.h&gt;</code>, is an unsigned 8-bit integer type. This array is raw byte storage, not a character string. At this point, treat it simply as memory owned by the process; we will explain its use below.</p>
+</section>
+<section id="lifecycle-information" class="level3" data-number="3.2.3">
+<h3 data-number="3.2.3" class="anchored" data-anchor-id="lifecycle-information"><span class="header-section-number">3.2.3</span> Lifecycle information</h3>
+<p>The manager needs to know whether the process may run and, once it finishes, which exit status it produced:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">enum</span> process_state <span class="op">{</span> READY<span class="op">,</span> RUNNING<span class="op">,</span> FINISHED <span class="op">};</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> process <span class="op">{</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    process_entry_t entry<span class="op">;</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint8_t</span> stack<span class="op">[</span>STACK_SIZE<span class="op">];</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">enum</span> process_state state<span class="op">;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> exit_status<span class="op">;</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>An <code>enum</code> supplies named alternatives for the state. READY means the process may run, RUNNING means it is executing, and FINISHED means it must not run again. <code>exit_status</code> records the result once it finishes.</p>
+</section>
+<section id="what-is-still-missing" class="level3" data-number="3.2.4">
+<h3 data-number="3.2.4" class="anchored" data-anchor-id="what-is-still-missing"><span class="header-section-number">3.2.4</span> What is still missing?</h3>
+<p>We can now remember where to start, where call data can live, whether the process may run, and how it finished. But suppose execution pauses here:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>helper<span class="op">();</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>process_yield<span class="op">();</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">/* continue here later */</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>These fields do not yet tell us how to continue at exactly that point. We need to understand both the stack’s runtime data and the CPU register values that make that data usable.</p>
+</section>
+</section>
+<section id="understanding-the-process-stack" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="understanding-the-process-stack"><span class="header-section-number">3.3</span> Understanding the process stack</h2>
+<p>The process needs <strong>owned stack storage</strong>: memory that remains associated with the process while the operating system executes elsewhere.</p>
+<p>The process’s machine instructions are <strong>not</strong> copied onto that stack. They remain in the program’s <code>.text</code> section. The stack contains runtime data associated with active calls—for example saved register values, return information, some local variables, and temporary values when needed. Not every local variable is stored on the stack; the compiler may keep values in registers.</p>
+<p>The array reserves storage; <code>sp</code>, the CPU’s stack-pointer register, selects the current position in that storage. Array indices increase toward higher addresses, while the RV64 C stack grows toward lower addresses:</p>
+<pre class="text"><code>                  stack grows this way
+                         &lt;-----
+
+lower addresses                            higher addresses
+&amp;stack[0]               sp                &amp;stack[STACK_SIZE]
+    v                   v                           v
+    +-----------------------------------------------+
+    |                   | -- used stack ------------|
+    +-----------------------------------------------+</code></pre>
+<p><code>&amp;stack[STACK_SIZE]</code> is the address just past the array’s last byte. A fresh process starts with an appropriately aligned <code>sp</code> at the high end; stack use then extends toward lower addresses. Reserving the array alone does not change the CPU’s active stack pointer.</p>
+<p>Nested calls belong to the same execution and use the same process stack. For example:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> helper<span class="op">(</span><span class="dt">int</span> <span class="op">*</span>x<span class="op">)</span> <span class="op">{</span> <span class="op">(*</span>x<span class="op">)++;</span> <span class="op">}</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> worker<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span> <span class="dt">int</span> n <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> helper<span class="op">(&amp;</span>n<span class="op">);</span> <span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Conceptually, while <code>helper()</code> is active:</p>
+<pre class="text"><code>                           sp
+lower addresses            v               higher addresses
+    +-----------------------------------------------+
+    |             | helper frame | worker frame | - |
+    +-----------------------------------------------+</code></pre>
+<p>The <code>helper frame</code> and <code>worker frame</code> labels denote runtime data associated with the active calls. The stack does <strong>not</strong> contain the machine instructions of <code>helper()</code> or <code>worker()</code>: the CPU executes those instructions from the <code>.text</code> section of the program’s memory layout.</p>
+<p>The newer call uses space toward the lower-address end of the used stack. This is a schematic picture, not an exact compiler-generated layout: the compiler may inline calls or keep values in registers.</p>
+<p>If the process yields from a nested call, that call chain’s stack data must remain intact while the OS uses its own stack. Resuming requires the process’s saved <code>sp</code> as well as the preserved storage.</p>
+</section>
+<section id="continuation-where-should-execution-return" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="continuation-where-should-execution-return"><span class="header-section-number">3.4</span> Continuation: where should execution return?</h2>
+<p>Lecture 2 showed the startup fragment:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">call</span> main</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A RISC-V <code>call</code> remembers the location to which execution should later return. That location is stored in <code>ra</code>, the <strong>return-address register</strong>.</p>
+<p>An ordinary return therefore already contains a useful idea:</p>
+<pre class="text"><code>call function
+    |
+    v
+function executes
+    |
+    v
+ret
+    |
+    v
+continue at address stored in ra</code></pre>
+<p>If a process yields and is later resumed, the operating system must preserve some representation of the place where execution should continue. Preserving <code>ra</code> makes that idea concrete.</p>
+<p>The stack data must survive too, and the process must recover the stack position recorded in <code>sp</code>. Restoring a continuation with the OS stack would not continue the same call chain.</p>
+</section>
+<section id="context" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="context"><span class="header-section-number">3.5</span> Context</h2>
+<p>At a pause, some execution state is still in CPU registers. Another execution can overwrite those values even when the process stack remains intact. The saved CPU register state needed to continue the execution is its <strong>context</strong>.</p>
+<p>For the cooperative CP1 mechanism, the provided representation is:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> context <span class="op">{</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uintptr_t</span> ra<span class="op">;</span>    <span class="co">// continuation address</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uintptr_t</span> sp<span class="op">;</span>    <span class="co">// current stack position</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uintptr_t</span> s<span class="op">[</span><span class="dv">12</span><span class="op">];</span> <span class="co">// saved s0 through s11</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>uintptr_t</code>, defined by <code>&lt;stdint.h&gt;</code>, is an <strong>unsigned integer type</strong>, not a pointer type. It can hold the integer representation of a pointer value and later be converted back without losing that value. In our RV64 toolchain it is 64 bits wide. We use it for saved register-sized values such as <code>ra</code> and <code>sp</code>, which contain addresses during normal execution. Students are not expected to study the complete family of fixed-width integer types here.</p>
+<p>The array <code>s</code> holds the RISC-V callee-saved registers <code>s0</code> through <code>s11</code>: <code>s[0]</code> stores <code>s0</code>, through <code>s[11]</code> storing <code>s11</code>. A <strong>calling convention</strong> is the agreement that lets separately compiled functions cooperate about how registers are used. A <strong>callee-saved register</strong> is one whose value a called function must preserve for its caller. Preserving those required registers allows an ordinary C function call to cross the context-switch boundary safely.</p>
+<p>Students do not need to memorize that register list or derive the complete assembly routine from the ABI. For CP1 they should be able to explain why <code>ra</code> and <code>sp</code> matter and why some additional register state must also survive.</p>
+</section>
+<section id="the-complete-process-object" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="the-complete-process-object"><span class="header-section-number">3.6</span> The complete process object</h2>
+<p>The saved context supplies the missing part. Together, entry, stack, context, and lifecycle information represent our managed execution.</p>
+<p>The public representation used by Lecture 3, Exercise 2, and Checkpoint 1 is:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> process <span class="op">{</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    process_entry_t entry<span class="op">;</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint8_t</span> stack<span class="op">[</span>STACK_SIZE<span class="op">];</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">struct</span> context context<span class="op">;</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">enum</span> process_state state<span class="op">;</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> exit_status<span class="op">;</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The five fields have distinct roles:</p>
+<ul>
+<li><code>entry</code>: where a new process begins;</li>
+<li><code>stack</code>: process-owned raw byte storage for its call stack;</li>
+<li><code>context</code>: saved CPU register state needed to continue execution;</li>
+<li><code>state</code>: whether the process is READY, RUNNING, or FINISHED;</li>
+<li><code>exit_status</code>: the result recorded when the process finishes.</li>
+</ul>
+<p>Exercise 2 uses this exact field order because its precompiled process library was built against this representation. Checkpoint 1 keeps the same interface and representation while students provide the implementation.</p>
+</section>
+<section id="the-provided-context-switch-boundary" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="the-provided-context-switch-boundary"><span class="header-section-number">3.7</span> The provided context-switch boundary</h2>
+<p>The course provides a function implemented in RISC-V assembly, with this C declaration:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> context_switch<span class="op">(</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">struct</span> context <span class="op">*</span>current_context<span class="op">,</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> <span class="kw">struct</span> context <span class="op">*</span>next_context<span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>current_context</code> points to storage where the running execution’s registers will be saved. <code>next_context</code> points to the saved registers to restore. The <code>const</code> qualifier says the function does not modify the context object through <code>next_context</code>. Either context may belong to the OS execution or the process execution.</p>
+<p>A <strong>context switch</strong> in this part of BVS1 means:</p>
+<ol type="1">
+<li>save the current execution context;</li>
+<li>restore another saved context;</li>
+<li>continue the restored execution.</li>
+</ol>
+<p>The assembly below shows the matching save and restore operations. The ellipses stand for the corresponding operations on <code>s1</code> through <code>s10</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>sd ra<span class="op">,</span>    <span class="dv">0</span><span class="op">(</span>a0<span class="op">)</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>sd <span class="kw">sp</span><span class="op">,</span>    <span class="dv">8</span><span class="op">(</span>a0<span class="op">)</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>sd s0<span class="op">,</span>   <span class="dv">16</span><span class="op">(</span>a0<span class="op">)</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>sd s11<span class="op">,</span> <span class="dv">104</span><span class="op">(</span>a0<span class="op">)</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>ld ra<span class="op">,</span>    <span class="dv">0</span><span class="op">(</span>a1<span class="op">)</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>ld <span class="kw">sp</span><span class="op">,</span>    <span class="dv">8</span><span class="op">(</span>a1<span class="op">)</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>ld s0<span class="op">,</span>   <span class="dv">16</span><span class="op">(</span>a1<span class="op">)</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>ld s11<span class="op">,</span> <span class="dv">104</span><span class="op">(</span>a1<span class="op">)</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="cf">ret</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>sd</code> (store doubleword) copies a 64-bit register value into memory; <code>ld</code> (load doubleword) copies a 64-bit value from memory into a register. In <code>sd s0, 16(a0)</code>, the destination is the address in <code>a0</code> plus 16 bytes. The offsets follow the context layout: <code>ra</code> at byte 0, <code>sp</code> at byte 8, and the twelve saved <code>s</code> registers at bytes 16 through 104.</p>
+<p>After the loads, <code>ret</code> uses the newly restored <code>ra</code>. The switch therefore changes both the stack that is active and the location at which execution continues.</p>
+<p>The stored fields and the restored fields match: <code>ra</code>, <code>sp</code>, and all twelve entries of <code>s</code>. The process needs both its stack memory and these saved register values to continue the same execution.</p>
+<p>The function arguments <code>current_context</code> and <code>next_context</code> arrive in the RISC-V argument registers <code>a0</code> and <code>a1</code>. These registers are caller-saved: their previous values are not part of the state that an ordinary C call promises to preserve. In this cooperative switch they are used to locate the two context structures; the persistent saved context is <code>ra</code>, <code>sp</code>, and <code>s0-s11</code>.</p>
+<p>The same operation works in both directions:</p>
+<pre class="text"><code>OS running                         process running
+    |                                   |
+    | save OS context                   | save process context
+    | restore process context           | restore OS context
+    v                                   v
+process running                       OS running</code></pre>
+<p>There is no scheduler here. CP1 contains only one process.</p>
+</section>
+<section id="implementation-boundary" class="level2" data-number="3.8">
+<h2 data-number="3.8" class="anchored" data-anchor-id="implementation-boundary"><span class="header-section-number">3.8</span> Implementation boundary</h2>
+<p>The course provides the machinery whose complexity is incidental to the CP1 competence:</p>
+<ul>
+<li>existing startup and linker support;</li>
+<li>UART output already available in the starter;</li>
+<li>the context representation;</li>
+<li>the RV64 context-switch assembly boundary.</li>
+</ul>
+<p>Students construct the process abstraction and lifecycle in C:</p>
+<ul>
+<li>process representation;</li>
+<li>owned stack;</li>
+<li>first-run context;</li>
+<li>entry handling;</li>
+<li>run;</li>
+<li>yield;</li>
+<li>exit;</li>
+<li>observable resume behaviour.</li>
+</ul>
+<p>CP1 does <strong>not</strong> require timer interrupts, preemption, several runnable processes, a scheduler, privilege separation, virtual memory, dynamic loading, or dynamic allocation.</p>
+</section>
+<section id="public-process-interface" class="level2" data-number="3.9">
+<h2 data-number="3.9" class="anchored" data-anchor-id="public-process-interface"><span class="header-section-number">3.9</span> Public process interface</h2>
+<p>The first-process abstraction uses this public C interface:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> process_create<span class="op">(</span><span class="kw">struct</span> process <span class="op">*</span>process<span class="op">,</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>                    process_entry_t entry<span class="op">);</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> process_run<span class="op">(</span><span class="kw">struct</span> process <span class="op">*</span>process<span class="op">);</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> process_yield<span class="op">(</span><span class="dt">void</span><span class="op">);</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> process_exit<span class="op">(</span><span class="dt">int</span> status<span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Exercise 2 links this interface against a provided implementation. Checkpoint 1 keeps the same interface but replaces that implementation with student-written C code.</p>
+</section>
+<section id="the-lifecycle-in-c" class="level2" data-number="3.10">
+<h2 data-number="3.10" class="anchored" data-anchor-id="the-lifecycle-in-c"><span class="header-section-number">3.10</span> The lifecycle in C</h2>
+<p>Lecture 2 introduced:</p>
+<pre class="text"><code>create -&gt; run -&gt; yield -&gt; resume -&gt; exit</code></pre>
+<p>Lecture 3 now connects each semantic step to the minimum implementation work.</p>
+<section id="create-prepare" class="level3" data-number="3.10.1">
+<h3 data-number="3.10.1" class="anchored" data-anchor-id="create-prepare"><span class="header-section-number">3.10.1</span> Create / prepare</h3>
+<p>Preparing a process means constructing a valid first-run state:</p>
+<pre class="text"><code>remember entry function
+        |
+choose process stack top
+        |
+prepare initial context
+        |
+state = READY</code></pre>
+<p>No process code has executed yet.</p>
+<p>A process that has already yielded has a saved continuation. A new process does not.</p>
+<p>The restore mechanism nevertheless expects a context containing a stack pointer and a continuation. The solution is to prepare an initial context before the process first runs.</p>
+<p>Its initial stack pointer is placed at the aligned high end of its owned stack array.</p>
+<p>The initial continuation is a small <strong>bootstrap function</strong>, called <code>process_start()</code>: an internal function used to enter a process for the first time. It is an implementation detail, not another public process operation.</p>
+<p>Conceptually:</p>
+<pre class="text"><code>initial sp -&gt; aligned high end of process.stack
+initial ra -&gt; process_start -&gt; process.entry()</code></pre>
+<p>The first restore followed by <code>ret</code> therefore enters <code>process_start()</code> while using the process’s own stack.</p>
+<p><code>process_start()</code> calls the process entry function. If that function returns normally, <code>process_start()</code> calls <code>process_exit(0)</code>. Returning from the entry function therefore finishes the process with status 0 and transfers control back to the OS.</p>
+<p>Later resumes do not use the prepared bootstrap address again. A yield saves the real continuation from the running process, so the next restore continues after the context-switch call inside the yield path.</p>
+<p>This is an important simplification:</p>
+<blockquote class="blockquote">
+<p><strong>First start and later resume use the same low-level restore mechanism.</strong></p>
+</blockquote>
+</section>
+<section id="run-and-resume" class="level3" data-number="3.10.2">
+<h3 data-number="3.10.2" class="anchored" data-anchor-id="run-and-resume"><span class="header-section-number">3.10.2</span> Run and resume</h3>
+<p>The OS keeps a pointer named <code>current_process</code> to identify the process whose execution currently owns the CPU. <code>process_yield()</code> and <code>process_exit()</code> take no process argument: they use this pointer to find the object whose state and context they must update.</p>
+<p><code>process_run(p)</code> performs these steps:</p>
+<pre class="text"><code>reject p if its state is FINISHED
+set current_process to p
+set p's state to RUNNING
+context switch from OS to p</code></pre>
+<p>The FINISHED check belongs to <code>process_run()</code>: a saved context does not by itself grant permission to run again.</p>
+<p>The same run operation can support two cases:</p>
+<ul>
+<li>a READY process that has never run starts through its prepared bootstrap context;</li>
+<li>a READY process that yielded earlier resumes through the context saved by that yield.</li>
+</ul>
+<p>The required behaviour is <strong>resume</strong>. A separate <code>process_resume()</code> API is not necessary.</p>
+</section>
+<section id="yield" class="level3" data-number="3.10.3">
+<h3 data-number="3.10.3" class="anchored" data-anchor-id="yield"><span class="header-section-number">3.10.3</span> Yield</h3>
+<p>For CP1:</p>
+<blockquote class="blockquote">
+<p><strong>yield</strong> means that the running process voluntarily returns control to the operating system while remaining able to resume later.</p>
+</blockquote>
+<p>Using <code>current_process</code>, yield marks the process READY, saves its current context, and restores the OS context.</p>
+<p>When the operating system later runs that process again, execution continues after the context-switch call inside the yield path.</p>
+</section>
+<section id="exit" class="level3" data-number="3.10.4">
+<h3 data-number="3.10.4" class="anchored" data-anchor-id="exit"><span class="header-section-number">3.10.4</span> Exit</h3>
+<p>For CP1:</p>
+<blockquote class="blockquote">
+<p><strong>exit</strong> means that the process finishes, records a result, and returns control to the operating system.</p>
+</blockquote>
+<p>Using <code>current_process</code>, exit records the status in the process object, marks it FINISHED, and switches from the process context back to the OS context.</p>
+<p>A finished process must not be resumed.</p>
+<p>Yield and exit can use the same low-level control-transfer boundary, but their lifecycle meaning is different.</p>
+</section>
+</section>
+<section id="the-complete-cp1-observation" class="level2" data-number="3.11">
+<h2 data-number="3.11" class="anchored" data-anchor-id="the-complete-cp1-observation"><span class="header-section-number">3.11</span> The complete CP1 observation</h2>
+<p>Exercise 2 and Checkpoint 1 use the same small permutation program. Its observable behaviour is:</p>
+<pre class="text"><code>process: before yield: VBS1
+os: process yielded
+process: result: VB1S
+os: process exited</code></pre>
+<p>The interesting evidence is not the strings themselves. The output demonstrates that:</p>
+<ol type="1">
+<li>the process starts using its own execution context;</li>
+<li><code>worker()</code> calls <code>permute()</code>, which modifies process-local data and yields before returning;</li>
+<li>the operating system regains control while that call chain remains suspended;</li>
+<li>the same <code>permute()</code> invocation later continues after <code>process_yield()</code>;</li>
+<li>the local array progresses from <code>VBS1</code> to <code>VB1S</code>, showing that the same execution state survived;</li>
+<li>the process exits with status 0 and becomes FINISHED;</li>
+<li>the operating system regains control again and must not resume the finished process.</li>
+</ol>
+</section>
+<section id="why-cp1-deliberately-uses-yield" class="level2" data-number="3.12">
+<h2 data-number="3.12" class="anchored" data-anchor-id="why-cp1-deliberately-uses-yield"><span class="header-section-number">3.12</span> Why CP1 deliberately uses yield</h2>
+<p>CP1 needs a control transfer that gives the operating system control <strong>without finishing the process</strong>.</p>
+<p>A timer interrupt would already introduce the preemption mechanism needed later for CP2. Blocking or sleeping would require an additional condition that makes the process runnable again. An ordinary C return would not expose the requirement to preserve and later restore a continuation.</p>
+<p>A cooperative yield is therefore the smallest mechanism that makes resumability observable.</p>
+<p>It also creates the next operating-system problem cleanly:</p>
+<blockquote class="blockquote">
+<p>What if a process never yields?</p>
+</blockquote>
+<p>That question motivates timer-driven preemption on the way to CP2.</p>
+</section>
+<section id="check-your-model" class="level2" data-number="3.13">
+<h2 data-number="3.13" class="anchored" data-anchor-id="check-your-model"><span class="header-section-number">3.13</span> Check your model</h2>
+<p>Use these questions to check the distinction between restarting, resuming, and finishing:</p>
+<ol type="1">
+<li>What breaks if we call the entry function again after yield instead of restoring the saved context?</li>
+<li>What breaks if we restore <code>ra</code> but not <code>sp</code> and <code>s0-s11</code>?</li>
+<li>What breaks if <code>process_run()</code> allows a FINISHED process to execute again?</li>
+</ol>
+<p>A successful explanation should connect each failure to the process representation: calling entry again restarts its work, restoring only part of the context cannot preserve the same execution, and restoring a finished process violates its lifecycle state.</p>
+</section>
+<section id="key-ideas" class="level2" data-number="3.14">
+<h2 data-number="3.14" class="anchored" data-anchor-id="key-ideas"><span class="header-section-number">3.14</span> Key ideas</h2>
+<ul>
+<li>A <strong>process</strong> is a managed execution.</li>
+<li>Our process representation combines an entry function, owned stack storage, CPU context, lifecycle state, and exit status.</li>
+<li>The <strong>stack</strong> is process-owned memory for the runtime data of active function calls. Function instructions remain in <code>.text</code>.</li>
+<li>A <strong>context</strong> is the saved CPU register state needed to continue the same execution.</li>
+<li><strong>Lifecycle state</strong> says whether an execution may run; <strong>context</strong> says how it continues.</li>
+<li>A <strong>context switch</strong> saves the current CPU register state and restores the next one. The same mechanism transfers control in both directions between OS and process.</li>
+</ul>
+</section>
+<section id="related-exercise-and-checkpoint" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="related-exercise-and-checkpoint">Related Exercise and Checkpoint</h2>
+<p><a href="../exercises/BVS1-Exercise-02-Using-Your-First-Process-WS26-27.pdf"><strong>Exercise 2 — Using Your First Process</strong></a> lets you use the process abstraction before implementing it yourself.</p>
+<p><a href="../checkpoints/BVS1-Checkpoint-01-I-Have-a-Process-WS26-27.pdf"><strong>Checkpoint 1 — I Have a Process</strong></a> is the corresponding implementation milestone.</p>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<ul>
+<li>RISC-V International, <em>RISC-V ABIs Specification</em>. <a href="https://riscv-non-isa.github.io/riscv-elf-psabi-doc/" class="uri">https://riscv-non-isa.github.io/riscv-elf-psabi-doc/</a></li>
+<li>Remzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau, <em>Operating Systems: Three Easy Pieces</em>, especially the process chapters. <a href="https://pages.cs.wisc.edu/~remzi/OSTEP/" class="uri">https://pages.cs.wisc.edu/~remzi/OSTEP/</a></li>
+<li>Russ Cox, Frans Kaashoek, Robert Morris et al., <em>xv6: a simple, Unix-like teaching operating system</em> and xv6-riscv source, used here only as a comparative reference for low-level context switching. <a href="https://pdos.csail.mit.edu/6.S081/2020/xv6/book-riscv-rev1.pdf" class="uri">https://pdos.csail.mit.edu/6.S081/2020/xv6/book-riscv-rev1.pdf</a></li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapters/02-source-to-executables.html" class="pagination-link" aria-label="From Source to Executables: Towards Processes">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">From Source to Executables: Towards Processes</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../downloads.html" class="pagination-link" aria-label="Downloads">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Downloads</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Except where otherwise noted, © 2026 Stavros Kousidis.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p><a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
