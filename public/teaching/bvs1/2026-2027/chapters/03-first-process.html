@@ -295,13 +295,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="owned-stack-storage" class="level3" data-number="3.2.2">
 <h3 data-number="3.2.2" class="anchored" data-anchor-id="owned-stack-storage"><span class="header-section-number">3.2.2</span> Owned stack storage</h3>
 <p>The process also reserves memory for its own call stack:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define STACK_SIZE </span><span class="dv">4096</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdint.h&gt;</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> process <span class="op">{</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    process_entry_t entry<span class="op">;</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint8_t</span> stack<span class="op">[</span>STACK_SIZE<span class="op">];</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>uint8_t</code>, defined by <code>&lt;stdint.h&gt;</code>, is an unsigned 8-bit integer type. This array is raw byte storage, not a character string. At this point, treat it simply as memory owned by the process; we will explain its use below.</p>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#define STACK_SIZE </span><span class="dv">4096</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> process <span class="op">{</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    process_entry_t entry<span class="op">;</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint8_t</span> stack<span class="op">[</span>STACK_SIZE<span class="op">];</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>uint8_t</code>, defined by <code>&lt;stdint.h&gt;</code>, is an unsigned 8-bit integer type. A <code>char stack[STACK_SIZE]</code> array would also be a viable choice for raw byte storage in our RV64 environment: a character array need not contain text. We use <code>uint8_t</code> to make the byte-storage role explicit and keep our treatment of integer types focused on <code>&lt;stdint.h&gt;</code>. This header is available in our freestanding RISC-V toolchain; including it does not require linking a C library.</p>
+<p>At this point, treat the array simply as memory owned by the process; we will explain its use below.</p>
 </section>
 <section id="lifecycle-information" class="level3" data-number="3.2.3">
 <h3 data-number="3.2.3" class="anchored" data-anchor-id="lifecycle-information"><span class="header-section-number">3.2.3</span> Lifecycle information</h3>
