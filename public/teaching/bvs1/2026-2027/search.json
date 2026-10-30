@@ -460,13 +460,153 @@
     ]
   },
   {
+    "objectID": "chapters/04-memory-and-execution.html",
+    "href": "chapters/04-memory-and-execution.html",
+    "title": "4  Where Our Code Runs",
+    "section": "",
+    "text": "4.1 Locate editing, building, and execution\nLecture 3 constructed a process from an entry function, owned stack storage, saved CPU context, and lifecycle information. This chapter connects that abstraction to the machines and memory we actually use. It follows four questions raised by students: Where am I working? How do I edit the files that are actually built? Where is the program counter? Where do constants appear in the disassembly? Together they lead to the guiding question: where are our instructions and runtime data, and what must be preserved when execution pauses or is interrupted?\nWe use the same worker() and permute() from Exercise 2. The aim is to reconstruct and diagnose the existing mechanism before extending it.\nOur setup has three machine roles:\nThe physical host supplies the outer infrastructure. Multipass manages the Ubuntu VM; it is not another machine layer. The VM is the development host for our tools. QEMU runs there as an ordinary Ubuntu process and emulates the target machine.\nBoth our OS-side control code and the managed process execute on the RV64 target. They do not become Ubuntu programs merely because QEMU runs in Ubuntu. The cross compiler and linker execute in the VM but generate an RV64 ELF for the target ISA.\nThe complete workflow is:\nMake automates the build recipe. The editor changes source text; the compiler reads the saved file; QEMU receives the resulting ELF. An already running QEMU instance does not automatically acquire a new image when source files are edited or rebuilt.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Where Our Code Runs</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-memory-and-execution.html#locate-editing-building-and-execution",
+    "href": "chapters/04-memory-and-execution.html#locate-editing-building-and-execution",
+    "title": "4  Where Our Code Runs",
+    "section": "",
+    "text": "physical host: Linux / macOS / Windows\n    |  hosts the VM; Multipass manages it\n    v\nUbuntu VM bvs1: our development host\n    |  runs editor, build tools, and QEMU\n    v\nQEMU emulates an RV64 target: CPU + RAM + UART\n    |  target CPU executes RV64 instructions\n    v\nour program / growing BVS1 operating system\n\n\n\nedit -&gt; save source -&gt; compile/link -&gt; linked ELF\n                                          |\n                                 QEMU loads the image\n                                          |\n                                RV64 instructions execute",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Where Our Code Runs</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-memory-and-execution.html#establish-a-reliable-editbuildrun-loop",
+    "href": "chapters/04-memory-and-execution.html#establish-a-reliable-editbuildrun-loop",
+    "title": "4  Where Our Code Runs",
+    "section": "4.2 Establish a reliable edit–build–run loop",
+    "text": "4.2 Establish a reliable edit–build–run loop\nStart on the physical host with:\nmultipass shell bvs1\nInside the VM, locate the existing repository and source file:\ncd ~/teaching-bvs1-code\npwd\nls\nnano main.c\nRun make from the repository directory that contains the Makefile. Make reads the Makefile in the current directory, and that Makefile names the source files it compiles. A main.c edited in another directory or another copy of the repository is not this build’s input.\nIn nano, save with Ctrl-O, Enter, then leave with Ctrl-X. If using Vim, enter Insert mode with i, make the change, press Esc, then save and leave with :wq. The editor handout contains further details. The relevant competence is editing the intended file reliably; the choice of editor is not assessed.\nAfter saving, inspect your change and build:\ngit diff -- main.c\nmake\nmake run\nUse one small output-label change to connect the saved file to an observable effect. The array’s permutation should remain unchanged if only a label changes. End QEMU with Ctrl-a, release, then x. Restore that intentional label change before continuing.\nIf an old label appears, diagnose the chain in order:\nsaved source -&gt; build input -&gt; successful build -&gt; executable -&gt; QEMU run\nWas the change saved? Is the saved file the one Make uses as build input? Did the build succeed and produce a new executable? Did a new QEMU session load that executable? Rebuilding repeatedly cannot correct an unsaved buffer or a different repository copy.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Where Our Code Runs</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-memory-and-execution.html#one-managed-execution-can-contain-several-active-calls",
+    "href": "chapters/04-memory-and-execution.html#one-managed-execution-can-contain-several-active-calls",
+    "title": "4  Where Our Code Runs",
+    "section": "4.3 One managed execution can contain several active calls",
+    "text": "4.3 One managed execution can contain several active calls\nExercise 2 uses this entry function:\nstatic void worker(void)\n{\n    char value[] = \"BVS1\";\n    permute(value);\n    uart_puts(\"process: result: \");\n    uart_puts(value);\n    uart_puts(\"\\n\");\n    process_exit(0);\n}\nThe local array has five bytes: B, V, S, 1, and the terminating zero byte. It is modifiable character data. The helper receives a pointer to that existing array; passing it does not create another array or another process.\nThe helper first exchanges positions 0 and 1, prints the intermediate value, calls process_yield(), then exchanges positions 2 and 3. Before yield, both worker() and permute() are still active. The array has become VBS1\\0, but its owning worker invocation has not ended.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Where Our Code Runs</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-memory-and-execution.html#instructions-and-runtime-data-have-different-roles",
+    "href": "chapters/04-memory-and-execution.html#instructions-and-runtime-data-have-different-roles",
+    "title": "4  Where Our Code Runs",
+    "section": "4.4 Instructions and runtime data have different roles",
+    "text": "4.4 Instructions and runtime data have different roles\nThe linked program places machine instructions in .text. This includes instructions implementing the worker, helper, process API, and OS-side code. Calling a function transfers control to its instructions; it does not copy those instructions onto the stack.\nThe program counter, pc, identifies the instruction to execute. The stack pointer, sp, selects the current stack position. These are CPU state, not memory sections. A saved return address is an address value that points back into code; its being stored on the stack does not make the pointed-to instructions stack contents.\nThe stack holds runtime data associated with active calls: saved call information, saved registers, some local variables, and temporaries as needed. The labels worker frame and permute frame describe this runtime data, not the functions’ instructions.\nA schematic snapshot after the first swap is:\n.text                       process-owned stack storage\n                            higher addresses\nsame worker instructions    +--------------------------+\nsame permute instructions   | worker: value V B S 1 \\0 |\n  ...                       +--------------------------+\n  call process_yield        | permute call data        |\n                            +--------------------------+\n                            lower addresses\nThe CPU has changed data in the array while executing instructions that remain in .text. A non-inlined helper call uses the same process stack as the worker, with newer call data toward lower addresses. The picture does not prescribe exact offsets, compiler-generated frames, or a stack slot for every local value.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Where Our Code Runs</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-memory-and-execution.html#sp-ra-and-pc-are-different-kinds-of-cpu-state",
+    "href": "chapters/04-memory-and-execution.html#sp-ra-and-pc-are-different-kinds-of-cpu-state",
+    "title": "4  Where Our Code Runs",
+    "section": "4.5 sp, ra, and pc are different kinds of CPU state",
+    "text": "4.5 sp, ra, and pc are different kinds of CPU state\nsp and ra are the conventional ABI names of the integer registers x2 and x1. Ordinary instructions read and write them like the other general-purpose registers x0–x31. The program counter is also architectural CPU state, but it is not one of these 32 registers. The CPU advances it as it executes, and jumps, branches, calls, and returns change it.\nThis explains why the Lecture 3 context contains ra, sp, and s0–s11 but no explicit pc. The cooperative context switch happens at an ordinary function-call boundary, so the saved ra already describes the continuation:\nsaved ra -&gt; restored ra -&gt; ret -&gt; execution continues there\nret sets the program counter to the restored ra. The program counter is therefore not forgotten; the cooperative switch re-establishes it through ra.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Where Our Code Runs</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-memory-and-execution.html#follow-the-same-execution-through-yield-and-resume",
+    "href": "chapters/04-memory-and-execution.html#follow-the-same-execution-through-yield-and-resume",
+    "title": "4  Where Our Code Runs",
+    "section": "4.6 Follow the same execution through yield and resume",
+    "text": "4.6 Follow the same execution through yield and resume\nWhen the process yields, the low-level switch saves its continuation, stack position, and required additional registers. The OS context is restored. The CPU’s current pc and sp now describe OS execution, while p.context holds the saved register values for the paused process. The array and suspended call data remain in p.stack.\nThe next process_run() restores that saved context. Low-level continuation first returns through the suspended yield path. process_yield() then returns to the same permute() invocation, which performs the second swap. The array becomes VB1S\\0. The worker does not initialize it again, because no new worker invocation was started.\nWhen the helper returns, the worker prints the result and calls process_exit(0). Exit marks the process FINISHED and returns control to the OS. Old bytes may physically remain after a helper returns or a process exits; that does not keep a call active or authorize another run. Lifecycle state determines whether the process may run again.\n\n\n\nMoment\nArray contents\nCPU executes\n\n\n\n\nworker initialized it\nBVS1\\0\nprocess\n\n\nfirst swap completed\nVBS1\\0\nprocess\n\n\nyielded\nVBS1\\0, preserved\nOS\n\n\nsecond swap completed\nVB1S\\0\nprocess\n\n\nprocess exited\nno active array\nOS\n\n\n\nCalling entry again restarts the work; restoring a continuation without the matching stack position loses the original call chain; allowing a FINISHED process to run violates its lifecycle. These are different failures of the same model.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Where Our Code Runs</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-memory-and-execution.html#connect-the-other-memory-regions",
+    "href": "chapters/04-memory-and-execution.html#connect-the-other-memory-regions",
+    "title": "4  Where Our Code Runs",
+    "section": "4.7 Connect the other memory regions",
+    "text": "4.7 Connect the other memory regions\nThe section names describe roles in the linked image:\n\n\n\n\n\n\n\nRegion\nRole in our example\n\n\n\n\n.text\nRV64 machine instructions\n\n\n.rodata\nconstant data, including output labels\n\n\n.data\nwritable static/global objects with stored initial values, when present\n\n\n.bss\nzero-initialized static/global storage, including OS bookkeeping in the inspected library\n\n\nOS stack\nruntime data of OS-side calls\n\n\nprocess stack storage\nruntime data of the managed process’s calls\n\n\n\nThe output label \"process: result: \" is constant data, normally placed in .rodata. The initialized local value array is a separate writable object. Its C initializer does not put that array in .rodata: the compiler can provide its initial bytes from constants in instructions or from constant storage. Inspect the actual build rather than assuming a separate BVS1 string must be present in .rodata.\nConstants therefore appear in the disassembly in two forms:\n\nA value small enough to encode inside an instruction appears as an immediate operand, for example in li or addi. Larger values may be built by more than one instruction. The four characters of BVS1 can appear together as one 32-bit value: our target uses little-endian byte order, so storing 0x31535642 produces the bytes 0x42 0x56 0x53 0x31 at increasing addresses.\nIn this build, constant output labels are stored in .rodata. Instructions compute a label’s address, typically with an auipc/addi pair that objdump -d annotates with the resulting address, and pass it to uart_puts(). riscv64-unknown-elf-objdump -s -j .rodata build/hello-bvs1.elf shows the bytes stored at that address.\n\nFor comparison, a static/global int initialized = 7 typically belongs to .data; a static/global int zeroed initially has value zero and typically belongs to .bss. Static storage lasts for the execution of the program, unlike the local state of a particular call. Neither declaration is needed in the Exercise 2 application merely to fill a diagram.\nIn the inspected Exercise 2 image, .data is empty. The local value array belongs to neither section: it lives on the process stack while worker() is active. Its .bss contains os_context and current_process from the provided library. A pointer becoming nonzero at runtime does not move its storage to .data. BSS occupies memory even though the ELF does not store all its initial zero bytes as file contents; loading/startup must establish the required initial state.\nThese roles do not imply that our minimal system enforces read/write permissions or separate address spaces. The course linker script and runtime storage choices determine the layout we are studying.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Where Our Code Runs</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-memory-and-execution.html#the-process-stack-is-an-array-in-an-object",
+    "href": "chapters/04-memory-and-execution.html#the-process-stack-is-an-array-in-an-object",
+    "title": "4  Where Our Code Runs",
+    "section": "4.8 The process stack is an array in an object",
+    "text": "4.8 The process stack is an array in an object\nExercise 2 declares:\nvoid main(void)\n{\n    struct process p;\n    /* create, run, inspect state, run again */\n    /* ... */\n}\nHere p is an automatic object in main()’s OS-stack allocation. The embedded array p.stack is part of that object. It reserves a subregion that becomes the process’s active call stack when sp selects an aligned position inside it.\nThis gives the process distinct stack storage for its execution without creating another ELF section. While the process runs, OS-side calls are suspended. When the OS regains control, it uses other stack space and leaves p.stack intact. main() remains active throughout, so the process object and its embedded storage remain alive.\nIf p were instead static/global, its containing storage would be static. The role of its stack array would remain process-owned runtime storage. Therefore “process stack” answers what the memory is used for; the declaration and allocation answer where that memory comes from. In this example no dynamic allocation is required.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Where Our Code Runs</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-memory-and-execution.html#inspect-the-file-without-confusing-it-with-live-memory",
+    "href": "chapters/04-memory-and-execution.html#inspect-the-file-without-confusing-it-with-live-memory",
+    "title": "4  Where Our Code Runs",
+    "section": "4.9 Inspect the file without confusing it with live memory",
+    "text": "4.9 Inspect the file without confusing it with live memory\nAfter a successful Exercise 2 build, run these commands in the VM:\nriscv64-unknown-elf-objdump -h build/hello-bvs1.elf\nriscv64-unknown-elf-nm -n build/hello-bvs1.elf\nriscv64-unknown-elf-objdump -d \\\n  --disassemble=context_switch build/hello-bvs1.elf\nThe first command lists sections; the second lists symbols by address; the third decodes the selected function’s instructions. In nm, T/t identifies code symbols and B/b identifies BSS-related symbols. A symbol can simply name an address: _stack_top is the linker-defined initial OS-stack address, not a C array declaration. These inspection options are documented in the GNU Binutils manuals.\nThe commands inspect the ELF on disk. They do not display the running target’s CPU registers or the live contents of the local array. Debugging information can describe local variables, but that is different from a linker symbol or an observation of runtime memory.\nThe normal build uses -O2. It can inline permute(), meaning it incorporates the helper’s work into the caller instead of retaining a separate call. Local scalar values such as tmp can be kept in registers. The lecture’s separate observation build uses -O0 -g -fno-inline to retain inspectable function boundaries; -g adds debugging information. Exact frames and addresses depend on the build. See GCC’s Optimize Options.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Where Our Code Runs</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-memory-and-execution.html#the-next-requirement-regain-control-without-cooperation",
+    "href": "chapters/04-memory-and-execution.html#the-next-requirement-regain-control-without-cooperation",
+    "title": "4  Where Our Code Runs",
+    "section": "4.10 The next requirement: regain control without cooperation",
+    "text": "4.10 The next requirement: regain control without cooperation\nOur current mechanism depends on the process reaching yield or exit. If it runs forever before either operation, our target-side OS continuation cannot run again. Ubuntu can still manage the QEMU process, but that is control at another layer. Terminating QEMU ends the target session rather than implementing target-side process management.\nAn interrupt signals an event. When enabled, it transfers control to a configured OS handler, allowing the OS to regain control. A future timer interrupt can make control transfer possible without a voluntary yield. This enables preemption: the OS takes control without the process’s cooperation. Scheduling then decides whether to continue the interrupted execution or select another runnable one. Interrupt handling and the scheduling decision are related but distinct steps.\nThis chapter raises that question without requiring an interrupt implementation for CP1. An arbitrary interruption is not an ordinary C call boundary. The interrupted continuation is not supplied by ra as it is at our cooperative call boundary; ra holds whatever value the interrupted code was using. The interrupted program counter must therefore be preserved explicitly, in dedicated trap state, together with the other registers the interrupted code may be using. The cooperative CP1 register subset is not by itself the full specification of such a mechanism.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Where Our Code Runs</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-memory-and-execution.html#key-ideas",
+    "href": "chapters/04-memory-and-execution.html#key-ideas",
+    "title": "4  Where Our Code Runs",
+    "section": "4.11 Key ideas",
+    "text": "4.11 Key ideas\n\nThe Ubuntu VM is our development host; the emulated RV64 machine is the target that executes our program’s instructions.\nEditing, saving, building, and starting a new run are separate steps in one observable workflow.\nFunction instructions remain in .text; stack frames contain runtime data associated with active calls.\nA local writable array is distinct from constant data used to initialize it or print an output label.\nProcess stack storage is an array in the process object; its role does not prescribe an ELF section or an address space.\nPreserved stack data and saved register context together support continuing the same execution.\nThe program counter is CPU state but not a general-purpose register: the cooperative switch re-establishes it through ra and ret, whereas an interruption must preserve it explicitly.\nLifecycle state determines whether another run is permitted, even if old memory contents remain.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Where Our Code Runs</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-memory-and-execution.html#related-exercise-and-handouts",
+    "href": "chapters/04-memory-and-execution.html#related-exercise-and-handouts",
+    "title": "4  Where Our Code Runs",
+    "section": "Related Exercise and Handouts",
+    "text": "Related Exercise and Handouts\nExercise 3 — Tracing Code and Runtime State investigates the workflow and memory roles using the existing Exercise 2 application.\nThe editor handout and development-environment handout support everyday work in the VM.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Where Our Code Runs</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-memory-and-execution.html#references",
+    "href": "chapters/04-memory-and-execution.html#references",
+    "title": "4  Where Our Code Runs",
+    "section": "References",
+    "text": "References\n\nGNU Binutils, objdump and nm.\nGCC, Optimize Options.\nRISC-V International, RISC-V ABIs Specification.\nArpaci-Dusseau and Arpaci-Dusseau, Operating Systems: Three Easy Pieces.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Where Our Code Runs</span>"
+    ]
+  },
+  {
     "objectID": "downloads.html",
     "href": "downloads.html",
     "title": "Downloads",
     "section": "",
     "text": "Course Script\nStudent-facing material for Winter Semester 2026/2027 is available here.",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Downloads</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Downloads</span>"
     ]
   },
   {
@@ -476,7 +616,7 @@
     "section": "",
     "text": "Download the complete course script (PDF)",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Downloads</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Downloads</span>"
     ]
   },
   {
@@ -484,9 +624,9 @@
     "href": "downloads.html#lecture-slides",
     "title": "Downloads",
     "section": "Lecture Slides",
-    "text": "Lecture Slides\n\n01 — Introduction\n02 — From Source to Executables: Towards Processes\n03 — First Process: Stop and Continue",
+    "text": "Lecture Slides\n\n01 — Introduction\n02 — From Source to Executables: Towards Processes\n03 — First Process: Stop and Continue\n04 — Where Our Code Runs",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Downloads</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Downloads</span>"
     ]
   },
   {
@@ -494,9 +634,9 @@
     "href": "downloads.html#exercises",
     "title": "Downloads",
     "section": "Exercises",
-    "text": "Exercises\n\nExercise 1 — From Source to First Instructions\nExercise 2 — Using Your First Process",
+    "text": "Exercises\n\nExercise 1 — From Source to First Instructions\nExercise 2 — Using Your First Process\nExercise 3 — Tracing Code and Runtime State",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Downloads</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Downloads</span>"
     ]
   },
   {
@@ -506,7 +646,7 @@
     "section": "Checkpoints",
     "text": "Checkpoints\n\nCheckpoint 1 — I Have a Process",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Downloads</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Downloads</span>"
     ]
   },
   {
@@ -516,7 +656,7 @@
     "section": "Lab",
     "text": "Lab\n\nLab 0 — Common Development Environment",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Downloads</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Downloads</span>"
     ]
   },
   {
@@ -526,7 +666,7 @@
     "section": "Handouts",
     "text": "Handouts\n\nDevelopment Environment\nEditing Source Files in Ubuntu — nano and Vim\nUbuntu Shell — Command-Line Cheat Sheet\nLab Organization",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Downloads</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Downloads</span>"
     ]
   },
   {
@@ -536,7 +676,7 @@
     "section": "License",
     "text": "License\nExcept where otherwise noted, the student-facing BVS1 teaching material is © 2026 Stavros Kousidis and licensed under CC BY-SA 4.0. Third-party material remains subject to its respective terms.\nThe HTML version you are currently reading is the primary online version of the course material.",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Downloads</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Downloads</span>"
     ]
   }
 ]

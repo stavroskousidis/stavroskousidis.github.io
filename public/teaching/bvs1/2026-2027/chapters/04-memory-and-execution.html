@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Stavros Kousidis">
+
+<title>4&nbsp; Where Our Code Runs – BVS1 – Betriebssysteme</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../downloads.html" rel="next">
+<link href="../chapters/03-first-process.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-d1ce83cbcf7f21d8208077a0fee83aa1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/04-memory-and-execution.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Where Our Code Runs</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">BVS1 – Betriebssysteme</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">BVS1 – Betriebssysteme</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/01-introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Executing Code to Operating Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/02-source-to-executables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">From Source to Executables: Towards Processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/03-first-process.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">First Process: Stop and Continue</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/04-memory-and-execution.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Where Our Code Runs</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../downloads.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Downloads</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#locate-editing-building-and-execution" id="toc-locate-editing-building-and-execution" class="nav-link active" data-scroll-target="#locate-editing-building-and-execution"><span class="header-section-number">4.1</span> Locate editing, building, and execution</a></li>
+  <li><a href="#establish-a-reliable-editbuildrun-loop" id="toc-establish-a-reliable-editbuildrun-loop" class="nav-link" data-scroll-target="#establish-a-reliable-editbuildrun-loop"><span class="header-section-number">4.2</span> Establish a reliable edit–build–run loop</a></li>
+  <li><a href="#one-managed-execution-can-contain-several-active-calls" id="toc-one-managed-execution-can-contain-several-active-calls" class="nav-link" data-scroll-target="#one-managed-execution-can-contain-several-active-calls"><span class="header-section-number">4.3</span> One managed execution can contain several active calls</a></li>
+  <li><a href="#instructions-and-runtime-data-have-different-roles" id="toc-instructions-and-runtime-data-have-different-roles" class="nav-link" data-scroll-target="#instructions-and-runtime-data-have-different-roles"><span class="header-section-number">4.4</span> Instructions and runtime data have different roles</a></li>
+  <li><a href="#sp-ra-and-pc-are-different-kinds-of-cpu-state" id="toc-sp-ra-and-pc-are-different-kinds-of-cpu-state" class="nav-link" data-scroll-target="#sp-ra-and-pc-are-different-kinds-of-cpu-state"><span class="header-section-number">4.5</span> <code>sp</code>, <code>ra</code>, and <code>pc</code> are different kinds of CPU state</a></li>
+  <li><a href="#follow-the-same-execution-through-yield-and-resume" id="toc-follow-the-same-execution-through-yield-and-resume" class="nav-link" data-scroll-target="#follow-the-same-execution-through-yield-and-resume"><span class="header-section-number">4.6</span> Follow the same execution through yield and resume</a></li>
+  <li><a href="#connect-the-other-memory-regions" id="toc-connect-the-other-memory-regions" class="nav-link" data-scroll-target="#connect-the-other-memory-regions"><span class="header-section-number">4.7</span> Connect the other memory regions</a></li>
+  <li><a href="#the-process-stack-is-an-array-in-an-object" id="toc-the-process-stack-is-an-array-in-an-object" class="nav-link" data-scroll-target="#the-process-stack-is-an-array-in-an-object"><span class="header-section-number">4.8</span> The process stack is an array in an object</a></li>
+  <li><a href="#inspect-the-file-without-confusing-it-with-live-memory" id="toc-inspect-the-file-without-confusing-it-with-live-memory" class="nav-link" data-scroll-target="#inspect-the-file-without-confusing-it-with-live-memory"><span class="header-section-number">4.9</span> Inspect the file without confusing it with live memory</a></li>
+  <li><a href="#the-next-requirement-regain-control-without-cooperation" id="toc-the-next-requirement-regain-control-without-cooperation" class="nav-link" data-scroll-target="#the-next-requirement-regain-control-without-cooperation"><span class="header-section-number">4.10</span> The next requirement: regain control without cooperation</a></li>
+  <li><a href="#key-ideas" id="toc-key-ideas" class="nav-link" data-scroll-target="#key-ideas"><span class="header-section-number">4.11</span> Key ideas</a></li>
+  <li><a href="#related-exercise-and-handouts" id="toc-related-exercise-and-handouts" class="nav-link" data-scroll-target="#related-exercise-and-handouts">Related Exercise and Handouts</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Where Our Code Runs</span></h1>
+<p class="subtitle lead">Winter Semester 2026/2027</p>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Stavros Kousidis </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            ICCT
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Lecture 3 constructed a process from an entry function, owned stack storage, saved CPU context, and lifecycle information. This chapter connects that abstraction to the machines and memory we actually use. It follows four questions raised by students: Where am I working? How do I edit the files that are actually built? Where is the program counter? Where do constants appear in the disassembly? Together they lead to the guiding question: <strong>where are our instructions and runtime data, and what must be preserved when execution pauses or is interrupted?</strong></p>
+<p>We use the same <code>worker()</code> and <code>permute()</code> from Exercise 2. The aim is to reconstruct and diagnose the existing mechanism before extending it.</p>
+<section id="locate-editing-building-and-execution" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="locate-editing-building-and-execution"><span class="header-section-number">4.1</span> Locate editing, building, and execution</h2>
+<p>Our setup has three machine roles:</p>
+<pre class="text"><code>physical host: Linux / macOS / Windows
+    |  hosts the VM; Multipass manages it
+    v
+Ubuntu VM bvs1: our development host
+    |  runs editor, build tools, and QEMU
+    v
+QEMU emulates an RV64 target: CPU + RAM + UART
+    |  target CPU executes RV64 instructions
+    v
+our program / growing BVS1 operating system</code></pre>
+<p>The physical host supplies the outer infrastructure. Multipass manages the Ubuntu VM; it is not another machine layer. The VM is the <strong>development host</strong> for our tools. QEMU runs there as an ordinary Ubuntu process and emulates the <strong>target machine</strong>.</p>
+<p>Both our OS-side control code and the managed process execute on the RV64 target. They do not become Ubuntu programs merely because QEMU runs in Ubuntu. The cross compiler and linker execute in the VM but generate an RV64 ELF for the target ISA.</p>
+<p>The complete workflow is:</p>
+<pre class="text"><code>edit -&gt; save source -&gt; compile/link -&gt; linked ELF
+                                          |
+                                 QEMU loads the image
+                                          |
+                                RV64 instructions execute</code></pre>
+<p>Make automates the build recipe. The editor changes source text; the compiler reads the saved file; QEMU receives the resulting ELF. An already running QEMU instance does not automatically acquire a new image when source files are edited or rebuilt.</p>
+</section>
+<section id="establish-a-reliable-editbuildrun-loop" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="establish-a-reliable-editbuildrun-loop"><span class="header-section-number">4.2</span> Establish a reliable edit–build–run loop</h2>
+<p>Start on the physical host with:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">multipass</span> shell bvs1</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Inside the VM, locate the existing repository and source file:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/teaching-bvs1-code</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">pwd</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> main.c</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Run <code>make</code> from the repository directory that contains the <code>Makefile</code>. Make reads the <code>Makefile</code> in the current directory, and that <code>Makefile</code> names the source files it compiles. A <code>main.c</code> edited in another directory or another copy of the repository is not this build’s input.</p>
+<p>In nano, save with <strong>Ctrl-O</strong>, <strong>Enter</strong>, then leave with <strong>Ctrl-X</strong>. If using Vim, enter Insert mode with <strong>i</strong>, make the change, press <strong>Esc</strong>, then save and leave with <code>:wq</code>. The editor handout contains further details. The relevant competence is editing the intended file reliably; the choice of editor is not assessed.</p>
+<p>After saving, inspect your change and build:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> diff <span class="at">--</span> main.c</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Use one small output-label change to connect the saved file to an observable effect. The array’s permutation should remain unchanged if only a label changes. End QEMU with <strong>Ctrl-a</strong>, release, then <strong>x</strong>. Restore that intentional label change before continuing.</p>
+<p>If an old label appears, diagnose the chain in order:</p>
+<pre class="text"><code>saved source -&gt; build input -&gt; successful build -&gt; executable -&gt; QEMU run</code></pre>
+<p>Was the change saved? Is the saved file the one Make uses as build input? Did the build succeed and produce a new executable? Did a new QEMU session load that executable? Rebuilding repeatedly cannot correct an unsaved buffer or a different repository copy.</p>
+</section>
+<section id="one-managed-execution-can-contain-several-active-calls" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="one-managed-execution-can-contain-several-active-calls"><span class="header-section-number">4.3</span> One managed execution can contain several active calls</h2>
+<p>Exercise 2 uses this entry function:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span> worker<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> value<span class="op">[]</span> <span class="op">=</span> <span class="st">"BVS1"</span><span class="op">;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    permute<span class="op">(</span>value<span class="op">);</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    uart_puts<span class="op">(</span><span class="st">"process: result: "</span><span class="op">);</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    uart_puts<span class="op">(</span>value<span class="op">);</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    uart_puts<span class="op">(</span><span class="st">"</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    process_exit<span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The local array has five bytes: <code>B</code>, <code>V</code>, <code>S</code>, <code>1</code>, and the terminating zero byte. It is modifiable character data. The helper receives a pointer to that existing array; passing it does not create another array or another process.</p>
+<p>The helper first exchanges positions 0 and 1, prints the intermediate value, calls <code>process_yield()</code>, then exchanges positions 2 and 3. Before yield, both <code>worker()</code> and <code>permute()</code> are still active. The array has become <code>VBS1\0</code>, but its owning worker invocation has not ended.</p>
+</section>
+<section id="instructions-and-runtime-data-have-different-roles" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="instructions-and-runtime-data-have-different-roles"><span class="header-section-number">4.4</span> Instructions and runtime data have different roles</h2>
+<p>The linked program places machine instructions in <code>.text</code>. This includes instructions implementing the worker, helper, process API, and OS-side code. Calling a function transfers control to its instructions; it does not copy those instructions onto the stack.</p>
+<p>The <strong>program counter</strong>, <code>pc</code>, identifies the instruction to execute. The <strong>stack pointer</strong>, <code>sp</code>, selects the current stack position. These are CPU state, not memory sections. A saved return address is an address value that points back into code; its being stored on the stack does not make the pointed-to instructions stack contents.</p>
+<p>The stack holds runtime data associated with active calls: saved call information, saved registers, some local variables, and temporaries as needed. The labels <code>worker frame</code> and <code>permute frame</code> describe this runtime data, not the functions’ instructions.</p>
+<p>A schematic snapshot after the first swap is:</p>
+<pre class="text"><code>.text                       process-owned stack storage
+                            higher addresses
+same worker instructions    +--------------------------+
+same permute instructions   | worker: value V B S 1 \0 |
+  ...                       +--------------------------+
+  call process_yield        | permute call data        |
+                            +--------------------------+
+                            lower addresses</code></pre>
+<p>The CPU has changed data in the array while executing instructions that remain in <code>.text</code>. A non-inlined helper call uses the same process stack as the worker, with newer call data toward lower addresses. The picture does not prescribe exact offsets, compiler-generated frames, or a stack slot for every local value.</p>
+</section>
+<section id="sp-ra-and-pc-are-different-kinds-of-cpu-state" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="sp-ra-and-pc-are-different-kinds-of-cpu-state"><span class="header-section-number">4.5</span> <code>sp</code>, <code>ra</code>, and <code>pc</code> are different kinds of CPU state</h2>
+<p><code>sp</code> and <code>ra</code> are the conventional ABI names of the integer registers <code>x2</code> and <code>x1</code>. Ordinary instructions read and write them like the other general-purpose registers <code>x0</code>–<code>x31</code>. The program counter is also architectural CPU state, but it is not one of these 32 registers. The CPU advances it as it executes, and jumps, branches, calls, and returns change it.</p>
+<p>This explains why the Lecture 3 context contains <code>ra</code>, <code>sp</code>, and <code>s0</code>–<code>s11</code> but no explicit <code>pc</code>. The cooperative context switch happens at an ordinary function-call boundary, so the saved <code>ra</code> already describes the continuation:</p>
+<pre class="text"><code>saved ra -&gt; restored ra -&gt; ret -&gt; execution continues there</code></pre>
+<p><code>ret</code> sets the program counter to the restored <code>ra</code>. The program counter is therefore not forgotten; the cooperative switch re-establishes it through <code>ra</code>.</p>
+</section>
+<section id="follow-the-same-execution-through-yield-and-resume" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="follow-the-same-execution-through-yield-and-resume"><span class="header-section-number">4.6</span> Follow the same execution through yield and resume</h2>
+<p>When the process yields, the low-level switch saves its continuation, stack position, and required additional registers. The OS context is restored. The CPU’s current <code>pc</code> and <code>sp</code> now describe OS execution, while <code>p.context</code> holds the saved register values for the paused process. The array and suspended call data remain in <code>p.stack</code>.</p>
+<p>The next <code>process_run()</code> restores that saved context. Low-level continuation first returns through the suspended yield path. <code>process_yield()</code> then returns to the same <code>permute()</code> invocation, which performs the second swap. The array becomes <code>VB1S\0</code>. The worker does not initialize it again, because no new worker invocation was started.</p>
+<p>When the helper returns, the worker prints the result and calls <code>process_exit(0)</code>. Exit marks the process FINISHED and returns control to the OS. Old bytes may physically remain after a helper returns or a process exits; that does not keep a call active or authorize another run. Lifecycle state determines whether the process may run again.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Moment</th>
+<th>Array contents</th>
+<th>CPU executes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>worker initialized it</td>
+<td><code>BVS1\0</code></td>
+<td>process</td>
+</tr>
+<tr class="even">
+<td>first swap completed</td>
+<td><code>VBS1\0</code></td>
+<td>process</td>
+</tr>
+<tr class="odd">
+<td>yielded</td>
+<td><code>VBS1\0</code>, preserved</td>
+<td>OS</td>
+</tr>
+<tr class="even">
+<td>second swap completed</td>
+<td><code>VB1S\0</code></td>
+<td>process</td>
+</tr>
+<tr class="odd">
+<td>process exited</td>
+<td>no active array</td>
+<td>OS</td>
+</tr>
+</tbody>
+</table>
+<p>Calling entry again restarts the work; restoring a continuation without the matching stack position loses the original call chain; allowing a FINISHED process to run violates its lifecycle. These are different failures of the same model.</p>
+</section>
+<section id="connect-the-other-memory-regions" class="level2" data-number="4.7">
+<h2 data-number="4.7" class="anchored" data-anchor-id="connect-the-other-memory-regions"><span class="header-section-number">4.7</span> Connect the other memory regions</h2>
+<p>The section names describe roles in the linked image:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Region</th>
+<th>Role in our example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>.text</code></td>
+<td>RV64 machine instructions</td>
+</tr>
+<tr class="even">
+<td><code>.rodata</code></td>
+<td>constant data, including output labels</td>
+</tr>
+<tr class="odd">
+<td><code>.data</code></td>
+<td>writable static/global objects with stored initial values, when present</td>
+</tr>
+<tr class="even">
+<td><code>.bss</code></td>
+<td>zero-initialized static/global storage, including OS bookkeeping in the inspected library</td>
+</tr>
+<tr class="odd">
+<td>OS stack</td>
+<td>runtime data of OS-side calls</td>
+</tr>
+<tr class="even">
+<td>process stack storage</td>
+<td>runtime data of the managed process’s calls</td>
+</tr>
+</tbody>
+</table>
+<p>The output label <code>"process: result: "</code> is constant data, normally placed in <code>.rodata</code>. The initialized local <code>value</code> array is a separate writable object. Its C initializer does not put that array in <code>.rodata</code>: the compiler can provide its initial bytes from constants in instructions or from constant storage. Inspect the actual build rather than assuming a separate <code>BVS1</code> string must be present in <code>.rodata</code>.</p>
+<p>Constants therefore appear in the disassembly in two forms:</p>
+<ul>
+<li>A value small enough to encode inside an instruction appears as an <strong>immediate</strong> operand, for example in <code>li</code> or <code>addi</code>. Larger values may be built by more than one instruction. The four characters of <code>BVS1</code> can appear together as one 32-bit value: our target uses little-endian byte order, so storing <code>0x31535642</code> produces the bytes <code>0x42 0x56 0x53 0x31</code> at increasing addresses.</li>
+<li>In this build, constant output labels are stored in <code>.rodata</code>. Instructions compute a label’s address, typically with an <code>auipc</code>/<code>addi</code> pair that <code>objdump -d</code> annotates with the resulting address, and pass it to <code>uart_puts()</code>. <code>riscv64-unknown-elf-objdump -s -j .rodata build/hello-bvs1.elf</code> shows the bytes stored at that address.</li>
+</ul>
+<p>For comparison, a static/global <code>int initialized = 7</code> typically belongs to <code>.data</code>; a static/global <code>int zeroed</code> initially has value zero and typically belongs to <code>.bss</code>. Static storage lasts for the execution of the program, unlike the local state of a particular call. Neither declaration is needed in the Exercise 2 application merely to fill a diagram.</p>
+<p>In the inspected Exercise 2 image, <code>.data</code> is empty. The local <code>value</code> array belongs to neither section: it lives on the process stack while <code>worker()</code> is active. Its <code>.bss</code> contains <code>os_context</code> and <code>current_process</code> from the provided library. A pointer becoming nonzero at runtime does not move its storage to <code>.data</code>. BSS occupies memory even though the ELF does not store all its initial zero bytes as file contents; loading/startup must establish the required initial state.</p>
+<p>These roles do not imply that our minimal system enforces read/write permissions or separate address spaces. The course linker script and runtime storage choices determine the layout we are studying.</p>
+</section>
+<section id="the-process-stack-is-an-array-in-an-object" class="level2" data-number="4.8">
+<h2 data-number="4.8" class="anchored" data-anchor-id="the-process-stack-is-an-array-in-an-object"><span class="header-section-number">4.8</span> The process stack is an array in an object</h2>
+<p>Exercise 2 declares:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">struct</span> process p<span class="op">;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* create, run, inspect state, run again */</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* ... */</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Here <code>p</code> is an automatic object in <code>main()</code>’s OS-stack allocation. The embedded array <code>p.stack</code> is part of that object. It reserves a subregion that becomes the process’s active call stack when <code>sp</code> selects an aligned position inside it.</p>
+<p>This gives the process distinct stack storage for its execution without creating another ELF section. While the process runs, OS-side calls are suspended. When the OS regains control, it uses other stack space and leaves <code>p.stack</code> intact. <code>main()</code> remains active throughout, so the process object and its embedded storage remain alive.</p>
+<p>If <code>p</code> were instead static/global, its containing storage would be static. The role of its stack array would remain process-owned runtime storage. Therefore “process stack” answers what the memory is used for; the declaration and allocation answer where that memory comes from. In this example no dynamic allocation is required.</p>
+</section>
+<section id="inspect-the-file-without-confusing-it-with-live-memory" class="level2" data-number="4.9">
+<h2 data-number="4.9" class="anchored" data-anchor-id="inspect-the-file-without-confusing-it-with-live-memory"><span class="header-section-number">4.9</span> Inspect the file without confusing it with live memory</h2>
+<p>After a successful Exercise 2 build, run these commands in the VM:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">riscv64-unknown-elf-objdump</span> <span class="at">-h</span> build/hello-bvs1.elf</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">riscv64-unknown-elf-nm</span> <span class="at">-n</span> build/hello-bvs1.elf</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ex">riscv64-unknown-elf-objdump</span> <span class="at">-d</span> <span class="dt">\</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--disassemble</span><span class="op">=</span>context_switch build/hello-bvs1.elf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The first command lists sections; the second lists symbols by address; the third decodes the selected function’s instructions. In <code>nm</code>, <code>T/t</code> identifies code symbols and <code>B/b</code> identifies BSS-related symbols. A symbol can simply name an address: <code>_stack_top</code> is the linker-defined initial OS-stack address, not a C array declaration. These inspection options are documented in the <a href="https://sourceware.org/binutils/docs/binutils/">GNU Binutils manuals</a>.</p>
+<p>The commands inspect the ELF on disk. They do not display the running target’s CPU registers or the live contents of the local array. Debugging information can describe local variables, but that is different from a linker symbol or an observation of runtime memory.</p>
+<p>The normal build uses <code>-O2</code>. It can inline <code>permute()</code>, meaning it incorporates the helper’s work into the caller instead of retaining a separate call. Local scalar values such as <code>tmp</code> can be kept in registers. The lecture’s separate observation build uses <code>-O0 -g -fno-inline</code> to retain inspectable function boundaries; <code>-g</code> adds debugging information. Exact frames and addresses depend on the build. See <a href="https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html">GCC’s Optimize Options</a>.</p>
+</section>
+<section id="the-next-requirement-regain-control-without-cooperation" class="level2" data-number="4.10">
+<h2 data-number="4.10" class="anchored" data-anchor-id="the-next-requirement-regain-control-without-cooperation"><span class="header-section-number">4.10</span> The next requirement: regain control without cooperation</h2>
+<p>Our current mechanism depends on the process reaching yield or exit. If it runs forever before either operation, our target-side OS continuation cannot run again. Ubuntu can still manage the QEMU process, but that is control at another layer. Terminating QEMU ends the target session rather than implementing target-side process management.</p>
+<p>An <strong>interrupt</strong> signals an event. When enabled, it transfers control to a configured OS handler, allowing the OS to regain control. A future <strong>timer interrupt</strong> can make control transfer possible without a voluntary yield. This enables <strong>preemption</strong>: the OS takes control without the process’s cooperation. Scheduling then decides whether to continue the interrupted execution or select another runnable one. Interrupt handling and the scheduling decision are related but distinct steps.</p>
+<p>This chapter raises that question without requiring an interrupt implementation for CP1. An arbitrary interruption is not an ordinary C call boundary. The interrupted continuation is not supplied by <code>ra</code> as it is at our cooperative call boundary; <code>ra</code> holds whatever value the interrupted code was using. The interrupted program counter must therefore be preserved explicitly, in dedicated trap state, together with the other registers the interrupted code may be using. The cooperative CP1 register subset is not by itself the full specification of such a mechanism.</p>
+</section>
+<section id="key-ideas" class="level2" data-number="4.11">
+<h2 data-number="4.11" class="anchored" data-anchor-id="key-ideas"><span class="header-section-number">4.11</span> Key ideas</h2>
+<ul>
+<li>The Ubuntu VM is our development host; the emulated RV64 machine is the target that executes our program’s instructions.</li>
+<li>Editing, saving, building, and starting a new run are separate steps in one observable workflow.</li>
+<li>Function instructions remain in <code>.text</code>; stack frames contain runtime data associated with active calls.</li>
+<li>A local writable array is distinct from constant data used to initialize it or print an output label.</li>
+<li>Process stack storage is an array in the process object; its role does not prescribe an ELF section or an address space.</li>
+<li>Preserved stack data and saved register context together support continuing the same execution.</li>
+<li>The program counter is CPU state but not a general-purpose register: the cooperative switch re-establishes it through <code>ra</code> and <code>ret</code>, whereas an interruption must preserve it explicitly.</li>
+<li>Lifecycle state determines whether another run is permitted, even if old memory contents remain.</li>
+</ul>
+</section>
+<section id="related-exercise-and-handouts" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="related-exercise-and-handouts">Related Exercise and Handouts</h2>
+<p><a href="../exercises/BVS1-Exercise-03-Tracing-Code-and-Runtime-State-WS26-27.pdf"><strong>Exercise 3 — Tracing Code and Runtime State</strong></a> investigates the workflow and memory roles using the existing Exercise 2 application.</p>
+<p>The <a href="../handouts/BVS1-Handout-Ubuntu-Editors-WS26-27.pdf">editor handout</a> and <a href="../handouts/BVS1-Handout-Development-Environment-WS26-27.pdf">development-environment handout</a> support everyday work in the VM.</p>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<ul>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/binutils/objdump.html">objdump</a> and <a href="https://sourceware.org/binutils/docs/binutils/nm.html">nm</a>.</li>
+<li>GCC, <a href="https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html">Optimize Options</a>.</li>
+<li>RISC-V International, <a href="https://riscv-non-isa.github.io/riscv-elf-psabi-doc/">RISC-V ABIs Specification</a>.</li>
+<li>Arpaci-Dusseau and Arpaci-Dusseau, <a href="https://pages.cs.wisc.edu/~remzi/OSTEP/"><em>Operating Systems: Three Easy Pieces</em></a>.</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapters/03-first-process.html" class="pagination-link" aria-label="First Process: Stop and Continue">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">First Process: Stop and Continue</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../downloads.html" class="pagination-link" aria-label="Downloads">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Downloads</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Except where otherwise noted, © 2026 Stavros Kousidis.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p><a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
