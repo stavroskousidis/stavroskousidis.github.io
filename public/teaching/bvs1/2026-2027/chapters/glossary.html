@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Stavros Kousidis">
+
+<title>Appendix A — Glossary – BVS1 – Betriebssysteme</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../downloads.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-d1ce83cbcf7f21d8208077a0fee83aa1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/glossary.html">Appendices</a></li><li class="breadcrumb-item"><a href="../chapters/glossary.html"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Glossary</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">BVS1 – Betriebssysteme</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">BVS1 – Betriebssysteme</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/01-introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Executing Code to Operating Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/02-source-to-executables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">From Source to Executables: Towards Processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/03-first-process.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">First Process: Stop and Continue</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/04-memory-and-execution.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Where Our Code Runs</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/05-entering-the-os.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Entering the OS</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../downloads.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Downloads</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/glossary.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Glossary</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/glossary.html">Appendices</a></li><li class="breadcrumb-item"><a href="../chapters/glossary.html"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Glossary</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Appendix A — Glossary</h1>
+<p class="subtitle lead">Winter Semester 2026/2027</p>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Stavros Kousidis </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            ICCT
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Short definitions of terms that the chapters use precisely. Each entry names the lecture where the term first matters. Terms that are easily confused point to each other with <em>see also</em>.</p>
+<dl>
+<dt>Architectural state</dt>
+<dd>
+State that the ISA defines and that every implementation must provide, as opposed to details of the microarchitecture. The <code>x</code> registers, the CSRs and the <code>pc</code> are all architectural state. The <code>pc</code> differs from the others in one respect: it is not addressable. No instruction names it as an operand or stores it to memory; it changes only through control transfers and the trap rule. <em>See also:</em> program counter, live <code>pc</code>. (Lecture 5)
+</dd>
+<dt>Automatic storage duration</dt>
+<dd>
+The lifetime of an ordinary local variable, declared inside a function without <code>static</code>. The object exists only while that call is active and lives in the call’s stack frame; every call, including a recursive one, gets its own copy. When the call returns, or when its stack frame is reused, the object is gone. Example: <code>struct process p;</code> inside <code>main()</code> in Exercise 2 lies in <code>main()</code>’s stack frame at the top of the OS stack. <em>See also:</em> static storage duration. (Lecture 4)
+</dd>
+<dt>Bootstrap function</dt>
+<dd>
+The internal function through which a process is entered for the first time: <code>process_start()</code>. It calls the process’s entry function and, if that returns, <code>process_exit(0)</code>. The initial saved state of a new process points to it, as <code>ra</code> in the CP1 context and as <code>pc</code> in the trap frame. (Lecture 3)
+</dd>
+<dt>Caller and callee</dt>
+<dd>
+In a function call, the <strong>caller</strong> is the function that makes the call, the <strong>callee</strong> the function being called. The calling convention splits the work of preserving registers between them. <em>See also:</em> calling convention, caller-saved and callee-saved register. (Lecture 3; named explicitly in Lecture 5)
+</dd>
+<dt>Caller-saved and callee-saved register</dt>
+<dd>
+A <strong>callee-saved</strong> register is one whose value a called function must preserve for its caller: <code>sp</code> and <code>s0</code>–<code>s11</code>. A <strong>caller-saved</strong> register may be destroyed by a call, so the caller keeps any value it still needs elsewhere: <code>t0</code>–<code>t6</code> and <code>a0</code>–<code>a7</code>, and <code>ra</code>, which every call overwrites. The split is why CP1’s <code>context_switch()</code> could save only <code>ra</code>, <code>sp</code> and <code>s0</code>–<code>s11</code>. <em>See also:</em> calling convention. (Lecture 3)
+</dd>
+<dt>Calling convention</dt>
+<dd>
+The software agreement, defined in the RISC-V ABI, that lets separately compiled functions cooperate about how registers are used: arguments in <code>a0</code>–<code>a7</code>, the return value in <code>a0</code>, the return address in <code>ra</code>, and which registers are caller-saved or callee-saved. The compiler guarantees it for the code it generates; hand-written assembly must keep it itself, and the hardware knows nothing of it. A trap is not a call, so the convention gives no guarantee at a trap. (Lecture 3)
+</dd>
+<dt>Context</dt>
+<dd>
+The saved CPU register state needed to continue the same execution. The CP1 <code>struct context</code> holds <code>ra</code>, <code>sp</code> and <code>s0</code>–<code>s11</code>, which suffices at a call boundary. From Lecture 5 the trap frame is the context, complete for our model. <em>See also:</em> trap frame, context switch. (Lecture 3)
+</dd>
+<dt>Context switch</dt>
+<dd>
+In CP1: save the current execution’s context, restore another saved context, and continue the restored execution. <code>context_switch()</code> did both halves in one function called by the running code; from Lecture 5 the trap path saves and the return path restores. (Lecture 3)
+</dd>
+<dt>Continuation address</dt>
+<dd>
+A saved value saying where an execution continues when it is restored. It is never the live <code>pc</code> itself. In CP1 it is <code>ra</code> in the context; in the trap frame it is the field <code>pc</code>. After an interrupt it equals the trap <code>pc</code>; after an <code>ecall</code> it is the trap <code>pc</code> + 4. <em>See also:</em> live <code>pc</code>, trap <code>pc</code>. (Lecture 4)
+</dd>
+<dt>Control and status register (CSR)</dt>
+<dd>
+A CPU register outside the general-purpose registers <code>x0</code>–<code>x31</code>, reachable only through the CSR instructions of the <code>Zicsr</code> extension, not through loads and stores. Our trap mechanism uses five: <code>mtvec</code> (where traps enter: a base address and a mode field), <code>mepc</code> (the trap <code>pc</code>), <code>mcause</code> (the reason, with the interrupt bit in bit 63), <code>mstatus</code> (among others <code>MIE</code>, <code>MPIE</code>, <code>MPP</code>), and <code>mscratch</code> (no meaning for the hardware; our OS keeps the current frame’s address there). The prefix <code>m</code> means machine mode. (Lecture 5)
+</dd>
+<dt>Cooperative and non-cooperative entry</dt>
+<dd>
+An entry into the OS is <strong>cooperative</strong> if the running execution itself decides to make it, as with <code>process_yield()</code> in CP1 or <code>ecall</code> in Lecture 5. It is <strong>non-cooperative</strong> if the OS is entered without the execution’s intention, as with an illegal instruction or, from Lecture 6, a timer interrupt. This axis is separate from synchronous versus asynchronous: an illegal instruction is synchronous but not cooperative. <em>See also:</em> synchronous and asynchronous trap, preemption. (Lecture 3; Lecture 5)
+</dd>
+<dt>Cross-compilation</dt>
+<dd>
+Building code on one architecture for another. A <strong>cross compiler</strong> runs on the development host, an x86-64 or ARM machine, and produces RV64 code for the target. (Lecture 1)
+</dd>
+<dt>Development host</dt>
+<dd>
+The machine on which the development tools run: in BVS1 the Ubuntu <code>bvs1</code> VM. <em>See also:</em> physical host, target. (Lecture 1)
+</dd>
+<dt>ELF (Executable and Linkable Format)</dt>
+<dd>
+The binary file format we use for both object files and the final executable. An ELF file contains sections, a symbol table and the entry address. (Lecture 1)
+</dd>
+<dt>Exception</dt>
+<dd>
+A synchronous trap: caused by the instruction being executed, at the same instruction every time the program runs with the same input. The trap <code>pc</code> is that instruction. Examples: <code>ecall</code> (<code>mcause</code> 11 from machine mode), illegal instruction (<code>mcause</code> 2). Not an interrupt. <em>See also:</em> interrupt, trap. (Lecture 5)
+</dd>
+<dt>Execution</dt>
+<dd>
+A running sequence of instructions together with the CPU and memory state it needs to continue. Two executions take turns when one stops and another continues; a process is an execution that the OS manages. In CP1 <code>main()</code> was an execution too, suspended while the process ran; from Lecture 5 nothing of the OS remains suspended between traps. <em>See also:</em> process. (Lecture 2)
+</dd>
+<dt>Exit</dt>
+<dd>
+The process finishes, records a result, and returns control to the operating system; it must never continue. From Lecture 5 <code>process_exit()</code> makes the system call <code>exit</code>. <em>See also:</em> yield. (Lecture 2; Lecture 3)
+</dd>
+<dt>Idle process</dt>
+<dd>
+The process the OS runs when no other process is <code>READY</code>. In the reference implementation it is a loop around <code>wfi</code> (wait for interrupt); after the last process has exited, the OS returns into its frame. (Lecture 5)
+</dd>
+<dt>Immediate</dt>
+<dd>
+A value small enough to be encoded inside an instruction, for example in <code>li</code> or <code>addi</code>. Larger values may need several instructions. (Lecture 4)
+</dd>
+<dt>Instruction Set Architecture (ISA)</dt>
+<dd>
+The contract between software and a processor: the instructions, registers and behaviour that every implementation provides and that software may rely on. The trap rule and the CSRs belong to it. <em>See also:</em> microarchitecture, platform. (Lecture 1)
+</dd>
+<dt>Interrupt</dt>
+<dd>
+An asynchronous trap: caused by an event independent of the current instruction and taken between two instructions, so the place varies from run to run. The trap <code>pc</code> is the instruction that was about to execute and has not executed yet; there is no <code>+4</code>. Interrupts are taken only when enabled; on a trap the CPU disables them while the OS saves the process’s state. Not an exception: an <code>ecall</code> is not an interrupt. <em>See also:</em> exception, timer interrupt, trap. (Lecture 4; as a kind of trap in Lecture 5)
+</dd>
+<dt>Label</dt>
+<dd>
+A name in assembly source, written as <code>name:</code>, that names the position of the next instruction or data item. Labels exist only in source code. The assembler turns a named label such as <code>_start:</code> or <code>trap_entry:</code> into a symbol; a local label such as <code>1:</code> in <code>start.S</code> is used only within its file and does not appear in the symbol table. <code>trap_entry:</code> in <code>trap.S</code> names the first instruction of the trap path. Not to be confused with an <em>output label</em>, the constant text that a program prints before a value, such as <code>"process: result: "</code>. <em>See also:</em> symbol. (Lecture 2)
+</dd>
+<dt>Lifecycle state</dt>
+<dd>
+Says whether an execution may run: <code>READY</code>, <code>RUNNING</code> or <code>FINISHED</code>. The context says how it continues. (Lecture 3)
+</dd>
+<dt>Linker</dt>
+<dd>
+The tool that combines object files, resolves references between them by symbol name, and places their sections at final addresses in target memory. (Lecture 1; Lecture 2)
+</dd>
+<dt>Linker script</dt>
+<dd>
+The file that tells the linker where the sections go in target memory and defines symbols such as <code>_stack_top</code>. Ours is <code>linker.ld</code>; students read it but do not write one. (Lecture 2)
+</dd>
+<dt>Live <code>pc</code></dt>
+<dd>
+The current execution position of the CPU: the <code>pc</code> as architectural state. Software never stores it directly; the CPU copies it into <code>mepc</code> on a trap, and <code>mret</code> sets it from <code>mepc</code>. <em>See also:</em> trap <code>pc</code>, continuation address. (Lecture 4; named in Lecture 5)
+</dd>
+<dt>Machine mode</dt>
+<dd>
+The most privileged RISC-V privilege mode (M-mode). Our whole system, OS and processes alike, runs in it, which is why our CSRs carry the prefix <code>m</code> and <code>ecall</code> produces <code>mcause</code> 11. <em>See also:</em> privilege mode. (Lecture 5)
+</dd>
+<dt>Microarchitecture</dt>
+<dd>
+How a particular processor implements the ISA internally, for example its pipeline or caches. Software written for the ISA does not depend on it. <em>See also:</em> ISA. (Lecture 1)
+</dd>
+<dt>Object file</dt>
+<dd>
+A target-specific intermediate file produced by the compiler or assembler, in ELF, that still needs to be linked with others into an executable. (Lecture 1)
+</dd>
+<dt>Operating system</dt>
+<dd>
+Software that helps turn hardware into a usable computer system by providing abstractions, resource management, coordination, protection, and services for programs and users. Two views: the OS as <strong>resource manager</strong> and the OS as <strong>abstract machine</strong>. (Lecture 1)
+</dd>
+<dt>OS stack</dt>
+<dd>
+The stack on which the OS’s own code runs: the region that the linker script reserves below <code>_stack_top</code>. <code>_start</code> selects it, and <code>main()</code> has run on it since Lecture 2. From Lecture 5 the trap path switches to it explicitly with <code>la sp, _stack_top</code>, so every handler run starts at its top; anything that must outlive one handler run must not live there. <em>See also:</em> process stack. (Lecture 4)
+</dd>
+<dt>Physical host</dt>
+<dd>
+The real computer that provides the CPU, memory and devices, and on which the development VM runs. <em>See also:</em> development host, target. (Lecture 1)
+</dd>
+<dt>Platform</dt>
+<dd>
+The machine around the CPU: memory map and devices such as the UART and, in Lecture 6, the timer. QEMU’s <code>virt</code> machine is our platform. A platform device raises an interrupt; the CPU’s trap rule reacts to it. <em>See also:</em> ISA. (Lecture 5)
+</dd>
+<dt>Preemption</dt>
+<dd>
+The OS takes control without the running process’s cooperation, made possible by a timer interrupt. Interrupt handling and the scheduling decision that may follow are related but distinct steps. <em>See also:</em> cooperative and non-cooperative entry. (Lecture 4)
+</dd>
+<dt>Privilege mode</dt>
+<dd>
+A CPU mode that determines which instructions, CSRs and memory are available. RISC-V defines machine, supervisor and user mode; a real OS runs processes in a less privileged mode, so that they cannot change OS state. Privilege is outside our model: everything runs in machine mode. <em>See also:</em> machine mode. (Lecture 5)
+</dd>
+<dt>Process</dt>
+<dd>
+An execution that the operating system can manage. In our system it combines an entry function, owned stack storage, a saved context (from Lecture 5 the trap frame), a lifecycle state and an exit status. <em>See also:</em> execution. (Lecture 2; Lecture 3)
+</dd>
+<dt>Process stack</dt>
+<dd>
+The stack of one process: owned stack storage, in our system the array <code>stack</code> inside <code>struct process</code>, which <code>sp</code> selects while the process runs. “Process stack” names the role of the memory, not an ELF section: the array lies wherever the process object lies. <em>See also:</em> OS stack. (Lecture 3; Lecture 4)
+</dd>
+<dt>Program counter (<code>pc</code>)</dt>
+<dd>
+Identifies the instruction to execute. It is CPU state, not memory, and not one of the general-purpose registers <code>x0</code>–<code>x31</code>. <em>See also:</em> architectural state, live <code>pc</code>. (Lecture 4)
+</dd>
+<dt>Pseudoinstruction</dt>
+<dd>
+Assembler notation that is not itself an instruction but is translated into one or more real instructions. Examples: <code>li</code>, <code>mv</code>, <code>j</code>, <code>ret</code> (<code>jalr x0, 0(ra)</code>), and the CSR forms <code>csrr</code>, <code>csrw</code> and <code>csrs</code>, which become <code>csrrs</code> or <code>csrrw</code>. (Lecture 5)
+</dd>
+<dt>QEMU</dt>
+<dd>
+An emulator and virtualizer. It runs as an ordinary program in the development VM and emulates the RV64 target machine; we start it without firmware (<code>-bios none</code>). (Lecture 1)
+</dd>
+<dt>Resume</dt>
+<dd>
+Continue a paused execution where it stopped, as opposed to starting it again from its entry function. From the CPU’s point of view, resuming and starting a process are the same operation: a return into a saved frame. (Lecture 3)
+</dd>
+<dt>Return path</dt>
+<dd>
+The second half of the provided <code>trap.S</code>, from the label <code>os_start</code> to <code>mret</code>: it makes <code>mscratch</code> point to the frame it restores, writes the frame’s <code>pc</code> into <code>mepc</code>, loads the registers and executes <code>mret</code>. It has two ways in: after every trap, by falling through from <code>call trap_handler</code>, and once from <code>os_run()</code> for the first start. <em>See also:</em> trap path. (Lecture 5)
+</dd>
+<dt>Return-address register</dt>
+<dd>
+<code>ra</code> (<code>x1</code>): a <code>call</code> stores the location to which execution returns, and <code>ret</code> jumps there. It is the continuation of a call. (Lecture 3)
+</dd>
+<dt>RV64</dt>
+<dd>
+The 64-bit form of RISC-V, the ISA of our target. We build for <code>rv64imac_zicsr</code>: the base integer instructions, multiplication and division, atomics and compressed instructions, plus the CSR instructions. (Lecture 1)
+</dd>
+<dt>Section</dt>
+<dd>
+A named part of an object file or executable that groups content of one kind; the linker places sections in memory according to the linker script. <code>.text</code> holds instructions, <code>.rodata</code> constant data, <code>.data</code> initialised data, and <code>.bss</code> zero-initialised data, which takes no space in the file. (Lecture 2)
+</dd>
+<dt>Stack</dt>
+<dd>
+Runtime memory for the data of active function calls: saved call information, saved registers, local variables. Function instructions remain in <code>.text</code>. A stack grows toward lower addresses. <em>See also:</em> stack frame, OS stack, process stack. (Lecture 2; Lecture 3)
+</dd>
+<dt>Stack frame</dt>
+<dd>
+The call data of one active call on a stack, for example its saved <code>ra</code>, saved registers and local variables. Not a trap frame. <em>See also:</em> trap frame. (Lecture 4)
+</dd>
+<dt>Stack pointer (<code>sp</code>)</dt>
+<dd>
+Register <code>x2</code>; selects the current position in the stack in use. Which stack is in use is decided by the value in <code>sp</code>: a trap does not change it. (Lecture 2; Lecture 4)
+</dd>
+<dt>Static storage duration</dt>
+<dd>
+The lifetime of global variables and of variables declared <code>static</code>, also inside a function. The object exists exactly once, for the whole run, independent of any stack frame and of which functions are active; it is initialised once, before the program runs. Its section depends on the initial value: <code>.bss</code> for no initialiser or zero, <code>.data</code> for a non-zero initialiser, <code>.rodata</code> for <code>const</code> data. <code>static</code> inside a function changes only where and how long the object lives; the name stays visible only inside that function. Example: <code>static struct process p;</code> in <code>main()</code> lies in <code>.bss</code> and survives every trap. <em>See also:</em> automatic storage duration. (Lecture 4; <code>static p</code> in Lecture 5)
+</dd>
+<dt>Symbol</dt>
+<dd>
+An entry in the symbol table of an object file or an ELF file: a name with a value, usually an address, plus a type and a visibility. <code>nm -n</code> lists the symbols of a program sorted by address. Symbols come from labels in assembly, from C functions and from C variables with static storage, for which the compiler emits labels, or from assignments in the linker script. Example: <code>trap_entry</code> comes from a label, <code>main</code> from a C function, <code>_stack_top</code> from <code>linker.ld</code>. The linker resolves references between separately translated parts by symbol name, and fixes the final address of every symbol when it places the sections. <em>See also:</em> label. (Lecture 2; <code>nm -n</code> in Lecture 4)
+</dd>
+<dt>Synchronous and asynchronous trap</dt>
+<dd>
+A <strong>synchronous</strong> trap is caused by the instruction being executed and is reproducible: an exception. An <strong>asynchronous</strong> trap is caused by an event outside the instruction stream and is taken between two instructions, wherever the program happens to be: an interrupt. <em>See also:</em> exception, interrupt, cooperative and non-cooperative entry. (Lecture 5)
+</dd>
+<dt>System call</dt>
+<dd>
+A request to the OS made with <code>ecall</code>. In our convention <code>a7</code> selects the service, <code>a0</code> and <code>a1</code> carry arguments, and the OS may return a result in <code>a0</code>: <code>exit</code> is 0, <code>yield</code> is 1. The system call is the request, not the C function that makes it: <code>process_yield()</code> makes the system call <code>yield</code>. (Lecture 5)
+</dd>
+<dt>Target</dt>
+<dd>
+The machine for which we build the program: an RV64 machine, emulated by QEMU. <em>See also:</em> development host, physical host. (Lecture 1)
+</dd>
+<dt>Timer interrupt</dt>
+<dd>
+An interrupt raised by the platform’s timer when a programmed time is reached (<code>mcause</code> 7 with the interrupt bit set). It lets the OS regain control without a voluntary yield. (Lecture 4; implemented in Lecture 6)
+</dd>
+<dt>Toolchain</dt>
+<dd>
+The set of cooperating build tools: compiler, assembler and linker, here for the RV64 target. (Lecture 1)
+</dd>
+<dt>Trap</dt>
+<dd>
+A transfer of control to an OS-defined handler that the CPU performs itself. On a trap the CPU records where (<code>mepc</code>) and why (<code>mcause</code>), turns interrupts off (<code>MPIE &lt;- MIE</code>, <code>MIE &lt;- 0</code>) and jumps to <code>mtvec</code>. The umbrella term for exceptions and interrupts. <em>See also:</em> exception, interrupt, return path. (Lecture 5)
+</dd>
+<dt>Trap frame</dt>
+<dd>
+The complete saved integer context of an execution that trapped, as our teaching model requires it: <code>struct trap_frame</code>, with the 31 writable integer registers in <code>regs[1]</code>–<code>regs[31]</code> and the continuation address in <code>pc</code>. It is the field <code>frame</code> of <code>struct process</code>, not on any stack; the name comes from systems that push it onto a stack. <em>See also:</em> stack frame, context. (Lecture 5)
+</dd>
+<dt>Trap handler</dt>
+<dd>
+The OS code that runs after a trap. In the course it is the C function <code>trap_handler()</code>, which the trap path calls with the frame of the process that trapped and which returns the frame to restore: the same one to resume, another one to schedule. In lifetime diagrams, “handler” labels the whole OS run between a trap and a return. <em>See also:</em> trap path, return path. (Lecture 5)
+</dd>
+<dt>Trap path</dt>
+<dd>
+The first half of the provided <code>trap.S</code>, from the label <code>trap_entry</code> to <code>call trap_handler</code>: it saves all registers and the trap <code>pc</code> into the frame that <code>mscratch</code> points to, switches to the OS stack and calls <code>trap_handler()</code>. The CPU jumps to it via <code>mtvec</code>; nobody calls it. <em>See also:</em> return path. (Lecture 5)
+</dd>
+<dt>Trap <code>pc</code></dt>
+<dd>
+Course term, not a RISC-V name: the <code>pc</code> value that the CPU records in <code>mepc</code> on trap entry. For an exception it is the causing instruction, for an <code>ecall</code> the <code>ecall</code> itself; for an interrupt it is the next instruction, not yet executed. <em>See also:</em> live <code>pc</code>, continuation address. (Lecture 5)
+</dd>
+<dt>Yield</dt>
+<dd>
+The running process voluntarily returns control to the operating system while remaining able to resume later. From Lecture 5 <code>process_yield()</code> makes the system call <code>yield</code>. <em>See also:</em> exit. (Lecture 2; Lecture 3)
+</dd>
+</dl>
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../downloads.html" class="pagination-link" aria-label="Downloads">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Downloads</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Except where otherwise noted, © 2026 Stavros Kousidis.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p><a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

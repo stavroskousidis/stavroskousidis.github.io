@@ -72,7 +72,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../downloads.html" rel="next">
+<link href="../chapters/05-entering-the-os.html" rel="next">
 <link href="../chapters/03-first-process.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -181,10 +181,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../downloads.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Downloads</span></span></a>
+  <a href="../chapters/05-entering-the-os.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Entering the OS</span></span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../downloads.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Downloads</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/glossary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Glossary</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
     </ul>
     </div>
 </nav>
@@ -311,7 +334,7 @@ our program / growing BVS1 operating system</code></pre>
 <h2 data-number="4.4" class="anchored" data-anchor-id="instructions-and-runtime-data-have-different-roles"><span class="header-section-number">4.4</span> Instructions and runtime data have different roles</h2>
 <p>The linked program places machine instructions in <code>.text</code>. This includes instructions implementing the worker, helper, process API, and OS-side code. Calling a function transfers control to its instructions; it does not copy those instructions onto the stack.</p>
 <p>The <strong>program counter</strong>, <code>pc</code>, identifies the instruction to execute. The <strong>stack pointer</strong>, <code>sp</code>, selects the current stack position. These are CPU state, not memory sections. A saved return address is an address value that points back into code; its being stored on the stack does not make the pointed-to instructions stack contents.</p>
-<p>The stack holds runtime data associated with active calls: saved call information, saved registers, some local variables, and temporaries as needed. The labels <code>worker frame</code> and <code>permute frame</code> describe this runtime data, not the functions’ instructions.</p>
+<p>The stack holds runtime data associated with active calls: saved call information, saved registers, some local variables, and temporaries as needed. The call data of one active call is its <strong>stack frame</strong>. The labels <code>worker stack frame</code> and <code>permute stack frame</code> describe this runtime data, not the functions’ instructions.</p>
 <p>A schematic snapshot after the first swap is:</p>
 <pre class="text"><code>.text                       process-owned stack storage
                             higher addresses
@@ -321,7 +344,7 @@ same permute instructions   | worker: value V B S 1 \0 |
   call process_yield        | permute call data        |
                             +--------------------------+
                             lower addresses</code></pre>
-<p>The CPU has changed data in the array while executing instructions that remain in <code>.text</code>. A non-inlined helper call uses the same process stack as the worker, with newer call data toward lower addresses. The picture does not prescribe exact offsets, compiler-generated frames, or a stack slot for every local value.</p>
+<p>The CPU has changed data in the array while executing instructions that remain in <code>.text</code>. A non-inlined helper call uses the same process stack as the worker, with newer call data toward lower addresses. The picture does not prescribe exact offsets, compiler-generated stack frames, or a stack slot for every local value.</p>
 </section>
 <section id="sp-ra-and-pc-are-different-kinds-of-cpu-state" class="level2" data-number="4.5">
 <h2 data-number="4.5" class="anchored" data-anchor-id="sp-ra-and-pc-are-different-kinds-of-cpu-state"><span class="header-section-number">4.5</span> <code>sp</code>, <code>ra</code>, and <code>pc</code> are different kinds of CPU state</h2>
@@ -329,6 +352,7 @@ same permute instructions   | worker: value V B S 1 \0 |
 <p>This explains why the Lecture 3 context contains <code>ra</code>, <code>sp</code>, and <code>s0</code>–<code>s11</code> but no explicit <code>pc</code>. The cooperative context switch happens at an ordinary function-call boundary, so the saved <code>ra</code> already describes the continuation:</p>
 <pre class="text"><code>saved ra -&gt; restored ra -&gt; ret -&gt; execution continues there</code></pre>
 <p><code>ret</code> sets the program counter to the restored <code>ra</code>. The program counter is therefore not forgotten; the cooperative switch re-establishes it through <code>ra</code>.</p>
+<p>Note the distinction this relies on. No saved context contains the live <code>pc</code>, which changes with every instruction. It contains a <strong>continuation address</strong>: a saved value saying where the execution continues when it is restored. In CP1 that value is <code>ra</code>, and <code>ret</code> turns it back into <code>pc</code>.</p>
 </section>
 <section id="follow-the-same-execution-through-yield-and-resume" class="level2" data-number="4.6">
 <h2 data-number="4.6" class="anchored" data-anchor-id="follow-the-same-execution-through-yield-and-resume"><span class="header-section-number">4.6</span> Follow the same execution through yield and resume</h2>
@@ -446,13 +470,13 @@ same permute instructions   | worker: value V B S 1 \0 |
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--disassemble</span><span class="op">=</span>context_switch build/hello-bvs1.elf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The first command lists sections; the second lists symbols by address; the third decodes the selected function’s instructions. In <code>nm</code>, <code>T/t</code> identifies code symbols and <code>B/b</code> identifies BSS-related symbols. A symbol can simply name an address: <code>_stack_top</code> is the linker-defined initial OS-stack address, not a C array declaration. These inspection options are documented in the <a href="https://sourceware.org/binutils/docs/binutils/">GNU Binutils manuals</a>.</p>
 <p>The commands inspect the ELF on disk. They do not display the running target’s CPU registers or the live contents of the local array. Debugging information can describe local variables, but that is different from a linker symbol or an observation of runtime memory.</p>
-<p>The normal build uses <code>-O2</code>. It can inline <code>permute()</code>, meaning it incorporates the helper’s work into the caller instead of retaining a separate call. Local scalar values such as <code>tmp</code> can be kept in registers. The lecture’s separate observation build uses <code>-O0 -g -fno-inline</code> to retain inspectable function boundaries; <code>-g</code> adds debugging information. Exact frames and addresses depend on the build. See <a href="https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html">GCC’s Optimize Options</a>.</p>
+<p>The normal build uses <code>-O2</code>. It can inline <code>permute()</code>, meaning it incorporates the helper’s work into the caller instead of retaining a separate call. Local scalar values such as <code>tmp</code> can be kept in registers. The lecture’s separate observation build uses <code>-O0 -g -fno-inline</code> to retain inspectable function boundaries; <code>-g</code> adds debugging information. Exact stack frames and addresses depend on the build. See <a href="https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html">GCC’s Optimize Options</a>.</p>
 </section>
 <section id="the-next-requirement-regain-control-without-cooperation" class="level2" data-number="4.10">
 <h2 data-number="4.10" class="anchored" data-anchor-id="the-next-requirement-regain-control-without-cooperation"><span class="header-section-number">4.10</span> The next requirement: regain control without cooperation</h2>
 <p>Our current mechanism depends on the process reaching yield or exit. If it runs forever before either operation, our target-side OS continuation cannot run again. Ubuntu can still manage the QEMU process, but that is control at another layer. Terminating QEMU ends the target session rather than implementing target-side process management.</p>
 <p>An <strong>interrupt</strong> signals an event. When enabled, it transfers control to a configured OS handler, allowing the OS to regain control. A future <strong>timer interrupt</strong> can make control transfer possible without a voluntary yield. This enables <strong>preemption</strong>: the OS takes control without the process’s cooperation. Scheduling then decides whether to continue the interrupted execution or select another runnable one. Interrupt handling and the scheduling decision are related but distinct steps.</p>
-<p>This chapter raises that question without requiring an interrupt implementation for CP1. An arbitrary interruption is not an ordinary C call boundary. The interrupted continuation is not supplied by <code>ra</code> as it is at our cooperative call boundary; <code>ra</code> holds whatever value the interrupted code was using. The interrupted program counter must therefore be preserved explicitly, in dedicated trap state, together with the other registers the interrupted code may be using. The cooperative CP1 register subset is not by itself the full specification of such a mechanism.</p>
+<p>This chapter raises that question without requiring an interrupt implementation for CP1. An arbitrary interruption is not an ordinary C call boundary. The interrupted continuation is not supplied by <code>ra</code> as it is at our cooperative call boundary; <code>ra</code> holds whatever value the interrupted code was using. Once control has transferred into OS entry code, software can no longer recover the interrupted program counter unless the hardware captured it at that moment. It must therefore be preserved explicitly, in dedicated trap state, together with the other registers the interrupted code may be using. The cooperative CP1 register subset is not by itself the full specification of such a mechanism.</p>
 </section>
 <section id="key-ideas" class="level2" data-number="4.11">
 <h2 data-number="4.11" class="anchored" data-anchor-id="key-ideas"><span class="header-section-number">4.11</span> Key ideas</h2>
@@ -463,7 +487,7 @@ same permute instructions   | worker: value V B S 1 \0 |
 <li>A local writable array is distinct from constant data used to initialize it or print an output label.</li>
 <li>Process stack storage is an array in the process object; its role does not prescribe an ELF section or an address space.</li>
 <li>Preserved stack data and saved register context together support continuing the same execution.</li>
-<li>The program counter is CPU state but not a general-purpose register: the cooperative switch re-establishes it through <code>ra</code> and <code>ret</code>, whereas an interruption must preserve it explicitly.</li>
+<li>The program counter is CPU state but not a general-purpose register: the cooperative switch re-establishes it through a saved continuation address (<code>ra</code> and <code>ret</code>), whereas after an interruption only the hardware can record where to continue.</li>
 <li>Lifecycle state determines whether another run is permitted, even if old memory contents remain.</li>
 </ul>
 </section>
@@ -892,8 +916,8 @@ same permute instructions   | worker: value V B S 1 \0 |
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../downloads.html" class="pagination-link" aria-label="Downloads">
-        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Downloads</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../chapters/05-entering-the-os.html" class="pagination-link" aria-label="Entering the OS">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Entering the OS</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
