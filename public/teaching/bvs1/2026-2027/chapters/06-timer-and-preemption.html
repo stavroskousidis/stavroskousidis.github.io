@@ -246,6 +246,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#who-sets-which-bit-in-our-system" id="toc-who-sets-which-bit-in-our-system" class="nav-link" data-scroll-target="#who-sets-which-bit-in-our-system"><span class="header-section-number">6.3.3</span> Who sets which bit in our system</a></li>
   <li><a href="#the-global-switch-over-time-the-payoff-of-interrupts-off" id="toc-the-global-switch-over-time-the-payoff-of-interrupts-off" class="nav-link" data-scroll-target="#the-global-switch-over-time-the-payoff-of-interrupts-off"><span class="header-section-number">6.3.4</span> The global switch over time: the payoff of “interrupts off”</a></li>
   <li><a href="#what-held-in-exercise-4" id="toc-what-held-in-exercise-4" class="nav-link" data-scroll-target="#what-held-in-exercise-4"><span class="header-section-number">6.3.5</span> What held in Exercise 4</a></li>
+  <li><a href="#interactive-model-pending-enabled-taken" id="toc-interactive-model-pending-enabled-taken" class="nav-link" data-scroll-target="#interactive-model-pending-enabled-taken"><span class="header-section-number">6.3.6</span> Interactive model: pending, enabled, taken</a></li>
   </ul></li>
   <li><a href="#the-same-trap-path-now-asynchronous" id="toc-the-same-trap-path-now-asynchronous" class="nav-link" data-scroll-target="#the-same-trap-path-now-asynchronous"><span class="header-section-number">6.4</span> The same trap path, now asynchronous</a>
   <ul class="collapse">
@@ -254,6 +255,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#the-trap-pc-is-the-continuation-address" id="toc-the-trap-pc-is-the-continuation-address" class="nav-link" data-scroll-target="#the-trap-pc-is-the-continuation-address"><span class="header-section-number">6.4.3</span> The trap <code>pc</code> is the continuation address</a></li>
   <li><a href="#the-timer-branch-of-trap_handler" id="toc-the-timer-branch-of-trap_handler" class="nav-link" data-scroll-target="#the-timer-branch-of-trap_handler"><span class="header-section-number">6.4.4</span> The timer branch of <code>trap_handler()</code></a></li>
   <li><a href="#the-lifetime-with-a-timer-interrupt" id="toc-the-lifetime-with-a-timer-interrupt" class="nav-link" data-scroll-target="#the-lifetime-with-a-timer-interrupt"><span class="header-section-number">6.4.5</span> The lifetime with a timer interrupt</a></li>
+  <li><a href="#interactive-model-one-trap-step-by-step" id="toc-interactive-model-one-trap-step-by-step" class="nav-link" data-scroll-target="#interactive-model-one-trap-step-by-step"><span class="header-section-number">6.4.6</span> Interactive model: one trap, step by step</a></li>
   </ul></li>
   <li><a href="#preemption" id="toc-preemption" class="nav-link" data-scroll-target="#preemption"><span class="header-section-number">6.5</span> Preemption</a>
   <ul class="collapse">
@@ -262,6 +264,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#one-line-per-tick" id="toc-one-line-per-tick" class="nav-link" data-scroll-target="#one-line-per-tick"><span class="header-section-number">6.5.3</span> One line per tick</a></li>
   <li><a href="#can-the-process-tell-it-was-interrupted" id="toc-can-the-process-tell-it-was-interrupted" class="nav-link" data-scroll-target="#can-the-process-tell-it-was-interrupted"><span class="header-section-number">6.5.4</span> Can the process tell it was interrupted?</a></li>
   <li><a href="#reproducible-interrupts-with--icount" id="toc-reproducible-interrupts-with--icount" class="nav-link" data-scroll-target="#reproducible-interrupts-with--icount"><span class="header-section-number">6.5.5</span> Reproducible interrupts with <code>-icount</code></a></li>
+  <li><a href="#interactive-model-preemption-over-time" id="toc-interactive-model-preemption-over-time" class="nav-link" data-scroll-target="#interactive-model-preemption-over-time"><span class="header-section-number">6.5.6</span> Interactive model: preemption over time</a></li>
   </ul></li>
   <li><a href="#what-can-go-wrong" id="toc-what-can-go-wrong" class="nav-link" data-scroll-target="#what-can-go-wrong"><span class="header-section-number">6.6</span> What can go wrong</a>
   <ul class="collapse">
@@ -540,7 +543,7 @@ mret           MIE &lt;- MPIE, so 1       timer may interrupt</code></pre>
 <p>A timer interrupt can arrive between any two instructions. If it could arrive in <code>trap_entry</code>, a second trap would overwrite <code>mepc</code> and <code>mcause</code> before the first ones are saved. Because the trap rule clears <code>mstatus.MIE</code>, nothing interrupts the OS while it saves the process’s state. A timer interrupt that becomes pending while the OS runs stays pending in <code>mip.MTIP</code> and is taken right after <code>mret</code>, before the process executes its next instruction. It is delayed, not lost.</p>
 <p>In our system the OS never runs with interrupts enabled. This is a property of our model, in which nested traps are outside the scope, not a rule for every OS.</p>
 </section>
-<section id="what-held-in-exercise-4" class="level3 page-columns page-full" data-number="6.3.5">
+<section id="what-held-in-exercise-4" class="level3" data-number="6.3.5">
 <h3 data-number="6.3.5" class="anchored" data-anchor-id="what-held-in-exercise-4"><span class="header-section-number">6.3.5</span> What held in Exercise 4</h3>
 <p>The Exercise 4 library never wrote <code>mtimecmp</code> or <code>mie</code>. While the process ran, the three conditions stood as follows:</p>
 <table class="caption-top table">
@@ -571,18 +574,18 @@ mret           MIE &lt;- MPIE, so 1       timer may interrupt</code></pre>
 </table>
 <p>The first row was already at work in Lecture 5. The second row alone kept the timer out: the timer switch was off. The third row is the surprise. The RISC-V specification fixes only <code>mstatus.MIE</code> = 0 at reset and leaves <code>mie</code> and the reset value of <code>mtimecmp</code> open; QEMU starts all three at 0. Then <code>mtime &gt;= mtimecmp</code> holds from reset, and <code>mip.MTIP</code> stays set for the whole run. A small probe program in the reference, built for our platform, prints <code>mtimecmp = 0x0</code> and <code>mip = 0x80</code> at reset, <code>mip = 0x0</code> after arming, and <code>mip = 0x80</code> again after expiry.</p>
 <p>So in Exercise 4, exactly one bit was missing. The natural answer “not pending, because nobody armed the timer” is wrong on QEMU, and it would be unsafe as a design rule: an OS must not rely on an unspecified reset value. Had the Exercise 4 library set <code>mie.MTIE</code> without arming the timer, the interrupt would have been taken right after the first <code>mret</code>, and again after every return, because nothing would ever have moved <code>mtimecmp</code> into the future. Arming first and turning on the timer switch second, both before the first <code>mret</code>, makes the first interrupt arrive exactly one time slice after start-up.</p>
-<div class="callout callout-style-simple callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
+</section>
+<section id="interactive-model-pending-enabled-taken" class="level3 page-columns page-full" data-number="6.3.6">
+<h3 data-number="6.3.6" class="anchored" data-anchor-id="interactive-model-pending-enabled-taken"><span class="header-section-number">6.3.6</span> Interactive model: pending, enabled, taken</h3>
+<div class="callout callout-style-simple callout-tip">
+<div class="callout-body d-flex">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Interactive model: pending, enabled, taken
-</div>
-</div>
-<div class="callout-body-container callout-body">
+<div class="callout-body-container">
 <p>The model below steps through the three conditions count by count. Choose a scenario, among them the Exercise 4 library, a missing re-arm and a time slice that ends while the OS runs, change the values, and step back and forth. It is a model in small abstract counts, not output of our OS. It loads its Python runtime from the internet when it starts, which takes a few seconds.</p>
 <p><a href="../notebooks/06-pending-enabled-taken.html" target="_blank" rel="noopener">Open the model in a full window</a></p>
+</div>
 </div>
 </div>
 <div class="column-page">
@@ -725,7 +728,7 @@ mret           MIE &lt;- MPIE, so 1       timer may interrupt</code></pre>
 <p>There is no <code>pc += 4</code>. The re-arm is not optional. Without it, <code>mip.MTIP</code> would still be set when the handler returns; <code>mret</code> sets <code>mstatus.MIE</code> to 1, <code>mie.MTIE</code> is 1, so all three conditions hold again, and the CPU traps before the spinner executes a single instruction. The OS would run and the process would not.</p>
 <p>The parameter of <code>trap_handler()</code> is still called <code>trapped</code>. For the timer case, read it as “the process that was interrupted”.</p>
 </section>
-<section id="the-lifetime-with-a-timer-interrupt" class="level3 page-columns page-full" data-number="6.4.5">
+<section id="the-lifetime-with-a-timer-interrupt" class="level3" data-number="6.4.5">
 <h3 data-number="6.4.5" class="anchored" data-anchor-id="the-lifetime-with-a-timer-interrupt"><span class="header-section-number">6.4.5</span> The lifetime with a timer interrupt</h3>
 <p>The picture of Lecture 5, “The lifetime in detail”, changes in two places only:</p>
 <pre class="text"><code>              OS             CPU               Process
@@ -739,18 +742,18 @@ trap_handler | re-arm     |        |
 os_start     +-----------&gt;| return |-----------&gt;| (resume)</code></pre>
 <p><code>os_run()</code> arms the timer and sets <code>mie.MTIE</code>, and the trap arrow starts at “timer” instead of an <code>ecall</code>. The process line has no <code>ecall</code> at all: the spinner just keeps computing, and the trap arrow leaves it between two instructions of its loop. From <code>trap_entry</code> until <code>os_start</code> restores it, the spinner’s state is in <code>p.frame</code>. The handler bar says “re-arm”, not “pc += 4”. The process never asked; the OS ran anyway and returned the same frame.</p>
 <p>After the spinner exits, the idle process receives the timer interrupts, as Lecture 5 showed for the time after the last exit.</p>
-<div class="callout callout-style-simple callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
+</section>
+<section id="interactive-model-one-trap-step-by-step" class="level3 page-columns page-full" data-number="6.4.6">
+<h3 data-number="6.4.6" class="anchored" data-anchor-id="interactive-model-one-trap-step-by-step"><span class="header-section-number">6.4.6</span> Interactive model: one trap, step by step</h3>
+<div class="callout callout-style-simple callout-tip">
+<div class="callout-body d-flex">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Interactive model: one trap, step by step
-</div>
-</div>
-<div class="callout-body-container callout-body">
+<div class="callout-body-container">
 <p>The model below follows one timer interrupt through the loop of our build, from the trap rule to <code>mret</code>: the registers <code>a4</code> and <code>a5</code>, the counter in memory, <code>mepc</code>, <code>mcause</code>, <code>mstatus.MIE</code> and <code>MPIE</code>, and the frame. Choose the instruction before which the interrupt lands and the trap path: the correct one, a handler that adds 4, or a <code>trap_entry</code> that saves only the CP1 subset. The listing is that of our build; the execution is a model, not output of our OS. It loads its Python runtime from the internet when it starts, which takes a few seconds.</p>
 <p><a href="../notebooks/06-one-trap-step-by-step.html" target="_blank" rel="noopener">Open the model in a full window</a></p>
+</div>
 </div>
 </div>
 <div class="column-page">
@@ -836,25 +839,25 @@ spinner: done,                   spinner: done,
 <p>The spinner’s own lines and its final counter are identical. The tick lines were printed by the OS between two instructions of the spinner; the spinner executed none of its own instructions meanwhile. After each tick, its registers, its memory and its next instruction are as they were before the interrupt.</p>
 <p>The process cannot tell that it was interrupted, except that time has passed. It could find out only by measuring time, for example by reading <code>mtime</code> before and after its loop and noticing that more time passed than its own instructions need. This is the only trace preemption leaves, and it is why the trap path must be exact: any register it failed to restore would be a visible trace, and a wrong one.</p>
 </section>
-<section id="reproducible-interrupts-with--icount" class="level3 page-columns page-full" data-number="6.5.5">
+<section id="reproducible-interrupts-with--icount" class="level3" data-number="6.5.5">
 <h3 data-number="6.5.5" class="anchored" data-anchor-id="reproducible-interrupts-with--icount"><span class="header-section-number">6.5.5</span> Reproducible interrupts with <code>-icount</code></h3>
 <p>Lecture 5 said that an interrupt happens between two instructions, at a place that varies from run to run. Real hardware behaves like that, and so does QEMU by default: its timer follows the time of the host, so the places where the spinner is interrupted change from run to run. That makes asynchronous behaviour hard to observe and impossible to predict exactly.</p>
 <p>For the course we start QEMU with an additional flag:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ex">qemu-system-riscv64</span> ... <span class="at">-icount</span> shift=4,sleep=off</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>With <code>-icount</code>, QEMU’s virtual clock counts executed instructions instead of host time: each instruction advances virtual time by 2<sup>4</sup> ns = 16 ns. <code>mtime</code> then depends only on how many instructions ran, and two runs of the same binary are interrupted at the same instructions. A 10 ms time slice is 625,000 instructions; one <code>mtime</code> count of 100 ns is about 6 instructions. <code>sleep=off</code> is part of the flag on purpose: with plain <code>shift=4</code>, the QEMU version of our build environment still interrupted the same binary at different instructions from run to run. Without <code>-icount</code>, on a fast host, the spinner may even finish before the first timer interrupt.</p>
 <p><code>-icount</code> is our observation tool, not a property of real hardware. Nothing in the OS may depend on where an interrupt lands. The flag makes our observations reproducible; it does not make the system more correct.</p>
-<div class="callout callout-style-simple callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
+</section>
+<section id="interactive-model-preemption-over-time" class="level3 page-columns page-full" data-number="6.5.6">
+<h3 data-number="6.5.6" class="anchored" data-anchor-id="interactive-model-preemption-over-time"><span class="header-section-number">6.5.6</span> Interactive model: preemption over time</h3>
+<div class="callout callout-style-simple callout-tip">
+<div class="callout-body d-flex">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Interactive model: preemption over time
-</div>
-</div>
-<div class="callout-body-container callout-body">
+<div class="callout-body-container">
 <p>The model below shows who runs over time when the spinner runs against the Exercise 4 and the Exercise 5 library. Change the time slice, the length of the loop and the OS time per tick, switch <code>-icount</code> off and run again, and step from tick to tick. It counts only the spinner’s loop and is not output of our OS. It loads its Python runtime from the internet when it starts, which takes a few seconds.</p>
 <p><a href="../notebooks/06-preemption-over-time.html" target="_blank" rel="noopener">Open the model in a full window</a></p>
+</div>
 </div>
 </div>
 <div class="column-page">
