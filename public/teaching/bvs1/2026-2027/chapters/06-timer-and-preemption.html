@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Stavros Kousidis">
+
+<title>6&nbsp; Timer and Preemption – BVS1 – Betriebssysteme</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../downloads.html" rel="next">
+<link href="../chapters/05-entering-the-os.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-d1ce83cbcf7f21d8208077a0fee83aa1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/06-timer-and-preemption.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Timer and Preemption</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">BVS1 – Betriebssysteme</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">BVS1 – Betriebssysteme</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/01-introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Executing Code to Operating Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/02-source-to-executables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">From Source to Executables: Towards Processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/03-first-process.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">First Process: Stop and Continue</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/04-memory-and-execution.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Where Our Code Runs</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/05-entering-the-os.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Entering the OS</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/06-timer-and-preemption.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Timer and Preemption</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../downloads.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Downloads</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/glossary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Glossary</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#where-we-stand" id="toc-where-we-stand" class="nav-link active" data-scroll-target="#where-we-stand"><span class="header-section-number">6.1</span> Where we stand</a>
+  <ul class="collapse">
+  <li><a href="#the-lifetime-through-the-cpu-recalled" id="toc-the-lifetime-through-the-cpu-recalled" class="nav-link" data-scroll-target="#the-lifetime-through-the-cpu-recalled"><span class="header-section-number">6.1.1</span> The lifetime through the CPU, recalled</a></li>
+  <li><a href="#why-a-never-yielding-loop-is-still-stuck" id="toc-why-a-never-yielding-loop-is-still-stuck" class="nav-link" data-scroll-target="#why-a-never-yielding-loop-is-still-stuck"><span class="header-section-number">6.1.2</span> Why a never-yielding loop is still stuck</a></li>
+  <li><a href="#two-halves-of-the-answer" id="toc-two-halves-of-the-answer" class="nav-link" data-scroll-target="#two-halves-of-the-answer"><span class="header-section-number">6.1.3</span> Two halves of the answer</a></li>
+  </ul></li>
+  <li><a href="#time-as-an-event-the-platform-timer" id="toc-time-as-an-event-the-platform-timer" class="nav-link" data-scroll-target="#time-as-an-event-the-platform-timer"><span class="header-section-number">6.2</span> Time as an event: the platform timer</a>
+  <ul class="collapse">
+  <li><a href="#a-device-you-have-used-since-exercise-1-the-uart" id="toc-a-device-you-have-used-since-exercise-1-the-uart" class="nav-link" data-scroll-target="#a-device-you-have-used-since-exercise-1-the-uart"><span class="header-section-number">6.2.1</span> A device you have used since Exercise 1: the UART</a></li>
+  <li><a href="#the-timer-is-a-platform-device" id="toc-the-timer-is-a-platform-device" class="nav-link" data-scroll-target="#the-timer-is-a-platform-device"><span class="header-section-number">6.2.2</span> The timer is a platform device</a></li>
+  <li><a href="#mtime-and-mtimecmp" id="toc-mtime-and-mtimecmp" class="nav-link" data-scroll-target="#mtime-and-mtimecmp"><span class="header-section-number">6.2.3</span> <code>mtime</code> and <code>mtimecmp</code></a></li>
+  <li><a href="#reading-and-writing-a-device-register-in-c" id="toc-reading-and-writing-a-device-register-in-c" class="nav-link" data-scroll-target="#reading-and-writing-a-device-register-in-c"><span class="header-section-number">6.2.4</span> Reading and writing a device register in C</a></li>
+  <li><a href="#the-time-slice" id="toc-the-time-slice" class="nav-link" data-scroll-target="#the-time-slice"><span class="header-section-number">6.2.5</span> The time slice</a></li>
+  <li><a href="#pending-a-request-not-yet-a-trap" id="toc-pending-a-request-not-yet-a-trap" class="nav-link" data-scroll-target="#pending-a-request-not-yet-a-trap"><span class="header-section-number">6.2.6</span> Pending: a request, not yet a trap</a></li>
+  </ul></li>
+  <li><a href="#letting-the-interrupt-in" id="toc-letting-the-interrupt-in" class="nav-link" data-scroll-target="#letting-the-interrupt-in"><span class="header-section-number">6.3</span> Letting the interrupt in</a>
+  <ul class="collapse">
+  <li><a href="#three-conditions-for-taking-a-timer-interrupt" id="toc-three-conditions-for-taking-a-timer-interrupt" class="nav-link" data-scroll-target="#three-conditions-for-taking-a-timer-interrupt"><span class="header-section-number">6.3.1</span> Three conditions for taking a timer interrupt</a></li>
+  <li><a href="#two-switches-in-series-mie.mtie-and-mstatus.mie" id="toc-two-switches-in-series-mie.mtie-and-mstatus.mie" class="nav-link" data-scroll-target="#two-switches-in-series-mie.mtie-and-mstatus.mie"><span class="header-section-number">6.3.2</span> Two switches in series: <code>mie.MTIE</code> and <code>mstatus.MIE</code></a></li>
+  <li><a href="#who-sets-which-bit-in-our-system" id="toc-who-sets-which-bit-in-our-system" class="nav-link" data-scroll-target="#who-sets-which-bit-in-our-system"><span class="header-section-number">6.3.3</span> Who sets which bit in our system</a></li>
+  <li><a href="#the-global-switch-over-time-the-payoff-of-interrupts-off" id="toc-the-global-switch-over-time-the-payoff-of-interrupts-off" class="nav-link" data-scroll-target="#the-global-switch-over-time-the-payoff-of-interrupts-off"><span class="header-section-number">6.3.4</span> The global switch over time: the payoff of “interrupts off”</a></li>
+  <li><a href="#what-held-in-exercise-4" id="toc-what-held-in-exercise-4" class="nav-link" data-scroll-target="#what-held-in-exercise-4"><span class="header-section-number">6.3.5</span> What held in Exercise 4</a></li>
+  </ul></li>
+  <li><a href="#the-same-trap-path-now-asynchronous" id="toc-the-same-trap-path-now-asynchronous" class="nav-link" data-scroll-target="#the-same-trap-path-now-asynchronous"><span class="header-section-number">6.4</span> The same trap path, now asynchronous</a>
+  <ul class="collapse">
+  <li><a href="#the-cpu-takes-the-interrupt" id="toc-the-cpu-takes-the-interrupt" class="nav-link" data-scroll-target="#the-cpu-takes-the-interrupt"><span class="header-section-number">6.4.1</span> The CPU takes the interrupt</a></li>
+  <li><a href="#mcause-interrupt-bit-first" id="toc-mcause-interrupt-bit-first" class="nav-link" data-scroll-target="#mcause-interrupt-bit-first"><span class="header-section-number">6.4.2</span> <code>mcause</code>: interrupt bit first</a></li>
+  <li><a href="#the-trap-pc-is-the-continuation-address" id="toc-the-trap-pc-is-the-continuation-address" class="nav-link" data-scroll-target="#the-trap-pc-is-the-continuation-address"><span class="header-section-number">6.4.3</span> The trap <code>pc</code> is the continuation address</a></li>
+  <li><a href="#the-timer-branch-of-trap_handler" id="toc-the-timer-branch-of-trap_handler" class="nav-link" data-scroll-target="#the-timer-branch-of-trap_handler"><span class="header-section-number">6.4.4</span> The timer branch of <code>trap_handler()</code></a></li>
+  <li><a href="#the-lifetime-with-a-timer-interrupt" id="toc-the-lifetime-with-a-timer-interrupt" class="nav-link" data-scroll-target="#the-lifetime-with-a-timer-interrupt"><span class="header-section-number">6.4.5</span> The lifetime with a timer interrupt</a></li>
+  </ul></li>
+  <li><a href="#preemption" id="toc-preemption" class="nav-link" data-scroll-target="#preemption"><span class="header-section-number">6.5</span> Preemption</a>
+  <ul class="collapse">
+  <li><a href="#losing-the-cpu-without-yielding" id="toc-losing-the-cpu-without-yielding" class="nav-link" data-scroll-target="#losing-the-cpu-without-yielding"><span class="header-section-number">6.5.1</span> Losing the CPU without yielding</a></li>
+  <li><a href="#interrupt-handling-versus-the-scheduling-decision" id="toc-interrupt-handling-versus-the-scheduling-decision" class="nav-link" data-scroll-target="#interrupt-handling-versus-the-scheduling-decision"><span class="header-section-number">6.5.2</span> Interrupt handling versus the scheduling decision</a></li>
+  <li><a href="#one-line-per-tick" id="toc-one-line-per-tick" class="nav-link" data-scroll-target="#one-line-per-tick"><span class="header-section-number">6.5.3</span> One line per tick</a></li>
+  <li><a href="#can-the-process-tell-it-was-interrupted" id="toc-can-the-process-tell-it-was-interrupted" class="nav-link" data-scroll-target="#can-the-process-tell-it-was-interrupted"><span class="header-section-number">6.5.4</span> Can the process tell it was interrupted?</a></li>
+  <li><a href="#reproducible-interrupts-with--icount" id="toc-reproducible-interrupts-with--icount" class="nav-link" data-scroll-target="#reproducible-interrupts-with--icount"><span class="header-section-number">6.5.5</span> Reproducible interrupts with <code>-icount</code></a></li>
+  </ul></li>
+  <li><a href="#what-can-go-wrong" id="toc-what-can-go-wrong" class="nav-link" data-scroll-target="#what-can-go-wrong"><span class="header-section-number">6.6</span> What can go wrong</a>
+  <ul class="collapse">
+  <li><a href="#ticks-without-progress" id="toc-ticks-without-progress" class="nav-link" data-scroll-target="#ticks-without-progress"><span class="header-section-number">6.6.1</span> Ticks without progress</a></li>
+  <li><a href="#our-trap-model-who-does-what-with-the-timer" id="toc-our-trap-model-who-does-what-with-the-timer" class="nav-link" data-scroll-target="#our-trap-model-who-does-what-with-the-timer"><span class="header-section-number">6.6.2</span> Our trap model: who does what, with the timer</a></li>
+  </ul></li>
+  <li><a href="#key-ideas" id="toc-key-ideas" class="nav-link" data-scroll-target="#key-ideas"><span class="header-section-number">6.7</span> Key ideas</a></li>
+  <li><a href="#related-exercise" id="toc-related-exercise" class="nav-link" data-scroll-target="#related-exercise">Related Exercise</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Timer and Preemption</span></h1>
+<p class="subtitle lead">Winter Semester 2026/2027</p>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Stavros Kousidis </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            ICCT
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Lecture 5 gave the OS a way in: the trap. Every trap in Lecture 5 was caused by the process, either on purpose with an <code>ecall</code> or by mistake with a faulty instruction. A process that never yields still keeps the CPU. This chapter answers the second half of the problem: <strong>how does the OS get control back without the process’s cooperation?</strong> The answer is an event that no process can prevent, the passing of time, delivered as a timer interrupt through the same trap path.</p>
+<p>We keep the Exercise 4 port. The only process is now a <code>spinner()</code> that counts, prints and exits, and never yields. There is still one process; the handler still returns the same frame. Everything of Lecture 5 stays, and only the source of the event changes.</p>
+<section id="where-we-stand" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="where-we-stand"><span class="header-section-number">6.1</span> Where we stand</h2>
+<section id="the-lifetime-through-the-cpu-recalled" class="level3" data-number="6.1.1">
+<h3 data-number="6.1.1" class="anchored" data-anchor-id="the-lifetime-through-the-cpu-recalled"><span class="header-section-number">6.1.1</span> The lifetime through the CPU, recalled</h3>
+<p>Lecture 5 drew the lifetime of a process with the CPU as a box between the OS and the process:</p>
+<pre class="text"><code>         OS                 CPU                   Process
+                        +--------+
+start-up | os_run()     |        |
+         +-------------&gt;| return |-------------&gt;| (start)
+                        |        |              | ecall
+         |&lt;-------------|  trap  |&lt;-------------+
+ handler | pc += 4      |        |
+         +-------------&gt;| return |-------------&gt;| (resume)</code></pre>
+<p>The OS prepares a frame and returns into it; the process runs; the CPU traps at the <code>ecall</code>; the handler adds 4 to the saved <code>pc</code> and returns the same frame. Nothing of the OS is suspended while the process runs. Both kinds of trap we have seen are synchronous: they happen at the same instruction in every run, and the process is their cause.</p>
+</section>
+<section id="why-a-never-yielding-loop-is-still-stuck" class="level3" data-number="6.1.2">
+<h3 data-number="6.1.2" class="anchored" data-anchor-id="why-a-never-yielding-loop-is-still-stuck"><span class="header-section-number">6.1.2</span> Why a never-yielding loop is still stuck</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(;;)</span> <span class="op">{</span> <span class="co">/* keep computing, never call */</span> <span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Lecture 4 ended with this loop and Lecture 5 began with it. The trap path now exists, but nobody enters it: the loop executes no <code>ecall</code> and no faulty instruction, so the CPU never traps. Lecture 5 gave us the way in, not a reason to take it.</p>
+<p>What the OS needs is an event that happens whatever the process does. A key press, a network packet or another device could interrupt the process, but none of them is guaranteed to happen. Time passes in any case. That is the event this course uses.</p>
+</section>
+<section id="two-halves-of-the-answer" class="level3" data-number="6.1.3">
+<h3 data-number="6.1.3" class="anchored" data-anchor-id="two-halves-of-the-answer"><span class="header-section-number">6.1.3</span> Two halves of the answer</h3>
+<p>Lecture 5 split the answer to the never-yielding process into two halves:</p>
+<pre class="text"><code>Lecture 5: the process asks       ecall   -&gt; CPU -&gt; OS
+Lecture 6: an event interrupts    timer   -&gt; CPU -&gt; OS</code></pre>
+<p>Lecture 5 promised that the second half reuses the identical entry path. This chapter keeps that promise. Three things are new: a device that keeps time and raises an interrupt request at a set time, the conditions under which the CPU accepts that request, and the two places where the trap path behaves differently for an interrupt. Today’s trap is asynchronous and non-cooperative at once: the process neither causes it nor intends it.</p>
+<p>Keep the distinction from Lecture 4 in view. <strong>Interrupt handling</strong> is how the OS gets control; the <strong>scheduling decision</strong> is what it does with it. With one process the decision is trivial. Whether it must stay trivial is the question this chapter leaves for Lecture 7.</p>
+</section>
+</section>
+<section id="time-as-an-event-the-platform-timer" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="time-as-an-event-the-platform-timer"><span class="header-section-number">6.2</span> Time as an event: the platform timer</h2>
+<section id="a-device-you-have-used-since-exercise-1-the-uart" class="level3" data-number="6.2.1">
+<h3 data-number="6.2.1" class="anchored" data-anchor-id="a-device-you-have-used-since-exercise-1-the-uart"><span class="header-section-number">6.2.1</span> A device you have used since Exercise 1: the UART</h3>
+<p>Every program of this course has printed through the UART, the serial device of our machine. Lecture 2 left its code aside; the timer works the same way, so we look at it now. The starter <code>main.c</code> of Exercise 1 contained:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define UART0_BASE </span><span class="bn">0x10000000</span><span class="bu">UL</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define UART_THR    </span><span class="dv">0</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#define UART_LSR    </span><span class="dv">5</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#define UART_LSR_THRE </span><span class="bn">0x20</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">volatile</span> <span class="dt">uint8_t</span> <span class="op">*</span><span class="dt">const</span> uart0 <span class="op">=</span> <span class="op">(</span><span class="dt">volatile</span> <span class="dt">uint8_t</span> <span class="op">*)</span>UART0_BASE<span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span> uart_putc<span class="op">(</span><span class="dt">char</span> c<span class="op">)</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">((</span>uart0<span class="op">[</span>UART_LSR<span class="op">]</span> <span class="op">&amp;</span> UART_LSR_THRE<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    uart0<span class="op">[</span>UART_THR<span class="op">]</span> <span class="op">=</span> <span class="op">(</span><span class="dt">uint8_t</span><span class="op">)</span>c<span class="op">;</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>uart0</code> is a pointer to the first of the UART’s byte-wide registers, at address <code>0x10000000</code>. The store <code>uart0[UART_THR] = (uint8_t)c</code> writes one byte to <code>0x10000000</code>. No memory cell receives it: the UART takes the byte and sends it to the terminal. The load <code>uart0[UART_LSR]</code> reads one byte from <code>0x10000005</code>, the UART’s line status register; its bit <code>0x20</code> says that the UART is ready to accept the next character. The loop asks the device again and again until it is ready. This is called <strong>polling</strong>.</p>
+<p>So an address does not have to lead to RAM. A device register that has an address, and is read and written with ordinary loads and stores, is called <strong>memory-mapped</strong>. Since Exercise 4, <code>uart_putc()</code> lives in the shared <code>uart.c</code>, with the same code.</p>
+</section>
+<section id="the-timer-is-a-platform-device" class="level3" data-number="6.2.2">
+<h3 data-number="6.2.2" class="anchored" data-anchor-id="the-timer-is-a-platform-device"><span class="header-section-number">6.2.2</span> The timer is a platform device</h3>
+<p>Lecture 5 separated the CPU from the <strong>platform</strong>, the machine around it. The CPU provides CSRs, instructions and the trap rule; the platform provides memory and devices, and decides which address leads where. For our command line (<code>-machine virt -m 128M</code>), QEMU’s <code>virt</code> machine routes loads and stores as follows:</p>
+<pre class="text"><code>address range            what answers   role
+0x02000000 - 0x0200ffff  CLINT          keeps time (this chapter)
+0x10000000 - 0x100000ff  UART           serial output
+0x80000000 - 0x87ffffff  RAM            program and data</code></pre>
+<p>RAM starts at <code>0x80000000</code>, the <code>ORIGIN</code> of the linker script from Lecture 2, and <code>-m 128M</code> makes it 128 MiB long (<code>0x8000000</code> bytes). The UART’s <code>0x10000000</code> is therefore not inside RAM: it lies far below RAM’s start, and a load or store there reaches the UART. The other ranges of the address space hold further <code>virt</code> devices that our system does not use, or nothing at all. The CSRs of Lecture 5 do not appear in the map: they have no address.</p>
+<p>None of these devices is created by our code. <code>-machine virt</code> selects a board that QEMU emulates as a whole, with its devices at addresses fixed by QEMU’s model of that board; QEMU also describes them in the device tree it generates. A real chip has its devices built in the same way, at addresses its manual documents. Our code only uses the addresses: <code>0x10000000</code> in <code>uart.c</code>, and the CLINT’s addresses in <code>riscv.h</code>.</p>
+<p>Lecture 4 named three parts of our target: CPU, RAM and UART. The timer is the fourth part we use. The <strong>CLINT</strong> (core-local interruptor) is the device of QEMU’s <code>virt</code> machine that keeps time and requests timer interrupts from the CPU. The CPU has no timer of its own that our OS programs; it reacts to the CLINT’s request as it would to any interrupt source. Newer RISC-V documents describe the same registers under the name ACLINT; QEMU and our code use CLINT. The addresses are those of QEMU’s <code>virt</code> machine. Real boards place their devices elsewhere, which is why the platform, not the ISA, defines them.</p>
+<p>The roles are split. The device decides when to request an interrupt; the CPU decides when to take it.</p>
+</section>
+<section id="mtime-and-mtimecmp" class="level3" data-number="6.2.3">
+<h3 data-number="6.2.3" class="anchored" data-anchor-id="mtime-and-mtimecmp"><span class="header-section-number">6.2.3</span> <code>mtime</code> and <code>mtimecmp</code></h3>
+<p>The CLINT has two registers that matter for us:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Register</th>
+<th>Address</th>
+<th>Holds</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>mtime</code></td>
+<td><code>0x0200bff8</code></td>
+<td>the current time: counts up at 10 MHz</td>
+</tr>
+<tr class="even">
+<td><code>mtimecmp</code></td>
+<td><code>0x02004000</code></td>
+<td>the time of the next timer interrupt</td>
+</tr>
+</tbody>
+</table>
+<p><code>mtime</code> counts up from 0 at machine start, on QEMU <code>virt</code> at 10 MHz: 10,000,000 counts per second, one count every 100 ns, 10,000 counts per millisecond, whatever the CPU executes. The device counts, not the OS: no instruction of our system increments <code>mtime</code>. It never stops; machine mode could write it, but our OS never does. <code>mtimecmp</code> holds a point in time, not a duration. The CLINT compares the two continuously: <strong>when <code>mtime &gt;= mtimecmp</code>, the CLINT requests a timer interrupt.</strong> Both registers are 64 bits wide. As an unsigned 64-bit counter at 10 MHz, <code>mtime</code> would reach its largest value 2<sup>64</sup> − 1 only after about 58,000 years and then wrap to 0, so overflow plays no role.</p>
+<p>Each hart has its own <code>mtimecmp</code>; all harts share one <code>mtime</code>. A <strong>hart</strong> (hardware thread) is the RISC-V word for one CPU that executes instructions. Our machine has one hart, so we use the <code>mtimecmp</code> of hart 0.</p>
+<p>Both registers are memory-mapped, like the UART’s: an ordinary load or store to their address reads or writes the device instead of memory. The CSRs of Lecture 5 are different: they have no address and are reached only through the <code>csr…</code> instructions. Both are hardware state, reached in two different ways.</p>
+</section>
+<section id="reading-and-writing-a-device-register-in-c" class="level3" data-number="6.2.4">
+<h3 data-number="6.2.4" class="anchored" data-anchor-id="reading-and-writing-a-device-register-in-c"><span class="header-section-number">6.2.4</span> Reading and writing a device register in C</h3>
+<p>The provided <code>riscv.h</code> turns the two addresses into pointers:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define CLINT_MTIMECMP0 </span><span class="op">((</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint64_t</span><span class="pp"> </span><span class="op">*)</span><span class="bn">0x02004000</span><span class="bu">UL</span><span class="op">)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define CLINT_MTIME     </span><span class="op">((</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint64_t</span><span class="pp"> </span><span class="op">*)</span><span class="bn">0x0200bff8</span><span class="bu">UL</span><span class="op">)</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#define TIMER_HZ        </span><span class="dv">10000000</span><span class="bu">UL</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">inline</span> <span class="dt">void</span> timer_arm<span class="op">(</span><span class="dt">uint64_t</span> delta<span class="op">)</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>CLINT_MTIMECMP0 <span class="op">=</span> <span class="op">*</span>CLINT_MTIME <span class="op">+</span> delta<span class="op">;</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Read the declarations from the inside out:</p>
+<ul>
+<li><code>0x02004000UL</code> is only a number, an <code>unsigned long</code> constant (suffix <code>UL</code>).</li>
+<li>The cast <code>(volatile uint64_t *)</code> turns that number into a pointer: the address of a 64-bit unsigned value. Nothing is read yet.</li>
+<li><code>#define</code> gives the pointer expression a name. The preprocessor pastes it into the code wherever the name appears; it is not a variable and occupies no memory.</li>
+<li><code>*CLINT_MTIME</code> dereferences the pointer: a 64-bit load from <code>0x0200bff8</code>, which the CLINT answers with the current time.</li>
+<li><code>*CLINT_MTIMECMP0 = …</code> on the left of an assignment is a 64-bit store to <code>0x02004000</code>.</li>
+<li><code>static inline</code> in a header gives every <code>.c</code> file that includes <code>riscv.h</code> its own copy of <code>timer_arm()</code>, which the compiler may place directly at the call. There is no link conflict, and no call needs to happen.</li>
+</ul>
+<p>The one line in <code>timer_arm()</code> is therefore a load from <code>mtime</code>, an addition, and a store to <code>mtimecmp</code>: it requests the next timer interrupt <code>delta</code> counts from now. It is the same pattern as <code>uart0[UART_THR] = c</code> in the UART code, with a 64-bit value instead of a byte. Our build (GCC 13.2, <code>-O2</code>) translates <code>timer_arm(100000)</code> into exactly these three steps; <code>lui</code> builds the addresses like any other constant:</p>
+<pre class="text"><code>lui  a4,0x200c       # a4 = 0x0200c000
+ld   a5,-8(a4)       # load mtime from 0x0200bff8
+lui  a3,0x18
+addi a3,a3,1696      # a3 = 0x186a0 = 100000
+add  a5,a5,a3        # mtime + delta
+lui  a4,0x2004       # a4 = 0x02004000
+sd   a5,0(a4)        # store to mtimecmp</code></pre>
+<p>Two details of the declaration matter. <code>uint64_t</code>, from <code>stdint.h</code>, says the width exactly: the register is 64 bits by definition, so the code says so, although <code>unsigned long</code> is also 64 bits under our <code>lp64</code> ABI. <code>volatile</code> tells the compiler that every access has an effect outside the program. Without it, the compiler may assume that memory changes only when the program writes it; it could load <code>mtime</code> once and reuse the value, or drop a store to <code>mtimecmp</code> that is never read back. Both are correct optimisations for RAM, of the kind Lecture 4 met with <code>-O2</code>, which keeps values in registers, and wrong for a device. With <code>volatile</code>, every access really happens, in the order written. It does not make an access atomic and has nothing to do with disabling interrupts.</p>
+<p>The parameter of <code>timer_arm()</code> counts <code>mtime</code> units. It is called <code>delta</code>, and the word “tick” is kept for something else later in this chapter.</p>
+</section>
+<section id="the-time-slice" class="level3" data-number="6.2.5">
+<h3 data-number="6.2.5" class="anchored" data-anchor-id="the-time-slice"><span class="header-section-number">6.2.5</span> The time slice</h3>
+<p>A <strong>time slice</strong> is how long the OS lets a process run until the next timer interrupt. Other books call it a <em>quantum</em>. Our OS uses 10 ms. <code>mtime</code> counts at <code>TIMER_HZ</code> = 10,000,000 counts per second, so 10 ms are 10,000,000 / 100 = 100,000 counts. The reference names this value in its <code>kernel.c</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* Time slice: 10 ms at the 10 MHz CLINT timebase, in mtime counts. */</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define TIME_SLICE </span><span class="op">(</span><span class="pp">TIMER_HZ </span><span class="op">/</span><span class="pp"> </span><span class="dv">100</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>timer_arm(TIME_SLICE)</code> therefore writes <code>mtime + 100000</code> into <code>mtimecmp</code>. Because <code>mtimecmp</code> is a point in time, the OS adds the time slice to the current value of <code>mtime</code>. 10 ms is a common order of magnitude for real systems as well; nothing in our mechanism depends on the exact value.</p>
+</section>
+<section id="pending-a-request-not-yet-a-trap" class="level3" data-number="6.2.6">
+<h3 data-number="6.2.6" class="anchored" data-anchor-id="pending-a-request-not-yet-a-trap"><span class="header-section-number">6.2.6</span> Pending: a request, not yet a trap</h3>
+<p>Take <code>mtimecmp</code> = 100000 as an example:</p>
+<pre class="text"><code>mtime       99998   99999   100000   100001   100002 ...
+pending       no      no      yes      yes      yes  ...</code></pre>
+<p>A timer interrupt is <strong>pending</strong> while <code>mtime &gt;= mtimecmp</code>: the device has requested it, and the request has not been withdrawn. Pending is a level, not a single pulse. <code>mtime</code> keeps counting, so the condition stays true until software writes a larger <code>mtimecmp</code>. Nothing clears it by itself, and taking the interrupt does not clear it either. This has a consequence for the handler, which the section on the timer branch draws.</p>
+<p>Three words stay apart from here on. An interrupt is <strong>pending</strong> when the device requests it, <strong>enabled</strong> when the CPU’s enable bits allow it, and <strong>taken</strong> when the CPU applies the trap rule. Whether a pending interrupt is taken is decided by the CPU, as the next section shows.</p>
+</section>
+</section>
+<section id="letting-the-interrupt-in" class="level2 page-columns page-full" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="letting-the-interrupt-in"><span class="header-section-number">6.3</span> Letting the interrupt in</h2>
+<section id="three-conditions-for-taking-a-timer-interrupt" class="level3" data-number="6.3.1">
+<h3 data-number="6.3.1" class="anchored" data-anchor-id="three-conditions-for-taking-a-timer-interrupt"><span class="header-section-number">6.3.1</span> Three conditions for taking a timer interrupt</h3>
+<p>Lecture 5 said that a timer interrupt is taken only if it is pending and two enable bits are set, and that Lecture 6 shows where “pending” is recorded. All three conditions live in CSRs:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 24%">
+<col style="width: 49%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Condition</th>
+<th>Recorded in</th>
+<th>Set by</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>pending</td>
+<td><code>mip.MTIP</code> (bit 7)</td>
+<td>the CLINT, while <code>mtime &gt;= mtimecmp</code></td>
+</tr>
+<tr class="even">
+<td>timer switch on</td>
+<td><code>mie.MTIE</code> (bit 7)</td>
+<td>the OS: <code>csr_set(mie, MIE_MTIE)</code></td>
+</tr>
+<tr class="odd">
+<td>global switch on</td>
+<td><code>mstatus.MIE</code> (bit 3)</td>
+<td>the CPU’s rules: trap and <code>mret</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>mip</code> (machine interrupt pending) and <code>mie</code> (machine interrupt enable) are CSRs with one bit per interrupt source. The bit for the machine timer is bit 7 in both: <code>MTIP</code> (machine timer interrupt pending) in <code>mip</code>, <code>MTIE</code> (machine timer interrupt enable) in <code>mie</code>.</p>
+<ul>
+<li><strong>Pending</strong> is recorded in <code>mip.MTIP</code>. The OS does not write it. The CLINT’s request sets it, and it clears when <code>mtimecmp</code> is moved beyond <code>mtime</code>. We need <code>mip</code> only as the place where pending is recorded.</li>
+<li><strong>Timer switch</strong>: <code>mie.MTIE</code>, “enabled for the timer”. The OS sets it once, during start-up; <code>MIE_MTIE</code> is the mask <code>1 &lt;&lt; 7</code> from <code>riscv.h</code>, and <code>csr_set()</code> is the <code>csrs</code> instruction of Lecture 5.</li>
+<li><strong>Global switch</strong>: <code>mstatus.MIE</code> from Lecture 5, “enabled globally”. Our OS does not write it directly. The CPU’s trap rule clears it, and <code>mret</code> restores it from <code>MPIE</code>, which the return path sets before every <code>mret</code>.</li>
+</ul>
+<p>When all three hold, the CPU takes the interrupt before the next instruction: it applies the trap rule of Lecture 5 instead of executing that instruction. As a reminder, the rule has three steps:</p>
+<pre class="text"><code>record     mepc &lt;- pc, mcause &lt;- reason
+off        mstatus: MPIE &lt;- MIE, MIE &lt;- 0
+jump       pc &lt;- mtvec</code></pre>
+<p>For an interrupt, the <code>pc</code> recorded in <code>mepc</code> is that of the instruction that has not executed yet. These rules are those for machine mode, the only mode in our system. The specification adds rules for other privilege modes and for several pending interrupts at once; neither occurs here.</p>
+</section>
+<section id="two-switches-in-series-mie.mtie-and-mstatus.mie" class="level3" data-number="6.3.2">
+<h3 data-number="6.3.2" class="anchored" data-anchor-id="two-switches-in-series-mie.mtie-and-mstatus.mie"><span class="header-section-number">6.3.2</span> Two switches in series: <code>mie.MTIE</code> and <code>mstatus.MIE</code></h3>
+<p>The two enable bits are not equals. One belongs to the timer; the other stands above every interrupt source:</p>
+<pre class="text"><code>CLINT: mtime &gt;= mtimecmp
+   |   mip.MTIP = 1           pending
+   v
+[ mie.MTIE ]      timer switch    the OS sets it once
+   |              (each source has its own bit in mie)
+   v
+[ mstatus.MIE ]   global switch   trap: 0, mret: 1
+   |              (one bit for all sources)
+   v
+CPU applies the trap rule</code></pre>
+<p>The device requests, the request is recorded as pending, and it reaches the CPU only through both switches. Both must be on (1); neither is the pending bit. The <strong>timer switch</strong> <code>mie.MTIE</code> belongs to one source and stays as the OS set it. The <strong>global switch</strong> <code>mstatus.MIE</code> applies to all sources; the CPU itself turns it off on a trap and on again at <code>mret</code>. Logically the three conditions are simply combined with “and”; the hierarchy lies in the scope of the bits, one per source below one for all.</p>
+<p>The names invite confusion. Lecture 5 introduced <code>mstatus.MIE</code>, bit 3 of <code>mstatus</code>, as “interrupts allowed (1) or not (0)”, and announced a second, similarly named CSR. The lower-case <code>mie</code> is that whole CSR, with one enable bit per interrupt source; the timer’s bit is <code>MTIE</code>, bit 7. The names come from the specification and cannot be changed, so we always write <code>mie.MTIE</code> or <code>mstatus.MIE</code>, never <code>MIE</code> alone.</p>
+<p><code>mip</code> and <code>mie</code> use the same bit position for the same source on purpose, so <code>MTIP</code> and <code>MTIE</code> are both bit 7. That <code>MPIE</code> in <code>mstatus</code> is also bit 7 is a coincidence.</p>
+</section>
+<section id="who-sets-which-bit-in-our-system" class="level3" data-number="6.3.3">
+<h3 data-number="6.3.3" class="anchored" data-anchor-id="who-sets-which-bit-in-our-system"><span class="header-section-number">6.3.3</span> Who sets which bit in our system</h3>
+<p>The OS does its part once, at start-up. Condensed from the reference <code>os_run()</code>, in the version of the Exercise 5 library:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> os_run<span class="op">(</span><span class="dt">void</span><span class="op">)</span>              <span class="co">/* start-up, once */</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    csr_write<span class="op">(</span>mtvec<span class="op">,</span> <span class="op">(</span><span class="dt">uintptr_t</span><span class="op">)</span>trap_entry<span class="op">);</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    timer_arm<span class="op">(</span>TIME_SLICE<span class="op">);</span>     <span class="co">/* first request in 10 ms */</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    csr_set<span class="op">(</span>mie<span class="op">,</span> MIE_MTIE<span class="op">);</span>    <span class="co">/* csrs: timer switch on */</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    os_start<span class="op">(...);</span>             <span class="co">/* mret: MIE &lt;- MPIE = 1 */</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>csr_write()</code>, <code>csr_read()</code> and <code>csr_set()</code> come from the provided <code>riscv.h</code>, as since Exercise 4: macros around the <code>csrw</code>, <code>csrr</code> and <code>csrs</code> instructions. <code>csr_set()</code> sets the given bits in a CSR and leaves the others unchanged. The dots stand for preparing the idle process’s frame, printing <code>os: starting 1 process</code>, and selecting the first process, as in Lecture 5. In the Exercise 4 library the two middle lines are missing.</p>
+<p>While <code>os_run()</code> runs, the global switch <code>mstatus.MIE</code> is still 0 from reset. Nothing can be taken there, so the order of arming and enabling does not matter; what matters is that both happen before the first <code>mret</code>. That <code>mret</code> copies <code>MPIE</code>, which <code>os_start</code> set to 1, into <code>mstatus.MIE</code>. The first timer interrupt therefore arrives in the process, one time slice after <code>os_run()</code> armed the timer. The OS arms the timer and turns on the timer switch; <code>mret</code> turns on the global switch.</p>
+</section>
+<section id="the-global-switch-over-time-the-payoff-of-interrupts-off" class="level3" data-number="6.3.4">
+<h3 data-number="6.3.4" class="anchored" data-anchor-id="the-global-switch-over-time-the-payoff-of-interrupts-off"><span class="header-section-number">6.3.4</span> The global switch over time: the payoff of “interrupts off”</h3>
+<p>Lecture 5 taught the transition of the global switch <code>mstatus.MIE</code> on a trap and on <code>mret</code> exactly, and nothing in its output depended on it. The trap rule turns it off, <code>mret</code> turns it on again. Here is the payoff:</p>
+<pre class="text"><code>process runs   mstatus.MIE = 1         timer may interrupt
+trap           MPIE &lt;- MIE, MIE &lt;- 0
+OS runs        mstatus.MIE = 0         a request waits
+mret           MIE &lt;- MPIE, so 1       timer may interrupt</code></pre>
+<p>A timer interrupt can arrive between any two instructions. If it could arrive in <code>trap_entry</code>, a second trap would overwrite <code>mepc</code> and <code>mcause</code> before the first ones are saved. Because the trap rule clears <code>mstatus.MIE</code>, nothing interrupts the OS while it saves the process’s state. A timer interrupt that becomes pending while the OS runs stays pending in <code>mip.MTIP</code> and is taken right after <code>mret</code>, before the process executes its next instruction. It is delayed, not lost.</p>
+<p>In our system the OS never runs with interrupts enabled. This is a property of our model, in which nested traps are outside the scope, not a rule for every OS.</p>
+</section>
+<section id="what-held-in-exercise-4" class="level3 page-columns page-full" data-number="6.3.5">
+<h3 data-number="6.3.5" class="anchored" data-anchor-id="what-held-in-exercise-4"><span class="header-section-number">6.3.5</span> What held in Exercise 4</h3>
+<p>The Exercise 4 library never wrote <code>mtimecmp</code> or <code>mie</code>. While the process ran, the three conditions stood as follows:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 69%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Condition</th>
+<th>In Exercise 4, while the process ran</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>mstatus.MIE</code></td>
+<td>1: <code>os_start</code> sets <code>MPIE</code> before every <code>mret</code></td>
+</tr>
+<tr class="even">
+<td><code>mie.MTIE</code></td>
+<td>0: 0 at reset on QEMU, and never set</td>
+</tr>
+<tr class="odd">
+<td>pending: <code>mip.MTIP</code></td>
+<td>1: set from reset on QEMU</td>
+</tr>
+</tbody>
+</table>
+<p>The first row was already at work in Lecture 5. The second row alone kept the timer out: the timer switch was off. The third row is the surprise. The RISC-V specification fixes only <code>mstatus.MIE</code> = 0 at reset and leaves <code>mie</code> and the reset value of <code>mtimecmp</code> open; QEMU starts all three at 0. Then <code>mtime &gt;= mtimecmp</code> holds from reset, and <code>mip.MTIP</code> stays set for the whole run. A small probe program in the reference, built for our platform, prints <code>mtimecmp = 0x0</code> and <code>mip = 0x80</code> at reset, <code>mip = 0x0</code> after arming, and <code>mip = 0x80</code> again after expiry.</p>
+<p>So in Exercise 4, exactly one bit was missing. The natural answer “not pending, because nobody armed the timer” is wrong on QEMU, and it would be unsafe as a design rule: an OS must not rely on an unspecified reset value. Had the Exercise 4 library set <code>mie.MTIE</code> without arming the timer, the interrupt would have been taken right after the first <code>mret</code>, and again after every return, because nothing would ever have moved <code>mtimecmp</code> into the future. Arming first and turning on the timer switch second, both before the first <code>mret</code>, makes the first interrupt arrive exactly one time slice after start-up.</p>
+<div class="callout callout-style-simple callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Interactive model: pending, enabled, taken
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The model below steps through the three conditions count by count. Choose a scenario, among them the Exercise 4 library, a missing re-arm and a time slice that ends while the OS runs, change the values, and step back and forth. It is a model in small abstract counts, not output of our OS. It loads its Python runtime from the internet when it starts, which takes a few seconds.</p>
+<p><a href="../notebooks/06-pending-enabled-taken.html" target="_blank" rel="noopener">Open the model in a full window</a></p>
+</div>
+</div>
+<div class="column-page">
+<iframe src="../notebooks/06-pending-enabled-taken.html" title="Interactive model: pending, enabled, taken" loading="lazy" style="width: 100%; height: 1150px; border: 1px solid #dee2e6; border-radius: 4px;"></iframe>
+</div>
+</section>
+</section>
+<section id="the-same-trap-path-now-asynchronous" class="level2 page-columns page-full" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="the-same-trap-path-now-asynchronous"><span class="header-section-number">6.4</span> The same trap path, now asynchronous</h2>
+<section id="the-cpu-takes-the-interrupt" class="level3" data-number="6.4.1">
+<h3 data-number="6.4.1" class="anchored" data-anchor-id="the-cpu-takes-the-interrupt"><span class="header-section-number">6.4.1</span> The CPU takes the interrupt</h3>
+<p>When the three conditions hold, the CPU applies the trap rule of Lecture 5. Side by side with an <code>ecall</code>:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 30%">
+<col style="width: 44%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Step of the trap rule</th>
+<th>After <code>ecall</code></th>
+<th>After a timer interrupt</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>record where: <code>mepc</code></td>
+<td>the <code>ecall</code> itself</td>
+<td>the next instruction, not executed</td>
+</tr>
+<tr class="even">
+<td>record why: <code>mcause</code></td>
+<td>11</td>
+<td>interrupt bit set, code 7</td>
+</tr>
+<tr class="odd">
+<td>interrupts off</td>
+<td><code>MPIE &lt;- MIE</code>, <code>MIE &lt;- 0</code></td>
+<td>the same</td>
+</tr>
+<tr class="even">
+<td>jump: <code>pc &lt;- mtvec</code></td>
+<td><code>trap_entry</code></td>
+<td>the same <code>trap_entry</code></td>
+</tr>
+</tbody>
+</table>
+<p>Only the first two rows differ, and only in the values recorded. The interrupt is taken between two instructions: the CPU has finished one instruction and, instead of executing the next one, applies the trap rule. That next instruction becomes the trap <code>pc</code>. <code>trap_entry</code> then saves all registers and the trap <code>pc</code> into the frame, exactly as after an <code>ecall</code>; it does not know which kind of trap it is saving, and it does not need to. Nothing is new in the CPU: the same rule, a different cause.</p>
+</section>
+<section id="mcause-interrupt-bit-first" class="level3" data-number="6.4.2">
+<h3 data-number="6.4.2" class="anchored" data-anchor-id="mcause-interrupt-bit-first"><span class="header-section-number">6.4.2</span> <code>mcause</code>: interrupt bit first</h3>
+<p>Lecture 5 introduced the layout of <code>mcause</code>: bit 63 is the interrupt bit, bits 62..0 hold the code. For the machine timer:</p>
+<pre class="text"><code>mcause = 0x8000000000000007
+         bit 63 = 1: interrupt
+         code   = 7: machine timer</code></pre>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th><code>mcause</code></th>
+<th>Interrupt bit</th>
+<th>Code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>0xb</code></td>
+<td>0</td>
+<td>11</td>
+<td><code>ecall</code> from M-mode</td>
+</tr>
+<tr class="even">
+<td><code>0x7</code></td>
+<td>0</td>
+<td>7</td>
+<td>store/AMO access fault</td>
+</tr>
+<tr class="odd">
+<td><code>0x8000000000000007</code></td>
+<td>1</td>
+<td>7</td>
+<td>machine timer interrupt</td>
+</tr>
+</tbody>
+</table>
+<p>The code 7 alone is ambiguous. Exception 7 is a store or AMO (atomic memory operation) access fault, for example a store to an address where nothing is mapped. A handler that compared only the code would treat such a fault as a timer interrupt and resume the faulting instruction forever. The handler therefore tests the interrupt bit first. <code>riscv.h</code> provides the names: <code>MCAUSE_INTERRUPT</code> is <code>1UL &lt;&lt; 63</code>, <code>MCAUSE_CODE(c)</code> clears that bit, and <code>IRQ_MACHINE_TIMER</code> is 7.</p>
+</section>
+<section id="the-trap-pc-is-the-continuation-address" class="level3" data-number="6.4.3">
+<h3 data-number="6.4.3" class="anchored" data-anchor-id="the-trap-pc-is-the-continuation-address"><span class="header-section-number">6.4.3</span> The trap <code>pc</code> is the continuation address</h3>
+<p>Today’s test process is the <strong>spinner</strong>, the process of Exercise 5. It is the never-yielding loop of Lecture 4, made concrete: it counts to a million and never calls <code>process_yield()</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span> spinner<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">volatile</span> <span class="dt">unsigned</span> <span class="dt">long</span> counter <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    uart_puts<span class="op">(</span><span class="st">"spinner: start</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span>counter <span class="op">&lt;</span> <span class="dv">1000000</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>        <span class="op">++</span>counter<span class="op">;</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* prints "spinner: done, counter = ...", then exits */</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The spinner has nothing to do with the timer mechanism itself. It is only a process that keeps the CPU busy, and its final counter lets us check afterwards that no increment was lost. Its loop, as compiled in our build (GCC 13.2), with our comments:</p>
+<pre class="text"><code>800002b4:  ld    a5,8(sp)       load counter
+800002b6:  addi  a5,a5,1        +1
+800002b8:  sd    a5,8(sp)       store counter
+800002ba:  ld    a5,8(sp)
+800002bc:  bgeu  a4,a5,800002b4 loop while counter &lt;= limit</code></pre>
+<p><code>counter</code> is a <code>volatile unsigned long</code> on the spinner’s stack at <code>8(sp)</code>, so every iteration loads it, increments it and stores it back. <code>a4</code> holds the limit 999999, loaded once before the loop. The addresses are build-specific; a GCC 14.2 build, or your own <code>main.c</code>, places the loop elsewhere.</p>
+<p>Suppose a timer interrupt is reported at <code>0x800002b6</code>. The <code>addi</code> at that address <strong>has not executed yet</strong>: the CPU took the interrupt instead of executing it. Resuming at the trap <code>pc</code> executes it for the first time. After an interrupt, <code>mepc</code> already says where to continue: the trap <code>pc</code> is the continuation address, and the handler changes nothing.</p>
+<p>Lecture 5 had the opposite case. After an <code>ecall</code>, <code>mepc</code> holds the <code>ecall</code>, which has executed, and the handler adds 4. Adding 4 after an interrupt would skip work that was never done. Our target has the C extension, so instructions are 2 or 4 bytes long. From <code>0x800002b6</code>, <code>+ 4</code> lands on <code>0x800002ba</code>: <code>addi</code> and <code>sd</code> are skipped, and one increment is lost silently. From <code>0x800002bc</code>, <code>+ 4</code> skips the loop’s branch, and the loop ends early. From a 2-byte instruction followed by a 4-byte one, <code>+ 4</code> lands in the middle of an instruction, and the CPU decodes from there.</p>
+<p>The registers of the interrupted loop survive the handler for the reason Lecture 5 gave: between the <code>ld</code> and the <code>addi</code>, the counter exists only in <code>a5</code> and the limit only in <code>a4</code>, two caller-saved registers with no call in sight, and <code>trap_entry</code> saves all 31 registers before any C code runs. The Lecture 5 chapter uses this loop as its compiled example. The final line <code>spinner: done, counter = 1000000</code>, identical with and without timer interrupts, is the evidence in our run.</p>
+</section>
+<section id="the-timer-branch-of-trap_handler" class="level3" data-number="6.4.4">
+<h3 data-number="6.4.4" class="anchored" data-anchor-id="the-timer-branch-of-trap_handler"><span class="header-section-number">6.4.4</span> The timer branch of <code>trap_handler()</code></h3>
+<p>The handler of Lecture 5 (“Inside <code>trap_handler()</code>”) gets one new branch at the top; everything below it is unchanged:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="dt">uintptr_t</span> cause <span class="op">=</span> csr_read<span class="op">(</span>mcause<span class="op">);</span>   <span class="co">/* the reason */</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>cause <span class="op">&amp;</span> MCAUSE_INTERRUPT<span class="op">)</span> <span class="op">{</span>                    <span class="co">/* new */</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>MCAUSE_CODE<span class="op">(</span>cause<span class="op">)</span> <span class="op">==</span> IRQ_MACHINE_TIMER<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>        report_tick<span class="op">(</span>trapped<span class="op">-&gt;</span>pc<span class="op">);</span>   <span class="co">/* Exercise 5 only */</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>        timer_arm<span class="op">(</span>TIME_SLICE<span class="op">);</span>      <span class="co">/* re-arm */</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> reschedule<span class="op">();</span>        <span class="co">/* same frame, no +4 */</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>cause <span class="op">==</span> EXC_ECALL_FROM_M<span class="op">)</span> <span class="op">{</span>  <span class="co">/* 11: ecall */</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    trapped<span class="op">-&gt;</span>pc <span class="op">+=</span> <span class="dv">4</span><span class="op">;</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">long</span> a0 <span class="op">=</span> trapped<span class="op">-&gt;</span>regs<span class="op">[</span>REG_A0<span class="op">];</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">switch</span> <span class="op">(</span>trapped<span class="op">-&gt;</span>regs<span class="op">[</span>REG_A7<span class="op">])</span> <span class="op">{</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> SYS_YIELD<span class="op">:</span> <span class="cf">return</span> reschedule<span class="op">();</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> SYS_EXIT<span class="op">:</span>  <span class="cf">return</span> finish_current<span class="op">(</span>a0<span class="op">);</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>report_unexpected<span class="op">(</span>cause<span class="op">,</span> trapped<span class="op">-&gt;</span>pc<span class="op">);</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> finish_current<span class="op">(</span>EXIT_STATUS_TRAP<span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>report_tick()</code> and <code>report_unexpected()</code> are names used only here for brevity; in the reference both reports are inline code. <code>report_tick()</code> prints the line <code>os: tick N at &lt;pc&gt; in process 1</code> and is compiled only into the Exercise 5 library; the reference also counts the interrupt there. In the reference, the <code>ecall</code> branch is the function <code>handle_syscall()</code>: it adds 4 and decides by <code>a7</code> as above, with additional report lines. An interrupt with another code falls through to the unexpected-trap report, as every unknown cause did in Lecture 5.</p>
+<p>The timer branch has three jobs:</p>
+<ul>
+<li><strong>Report</strong>, in the Exercise 5 library only: one line with the trap <code>pc</code>.</li>
+<li><strong>Re-arm</strong>: <code>timer_arm(TIME_SLICE)</code> moves <code>mtimecmp</code> one time slice into the future. This also withdraws the pending request, because <code>mtime &gt;= mtimecmp</code> no longer holds.</li>
+<li><strong>Decide</strong>: <code>reschedule()</code> marks the current process <code>READY</code> and selects the next <code>READY</code> one. With one process, that is the same process, so the same frame is returned.</li>
+</ul>
+<p>There is no <code>pc += 4</code>. The re-arm is not optional. Without it, <code>mip.MTIP</code> would still be set when the handler returns; <code>mret</code> sets <code>mstatus.MIE</code> to 1, <code>mie.MTIE</code> is 1, so all three conditions hold again, and the CPU traps before the spinner executes a single instruction. The OS would run and the process would not.</p>
+<p>The parameter of <code>trap_handler()</code> is still called <code>trapped</code>. For the timer case, read it as “the process that was interrupted”.</p>
+</section>
+<section id="the-lifetime-with-a-timer-interrupt" class="level3 page-columns page-full" data-number="6.4.5">
+<h3 data-number="6.4.5" class="anchored" data-anchor-id="the-lifetime-with-a-timer-interrupt"><span class="header-section-number">6.4.5</span> The lifetime with a timer interrupt</h3>
+<p>The picture of Lecture 5, “The lifetime in detail”, changes in two places only:</p>
+<pre class="text"><code>              OS             CPU               Process
+                          +--------+
+os_run()     | arm, MTIE  |        |
+os_start     +-----------&gt;| return |-----------&gt;| (start)
+                          |        |            | loop ...
+trap_entry   |&lt;-----------|  trap  |&lt;-----------+ timer
+             | save frame |        |
+trap_handler | re-arm     |        |
+os_start     +-----------&gt;| return |-----------&gt;| (resume)</code></pre>
+<p><code>os_run()</code> arms the timer and sets <code>mie.MTIE</code>, and the trap arrow starts at “timer” instead of an <code>ecall</code>. The process line has no <code>ecall</code> at all: the spinner just keeps computing, and the trap arrow leaves it between two instructions of its loop. From <code>trap_entry</code> until <code>os_start</code> restores it, the spinner’s state is in <code>p.frame</code>. The handler bar says “re-arm”, not “pc += 4”. The process never asked; the OS ran anyway and returned the same frame.</p>
+<p>After the spinner exits, the idle process receives the timer interrupts, as Lecture 5 showed for the time after the last exit.</p>
+<div class="callout callout-style-simple callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Interactive model: one trap, step by step
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The model below follows one timer interrupt through the loop of our build, from the trap rule to <code>mret</code>: the registers <code>a4</code> and <code>a5</code>, the counter in memory, <code>mepc</code>, <code>mcause</code>, <code>mstatus.MIE</code> and <code>MPIE</code>, and the frame. Choose the instruction before which the interrupt lands and the trap path: the correct one, a handler that adds 4, or a <code>trap_entry</code> that saves only the CP1 subset. The listing is that of our build; the execution is a model, not output of our OS. It loads its Python runtime from the internet when it starts, which takes a few seconds.</p>
+<p><a href="../notebooks/06-one-trap-step-by-step.html" target="_blank" rel="noopener">Open the model in a full window</a></p>
+</div>
+</div>
+<div class="column-page">
+<iframe src="../notebooks/06-one-trap-step-by-step.html" title="Interactive model: one trap, step by step" loading="lazy" style="width: 100%; height: 1200px; border: 1px solid #dee2e6; border-radius: 4px;"></iframe>
+</div>
+</section>
+</section>
+<section id="preemption" class="level2 page-columns page-full" data-number="6.5">
+<h2 data-number="6.5" class="anchored" data-anchor-id="preemption"><span class="header-section-number">6.5</span> Preemption</h2>
+<section id="losing-the-cpu-without-yielding" class="level3" data-number="6.5.1">
+<h3 data-number="6.5.1" class="anchored" data-anchor-id="losing-the-cpu-without-yielding"><span class="header-section-number">6.5.1</span> Losing the CPU without yielding</h3>
+<p><strong>Preemption</strong> means that the OS takes the CPU away from a process that did not yield. In our system the only way this happens is the timer interrupt: the process neither causes nor intends the entry into the OS.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 35%">
+<col style="width: 37%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Cooperative (Lecture 5)</th>
+<th>Preemptive (Lecture 6)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>who causes the entry</td>
+<td>the process: <code>ecall</code></td>
+<td>the timer</td>
+</tr>
+<tr class="even">
+<td>when</td>
+<td>where the process chooses</td>
+<td>between any two instructions</td>
+</tr>
+<tr class="odd">
+<td>a <code>for (;;)</code> loop</td>
+<td>keeps the CPU</td>
+<td>loses it every 10 ms</td>
+</tr>
+</tbody>
+</table>
+<p>This answers the question of Lecture 4. The answer depends on nothing the process does: the OS arms the timer and turns on the timer switch before the first return, and the next time slice is armed in every timer branch. From now on, no process can keep the OS out for longer than one time slice. That last sentence holds for well-behaved processes only. Everything runs in machine mode, so a process could write <code>mie</code> or <code>mtimecmp</code> itself; privilege modes, which would prevent this, are outside our model.</p>
+<p>Keep this axis apart from the one of Lecture 5. Cooperative versus non-cooperative asks whether the process intends the entry; synchronous versus asynchronous asks whether the current instruction causes it. A timer interrupt is non-cooperative and asynchronous; an illegal instruction is non-cooperative but synchronous.</p>
+</section>
+<section id="interrupt-handling-versus-the-scheduling-decision" class="level3" data-number="6.5.2">
+<h3 data-number="6.5.2" class="anchored" data-anchor-id="interrupt-handling-versus-the-scheduling-decision"><span class="header-section-number">6.5.2</span> Interrupt handling versus the scheduling decision</h3>
+<p>The timer gives the OS control. What the OS does with it is a separate step:</p>
+<pre class="text"><code>interrupt handling     CPU: trap rule         the OS gets control
+                       trap_entry: save       the state becomes data
+scheduling decision    trap_handler(): which frame to return?
+return                 os_start, mret         that frame continues</code></pre>
+<p>The decision is one line of <code>trap_handler()</code>: <code>return reschedule();</code>. With one process it has one option, and the same frame continues. Preemption makes a decision possible; it does not make one. Lecture 7 asks whether the handler must return the same frame, and that question only makes sense now that the OS has control without the process’s help.</p>
+</section>
+<section id="one-line-per-tick" class="level3" data-number="6.5.3">
+<h3 data-number="6.5.3" class="anchored" data-anchor-id="one-line-per-tick"><span class="header-section-number">6.5.3</span> One line per tick</h3>
+<p>A <strong>tick</strong> is one timer interrupt of the OS. It is not one count of <code>mtime</code>, which is why the code uses <code>delta</code> and <code>TIME_SLICE</code> for <code>mtime</code> counts. The Exercise 5 library prints one line per tick taken in a process. Our spinner counts to 1,000,000 and exits with status 7; linked against the Exercise 5 library, it produced, in our build (GCC 13.2, QEMU 8.2):</p>
+<pre class="text"><code>os: starting 1 process
+spinner: start
+os: tick 1 at 0x800002b8 in process 1
+os: tick 2 at 0x800002b8 in process 1
+os: tick 3 at 0x800002b8 in process 1
+os: tick 4 at 0x800002b6 in process 1
+os: tick 5 at 0x800002b6 in process 1
+os: tick 6 at 0x800002b6 in process 1
+os: tick 7 at 0x800002b4 in process 1
+os: tick 8 at 0x800002b4 in process 1
+spinner: done, counter = 1000000
+os: process 1 exited 7
+os: all processes finished
+os: 8 timer interrupts</code></pre>
+<p>The <code>spinner:</code> lines come from the process, the <code>os:</code> lines from the OS. All eight reported addresses lie in the loop shown above. The last line is the count of timer interrupts, printed when the last process has finished. Addresses and counts are those of our build; yours differ, the structure does not.</p>
+</section>
+<section id="can-the-process-tell-it-was-interrupted" class="level3" data-number="6.5.4">
+<h3 data-number="6.5.4" class="anchored" data-anchor-id="can-the-process-tell-it-was-interrupted"><span class="header-section-number">6.5.4</span> Can the process tell it was interrupted?</h3>
+<p>The same spinner, linked once against the Exercise 4 library and once against the Exercise 5 library:</p>
+<pre class="text"><code>Exercise 4 library               Exercise 5 library
+spinner: start                   spinner: start
+                                 os: tick 1 ... os: tick 8
+spinner: done,                   spinner: done,
+  counter = 1000000                counter = 1000000</code></pre>
+<p>The spinner’s own lines and its final counter are identical. The tick lines were printed by the OS between two instructions of the spinner; the spinner executed none of its own instructions meanwhile. After each tick, its registers, its memory and its next instruction are as they were before the interrupt.</p>
+<p>The process cannot tell that it was interrupted, except that time has passed. It could find out only by measuring time, for example by reading <code>mtime</code> before and after its loop and noticing that more time passed than its own instructions need. This is the only trace preemption leaves, and it is why the trap path must be exact: any register it failed to restore would be a visible trace, and a wrong one.</p>
+</section>
+<section id="reproducible-interrupts-with--icount" class="level3 page-columns page-full" data-number="6.5.5">
+<h3 data-number="6.5.5" class="anchored" data-anchor-id="reproducible-interrupts-with--icount"><span class="header-section-number">6.5.5</span> Reproducible interrupts with <code>-icount</code></h3>
+<p>Lecture 5 said that an interrupt happens between two instructions, at a place that varies from run to run. Real hardware behaves like that, and so does QEMU by default: its timer follows the time of the host, so the places where the spinner is interrupted change from run to run. That makes asynchronous behaviour hard to observe and impossible to predict exactly.</p>
+<p>For the course we start QEMU with an additional flag:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ex">qemu-system-riscv64</span> ... <span class="at">-icount</span> shift=4,sleep=off</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>With <code>-icount</code>, QEMU’s virtual clock counts executed instructions instead of host time: each instruction advances virtual time by 2<sup>4</sup> ns = 16 ns. <code>mtime</code> then depends only on how many instructions ran, and two runs of the same binary are interrupted at the same instructions. A 10 ms time slice is 625,000 instructions; one <code>mtime</code> count of 100 ns is about 6 instructions. <code>sleep=off</code> is part of the flag on purpose: with plain <code>shift=4</code>, the QEMU version of our build environment still interrupted the same binary at different instructions from run to run. Without <code>-icount</code>, on a fast host, the spinner may even finish before the first timer interrupt.</p>
+<p><code>-icount</code> is our observation tool, not a property of real hardware. Nothing in the OS may depend on where an interrupt lands. The flag makes our observations reproducible; it does not make the system more correct.</p>
+<div class="callout callout-style-simple callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Interactive model: preemption over time
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The model below shows who runs over time when the spinner runs against the Exercise 4 and the Exercise 5 library. Change the time slice, the length of the loop and the OS time per tick, switch <code>-icount</code> off and run again, and step from tick to tick. It counts only the spinner’s loop and is not output of our OS. It loads its Python runtime from the internet when it starts, which takes a few seconds.</p>
+<p><a href="../notebooks/06-preemption-over-time.html" target="_blank" rel="noopener">Open the model in a full window</a></p>
+</div>
+</div>
+<div class="column-page">
+<iframe src="../notebooks/06-preemption-over-time.html" title="Interactive model: preemption over time" loading="lazy" style="width: 100%; height: 1250px; border: 1px solid #dee2e6; border-radius: 4px;"></iframe>
+</div>
+</section>
+</section>
+<section id="what-can-go-wrong" class="level2" data-number="6.6">
+<h2 data-number="6.6" class="anchored" data-anchor-id="what-can-go-wrong"><span class="header-section-number">6.6</span> What can go wrong</h2>
+<section id="ticks-without-progress" class="level3" data-number="6.6.1">
+<h3 data-number="6.6.1" class="anchored" data-anchor-id="ticks-without-progress"><span class="header-section-number">6.6.1</span> Ticks without progress</h3>
+<p>The following output comes from the reference OS with exactly one line of its timer path removed, run with the same spinner. It never reaches <code>spinner: done</code>:</p>
+<pre class="text"><code>os: starting 1 process
+spinner: start
+os: tick 1 at 0x800002b8 in process 1
+os: tick 2 at 0x800002b8 in process 1
+os: tick 3 at 0x800002b8 in process 1
+...                      (tens of thousands of lines)</code></pre>
+<p>The re-arm is missing from the timer branch. <code>mtimecmp</code> stays in the past, so <code>mip.MTIP</code> stays set. After every <code>mret</code> all three conditions hold at once, and the CPU traps before the spinner executes its next instruction: the same trap <code>pc</code> every time, and no progress. The OS is busy, and the process starves.</p>
+<p>The conditions table is the tool to find such a defect. Exercise 5 has you diagnose further broken timer paths with your own build.</p>
+</section>
+<section id="our-trap-model-who-does-what-with-the-timer" class="level3" data-number="6.6.2">
+<h3 data-number="6.6.2" class="anchored" data-anchor-id="our-trap-model-who-does-what-with-the-timer"><span class="header-section-number">6.6.2</span> Our trap model: who does what, with the timer</h3>
+<p>Lecture 5 summarised the trap model in a table. With the timer it gains one row at the top and changes in two cells:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 25%">
+<col style="width: 61%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Step</th>
+<th>Who</th>
+<th>What</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>request</td>
+<td>CLINT</td>
+<td>pending while <code>mtime &gt;= mtimecmp</code></td>
+</tr>
+<tr class="even">
+<td>trap</td>
+<td>CPU</td>
+<td>if enabled: <code>mepc</code>, <code>mcause</code>; interrupts off; <code>pc &lt;- mtvec</code></td>
+</tr>
+<tr class="odd">
+<td>save</td>
+<td><code>trap_entry</code></td>
+<td>registers and trap <code>pc</code> into the frame; OS stack</td>
+</tr>
+<tr class="even">
+<td>decide</td>
+<td><code>trap_handler()</code></td>
+<td>timer: re-arm, return a frame</td>
+</tr>
+<tr class="odd">
+<td>restore</td>
+<td><code>os_start</code></td>
+<td>registers and <code>mepc</code> from the frame</td>
+</tr>
+<tr class="even">
+<td>return</td>
+<td>CPU, <code>mret</code></td>
+<td><code>pc &lt;- mepc</code>; <code>MIE &lt;- MPIE</code>, interrupts on</td>
+</tr>
+</tbody>
+</table>
+<p>The platform device requests, the CPU takes the interrupt if it is enabled, and the handler re-arms and returns a frame. Everything else is unchanged. For CP2, students write their own <code>os_run()</code> and <code>trap_handler()</code>: <code>os_run()</code> arms the timer and turns on the timer switch, and <code>trap_handler()</code> has the timer branch and, after Lecture 7, a scheduler.</p>
+<p>The model stays as restricted as in Lecture 5: machine mode only, one trap entry through <code>mtvec</code>, no nested traps, since the OS always runs with <code>mstatus.MIE</code> = 0, and no privilege separation. Lecture 6 adds exactly one interrupt source, the machine timer of the CLINT. Outside the model: other interrupt sources and the interrupt controllers that collect them, vectored <code>mtvec</code>, timers for supervisor mode, and the protection that would keep a process from changing <code>mie</code> or <code>mtimecmp</code>.</p>
+</section>
+</section>
+<section id="key-ideas" class="level2" data-number="6.7">
+<h2 data-number="6.7" class="anchored" data-anchor-id="key-ideas"><span class="header-section-number">6.7</span> Key ideas</h2>
+<ul>
+<li>The <strong>CLINT</strong> is a platform device: <code>mtime</code> counts at 10 MHz, <code>mtimecmp</code> holds the time of the next request, and both are memory-mapped registers reached through <code>volatile</code> pointers.</li>
+<li>A timer interrupt is <strong>pending</strong> in <code>mip.MTIP</code> while <code>mtime &gt;= mtimecmp</code>, until the OS writes a larger <code>mtimecmp</code>. It is taken only if the timer switch <code>mie.MTIE</code> and the global switch <code>mstatus.MIE</code> are also on; the OS sets <code>mie.MTIE</code> once, and the trap rule and <code>mret</code> switch <code>mstatus.MIE</code>.</li>
+<li>Because a trap clears <code>mstatus.MIE</code>, a timer interrupt never interrupts the OS; one that becomes pending meanwhile is taken right after <code>mret</code>.</li>
+<li>A timer interrupt enters through the <strong>same trap path</strong> as an <code>ecall</code>. <code>mcause</code> has the interrupt bit set and code 7, and the trap <code>pc</code> is the instruction not yet executed: it already is the continuation address, so the handler adds nothing.</li>
+<li>The full trap frame of Lecture 5 is what makes this safe: at an interrupt, caller-saved registers hold live values and no calling convention protects them.</li>
+<li>The timer branch of <code>trap_handler()</code> re-arms the timer and returns a frame. Without the re-arm, the interrupt stays pending and the process makes no progress.</li>
+<li><strong>Preemption</strong>: the OS gets the CPU back every time slice without a yield. It makes a scheduling decision possible; with one process, the decision is the same frame.</li>
+<li><code>-icount</code> makes the places of interrupts reproducible for observation; it is not a property of real hardware.</li>
+</ul>
+<p>The OS now has control at every tick. Must it give the CPU back to the same process?</p>
+</section>
+<section id="related-exercise" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="related-exercise">Related Exercise</h2>
+<p><a href="../exercises/BVS1-Exercise-05-The-Timer-Path-WS26-27.pdf"><strong>Exercise 5 — The Timer Path</strong></a> runs a never-yielding process against the Exercise 4 and the Exercise 5 library, locates the reported trap <code>pc</code> values in the disassembly, and diagnoses three broken libraries from their output.</p>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<ul>
+<li>RISC-V International, <a href="https://riscv.org/specifications/ratified/"><em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em></a>: <code>mip</code>, <code>mie</code>, <code>mstatus</code>, <code>mcause</code>, machine timer interrupt.</li>
+<li>RISC-V International, <a href="https://github.com/riscv/riscv-aclint"><em>RISC-V Advanced Core Local Interruptor Specification</em></a>: <code>mtime</code>, <code>mtimecmp</code>.</li>
+<li>QEMU documentation, <a href="https://www.qemu.org/docs/master/devel/tcg-icount.html"><em>TCG Instruction Counting</em></a>: <code>-icount</code>.</li>
+<li>Arpaci-Dusseau and Arpaci-Dusseau, <a href="https://pages.cs.wisc.edu/~remzi/OSTEP/"><em>Operating Systems: Three Easy Pieces</em></a>, chapter <em>Mechanism: Limited Direct Execution</em>.</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapters/05-entering-the-os.html" class="pagination-link" aria-label="Entering the OS">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Entering the OS</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../downloads.html" class="pagination-link" aria-label="Downloads">
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Downloads</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Except where otherwise noted, © 2026 Stavros Kousidis.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p><a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

@@ -151,8 +151,14 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../chapters/06-timer-and-preemption.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Timer and Preemption</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../downloads.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Downloads</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Downloads</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -242,6 +248,10 @@ A <strong>callee-saved</strong> register is one whose value a called function mu
 <dd>
 The software agreement, defined in the RISC-V ABI, that lets separately compiled functions cooperate about how registers are used: arguments in <code>a0</code>–<code>a7</code>, the return value in <code>a0</code>, the return address in <code>ra</code>, and which registers are caller-saved or callee-saved. The compiler guarantees it for the code it generates; hand-written assembly must keep it itself, and the hardware knows nothing of it. A trap is not a call, so the convention gives no guarantee at a trap. (Lecture 3)
 </dd>
+<dt>CLINT (core-local interruptor)</dt>
+<dd>
+The timer device of QEMU’s <code>virt</code> machine, a part of the platform, not of the CPU. It holds the memory-mapped registers <code>mtime</code> and <code>mtimecmp</code> and requests a machine timer interrupt from the CPU while <code>mtime &gt;= mtimecmp</code>. Newer RISC-V documents call it ACLINT. <em>See also:</em> <code>mtime</code> and <code>mtimecmp</code>, platform. (Lecture 6)
+</dd>
 <dt>Context</dt>
 <dd>
 The saved CPU register state needed to continue the same execution. The CP1 <code>struct context</code> holds <code>ra</code>, <code>sp</code> and <code>s0</code>–<code>s11</code>, which suffices at a call boundary. From Lecture 5 the trap frame is the context, complete for our model. <em>See also:</em> trap frame, context switch. (Lecture 3)
@@ -256,7 +266,7 @@ A saved value saying where an execution continues when it is restored. It is nev
 </dd>
 <dt>Control and status register (CSR)</dt>
 <dd>
-A CPU register outside the general-purpose registers <code>x0</code>–<code>x31</code>, reachable only through the CSR instructions of the <code>Zicsr</code> extension, not through loads and stores. Our trap mechanism uses five: <code>mtvec</code> (where traps enter: a base address and a mode field), <code>mepc</code> (the trap <code>pc</code>), <code>mcause</code> (the reason, with the interrupt bit in bit 63), <code>mstatus</code> (among others <code>MIE</code>, <code>MPIE</code>, <code>MPP</code>), and <code>mscratch</code> (no meaning for the hardware; our OS keeps the current frame’s address there). The prefix <code>m</code> means machine mode. (Lecture 5)
+A CPU register outside the general-purpose registers <code>x0</code>–<code>x31</code>, reachable only through the CSR instructions of the <code>Zicsr</code> extension, not through loads and stores. Our trap mechanism uses five: <code>mtvec</code> (where traps enter: a base address and a mode field), <code>mepc</code> (the trap <code>pc</code>), <code>mcause</code> (the reason, with the interrupt bit in bit 63), <code>mstatus</code> (among others <code>MIE</code>, <code>MPIE</code>, <code>MPP</code>), and <code>mscratch</code> (no meaning for the hardware; our OS keeps the current frame’s address there). Lecture 6 adds <code>mie</code> (one enable bit per interrupt source, among them <code>MTIE</code> for the machine timer) and <code>mip</code> (the pending bits, among them <code>MTIP</code>). The prefix <code>m</code> means machine mode. (Lecture 5; Lecture 6)
 </dd>
 <dt>Cooperative and non-cooperative entry</dt>
 <dd>
@@ -300,7 +310,7 @@ The contract between software and a processor: the instructions, registers and b
 </dd>
 <dt>Interrupt</dt>
 <dd>
-An asynchronous trap: caused by an event independent of the current instruction and taken between two instructions, so the place varies from run to run. The trap <code>pc</code> is the instruction that was about to execute and has not executed yet; there is no <code>+4</code>. Interrupts are taken only when enabled; on a trap the CPU disables them while the OS saves the process’s state. Not an exception: an <code>ecall</code> is not an interrupt. <em>See also:</em> exception, timer interrupt, trap. (Lecture 4; as a kind of trap in Lecture 5)
+An asynchronous trap: caused by an event independent of the current instruction and taken between two instructions, so the place varies from run to run. The trap <code>pc</code> is the instruction that was about to execute and has not executed yet; there is no <code>+4</code>. Interrupts are taken only when enabled; on a trap the CPU disables them while the OS saves the process’s state. Not an exception: an <code>ecall</code> is not an interrupt. <em>See also:</em> exception, pending, timer interrupt, trap. (Lecture 4; as a kind of trap in Lecture 5)
 </dd>
 <dt>Label</dt>
 <dd>
@@ -326,9 +336,17 @@ The current execution position of the CPU: the <code>pc</code> as architectural 
 <dd>
 The most privileged RISC-V privilege mode (M-mode). Our whole system, OS and processes alike, runs in it, which is why our CSRs carry the prefix <code>m</code> and <code>ecall</code> produces <code>mcause</code> 11. <em>See also:</em> privilege mode. (Lecture 5)
 </dd>
+<dt>Memory-mapped register</dt>
+<dd>
+A device register that has an address in the same address space as RAM, so that an ordinary load or store to that address reads or writes the device instead of memory. In C it is reached through a <code>volatile</code> pointer, so that the compiler performs every access as written. Examples: the UART’s transmit and status registers at <code>0x10000000</code> and <code>0x10000005</code>, <code>mtime</code> and <code>mtimecmp</code>. The platform decides which address leads to RAM and which to a device; on QEMU <code>virt</code>, RAM starts at <code>0x80000000</code>. CSRs are not memory-mapped: they have no address. <em>See also:</em> control and status register. (Lecture 6)
+</dd>
 <dt>Microarchitecture</dt>
 <dd>
 How a particular processor implements the ISA internally, for example its pipeline or caches. Software written for the ISA does not depend on it. <em>See also:</em> ISA. (Lecture 1)
+</dd>
+<dt><code>mtime</code> and <code>mtimecmp</code></dt>
+<dd>
+The two 64-bit memory-mapped registers of the CLINT. <code>mtime</code> (at <code>0x0200bff8</code> on QEMU <code>virt</code>) is the current time; the device counts it up from 0 at machine start at 10 MHz, one count every 100 ns, and it never stops. <code>mtimecmp</code> (for hart 0 at <code>0x02004000</code>) holds a point in time, not a duration: while <code>mtime &gt;= mtimecmp</code>, a timer interrupt is pending. <code>timer_arm(delta)</code> writes <code>mtime + delta</code> into <code>mtimecmp</code>. <em>See also:</em> CLINT, pending, time slice. (Lecture 6)
 </dd>
 <dt>Object file</dt>
 <dd>
@@ -342,6 +360,10 @@ Software that helps turn hardware into a usable computer system by providing abs
 <dd>
 The stack on which the OS’s own code runs: the region that the linker script reserves below <code>_stack_top</code>. <code>_start</code> selects it, and <code>main()</code> has run on it since Lecture 2. From Lecture 5 the trap path switches to it explicitly with <code>la sp, _stack_top</code>, so every handler run starts at its top; anything that must outlive one handler run must not live there. <em>See also:</em> process stack. (Lecture 4)
 </dd>
+<dt>Pending</dt>
+<dd>
+An interrupt is <strong>pending</strong> when its source has requested it and the request has not been withdrawn; it is <strong>enabled</strong> when the CPU’s enable bits allow it, and <strong>taken</strong> when the CPU applies the trap rule. The machine timer interrupt is pending in <code>mip.MTIP</code> while <code>mtime &gt;= mtimecmp</code>; it stays pending until the OS writes a larger <code>mtimecmp</code>, and taking it does not clear it. It is taken only if <code>mie.MTIE</code> and <code>mstatus.MIE</code> are also set. <em>See also:</em> interrupt, <code>mtime</code> and <code>mtimecmp</code>. (Lecture 6)
+</dd>
 <dt>Physical host</dt>
 <dd>
 The real computer that provides the CPU, memory and devices, and on which the development VM runs. <em>See also:</em> development host, target. (Lecture 1)
@@ -350,9 +372,13 @@ The real computer that provides the CPU, memory and devices, and on which the de
 <dd>
 The machine around the CPU: memory map and devices such as the UART and, in Lecture 6, the timer. QEMU’s <code>virt</code> machine is our platform. A platform device raises an interrupt; the CPU’s trap rule reacts to it. <em>See also:</em> ISA. (Lecture 5)
 </dd>
+<dt>Polling</dt>
+<dd>
+Asking a device again and again whether it is ready, in a loop, until it is. <code>uart_putc()</code> polls the UART’s line status register before each character. <em>See also:</em> memory-mapped register, UART. (Lecture 6)
+</dd>
 <dt>Preemption</dt>
 <dd>
-The OS takes control without the running process’s cooperation, made possible by a timer interrupt. Interrupt handling and the scheduling decision that may follow are related but distinct steps. <em>See also:</em> cooperative and non-cooperative entry. (Lecture 4)
+The OS takes control without the running process’s cooperation, made possible by a timer interrupt. Interrupt handling and the scheduling decision that may follow are related but distinct steps. In our system from Lecture 6, the timer interrupt enters the OS every time slice; with one process, the scheduling decision returns the same frame. <em>See also:</em> cooperative and non-cooperative entry, time slice. (Lecture 4; Lecture 6)
 </dd>
 <dt>Privilege mode</dt>
 <dd>
@@ -430,9 +456,17 @@ A request to the OS made with <code>ecall</code>. In our convention <code>a7</co
 <dd>
 The machine for which we build the program: an RV64 machine, emulated by QEMU. <em>See also:</em> development host, physical host. (Lecture 1)
 </dd>
+<dt>Tick</dt>
+<dd>
+One timer interrupt of the OS, as in the Exercise 5 library’s lines <code>os: tick N at &lt;pc&gt; in process 1</code>. Not one count of <code>mtime</code>: that is why <code>timer_arm()</code> takes a <code>delta</code> and the time slice is called <code>TIME_SLICE</code>, both in <code>mtime</code> counts. <em>See also:</em> time slice, timer interrupt. (Lecture 6)
+</dd>
+<dt>Time slice</dt>
+<dd>
+How long the OS lets a process run until the next timer interrupt; other books call it a <em>quantum</em>. In our system 10 ms, <code>TIME_SLICE</code> = <code>TIMER_HZ / 100</code> = 100,000 <code>mtime</code> counts. <em>See also:</em> tick, preemption. (Lecture 6)
+</dd>
 <dt>Timer interrupt</dt>
 <dd>
-An interrupt raised by the platform’s timer when a programmed time is reached (<code>mcause</code> 7 with the interrupt bit set). It lets the OS regain control without a voluntary yield. (Lecture 4; implemented in Lecture 6)
+An interrupt raised by the platform’s timer when a programmed time is reached (<code>mcause</code> 7 with the interrupt bit set). It lets the OS regain control without a voluntary yield. In our system the CLINT requests it when <code>mtime</code> reaches <code>mtimecmp</code>; the trap <code>pc</code> is the instruction not yet executed, and the handler re-arms the timer before it returns a frame. <em>See also:</em> pending, tick. (Lecture 4; implemented in Lecture 6)
 </dd>
 <dt>Toolchain</dt>
 <dd>
@@ -457,6 +491,10 @@ The first half of the provided <code>trap.S</code>, from the label <code>trap_en
 <dt>Trap <code>pc</code></dt>
 <dd>
 Course term, not a RISC-V name: the <code>pc</code> value that the CPU records in <code>mepc</code> on trap entry. For an exception it is the causing instruction, for an <code>ecall</code> the <code>ecall</code> itself; for an interrupt it is the next instruction, not yet executed. <em>See also:</em> live <code>pc</code>, continuation address. (Lecture 5)
+</dd>
+<dt>UART</dt>
+<dd>
+The serial device of our platform through which all output of the course is printed; on QEMU <code>virt</code> its registers start at <code>0x10000000</code>. <code>uart_putc()</code> polls its line status register and stores each character into its transmit register, with ordinary loads and stores. <em>See also:</em> memory-mapped register, polling, platform. (Lecture 6)
 </dd>
 <dt>Yield</dt>
 <dd>
@@ -870,7 +908,7 @@ The running process voluntarily returns control to the operating system while re
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="../downloads.html" class="pagination-link" aria-label="Downloads">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Downloads</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Downloads</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
