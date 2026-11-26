@@ -541,7 +541,7 @@ p1.state     =  FINISHED</code></pre>
 <pre class="text"><code>os: schedule() returned process 1 in state FINISHED, halting</code></pre>
 </section>
 </section>
-<section id="choosing-the-next-frame-round-robin" class="level2" data-number="7.4">
+<section id="choosing-the-next-frame-round-robin" class="level2 page-columns page-full" data-number="7.4">
 <h2 data-number="7.4" class="anchored" data-anchor-id="choosing-the-next-frame-round-robin"><span class="header-section-number">7.4</span> Choosing the next frame: round robin</h2>
 <section id="scheduling-choosing-the-frame-to-return" class="level3" data-number="7.4.1">
 <h3 data-number="7.4.1" class="anchored" data-anchor-id="scheduling-choosing-the-frame-to-return"><span class="header-section-number">7.4.1</span> Scheduling: choosing the frame to return</h3>
@@ -584,7 +584,7 @@ p1.state     =  FINISHED</code></pre>
 </table>
 <p>The <strong>scheduler</strong> is the part of the OS that makes the scheduling decision. In our OS it is one function, called at the end of every trap and once in <code>os_run()</code>. In Lecture 6 it had one candidate; now it has several, and the rule is ours to choose. The mechanism does not depend on the rule: any function that returns a <code>READY</code> process gives an OS that never restores a <code>FINISHED</code> frame. Which rule is a good one is a separate question.</p>
 </section>
-<section id="round-robin-the-next-ready-process-after-the-current-one" class="level3" data-number="7.4.2">
+<section id="round-robin-the-next-ready-process-after-the-current-one" class="level3 page-columns page-full" data-number="7.4.2">
 <h3 data-number="7.4.2" class="anchored" data-anchor-id="round-robin-the-next-ready-process-after-the-current-one"><span class="header-section-number">7.4.2</span> Round robin: the next <code>READY</code> process after the current one</h3>
 <pre class="text"><code>table:    [ p1 ]  [ p2 ]  [ p3 ]  [ p4 ]
                     ^
@@ -593,6 +593,23 @@ search:             p3 -&gt; p4 -&gt; p1 -&gt; p2</code></pre>
 <p><strong>Round robin</strong>: search the process table in order, starting <strong>after</strong> the current process and wrapping around at the end; the first <code>READY</code> process runs. Every <code>READY</code> process gets its turn in table order, like the players at a table. The current process comes last in the search, so it is chosen again only if no other process is <code>READY</code>. If there is no current process of the table, at the first start or after the idle process ran, the search starts at the first entry. If no process is <code>READY</code> at all, nobody from the table runs.</p>
 <p>With the picture: if p2 is current, p3 and p4 are <code>FINISHED</code> and p1 is <code>READY</code>, then p1 runs. If only p2 is <code>READY</code>, p2 runs again.</p>
 <p>Why start after the current process and not at the start of the table? Exercise 6 answers this question from a run.</p>
+<section id="interactive-model-round-robin-over-time" class="level4 page-columns page-full" data-number="7.4.2.1">
+<h4 data-number="7.4.2.1" class="anchored" data-anchor-id="interactive-model-round-robin-over-time"><span class="header-section-number">7.4.2.1</span> Interactive model: round robin over time</h4>
+<div class="callout callout-style-simple callout-tip">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>The model below schedules two to four processes that never yield, as our OS does: at every tick, and when a process exits, the search starts after the current process. Choose how much CPU time each process needs, then step from trap to trap: the timeline shows who runs, the process table shows the states after each decision and which entries the search checked, and the <code>os:</code> lines grow as in a run. It counts time in time slices and leaves out the time the OS itself needs; it is not output of our OS. The model loads its Python runtime from the internet when it starts, which takes a few seconds.</p>
+<p><a href="../notebooks/07-round-robin-over-time.html" target="_blank" rel="noopener">Open the model in a full window</a></p>
+</div>
+</div>
+</div>
+<div class="column-page">
+<iframe src="../notebooks/07-round-robin-over-time.html" title="Interactive model: round robin over time" loading="lazy" style="width: 100%; height: 1400px; border: 1px solid #dee2e6; border-radius: 4px;"></iframe>
+</div>
+</section>
 </section>
 <section id="the-scheduling-decision-as-one-c-function" class="level3" data-number="7.4.3">
 <h3 data-number="7.4.3" class="anchored" data-anchor-id="the-scheduling-decision-as-one-c-function"><span class="header-section-number">7.4.3</span> The scheduling decision as one C function</h3>
@@ -876,13 +893,13 @@ os: 16 timer interrupts</code></pre>
 <i class="callout-icon"></i>
 </div>
 <div class="callout-body-container">
-<p>The model below rates schedules of three tasks on one core with the objective above. It compares the offline optimum, an exhaustive search over every order and every frequency level with the whole input known in advance, with rules that decide online: first come, first served, greedy shortest-first, and round robin. Change the tasks, the hardware model and the weights, and watch which schedule wins. The parameters are invented to show the effects; they are not measurements of a chip or of our OS. The model loads its Python runtime from the internet when it starts, which takes a few seconds.</p>
+<p>The model below works through a small, hypothetical example step by step: the optimisation problem with its decision variables, one task that can run on an efficiency core or a performance core at a low or a high clock, the weighted choice between energy and time (a slider for the weight), energy minimisation under a deadline (a slider for the deadline), and how fast the solution space grows with the number of tasks. The values are invented for illustration; they are not measurements of a chip or of our OS. The model loads its Python runtime from the internet when it starts, which takes a few seconds.</p>
 <p><a href="../notebooks/07-scheduling-as-optimisation.html" target="_blank" rel="noopener">Open the model in a full window</a></p>
 </div>
 </div>
 </div>
 <div class="column-page">
-<iframe src="../notebooks/07-scheduling-as-optimisation.html" title="Interactive model: scheduling as optimisation" loading="lazy" style="width: 100%; height: 1500px; border: 1px solid #dee2e6; border-radius: 4px;"></iframe>
+<iframe src="../notebooks/07-scheduling-as-optimisation.html" title="Interactive model: scheduling as optimisation" loading="lazy" style="width: 100%; height: 2400px; border: 1px solid #dee2e6; border-radius: 4px;"></iframe>
 </div>
 </section>
 </section>
