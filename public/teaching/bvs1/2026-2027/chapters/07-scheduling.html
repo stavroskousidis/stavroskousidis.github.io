@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Stavros Kousidis">
+
+<title>7&nbsp; Scheduling Several Processes – BVS1 – Betriebssysteme</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../downloads.html" rel="next">
+<link href="../chapters/06-timer-and-preemption.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-d1ce83cbcf7f21d8208077a0fee83aa1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/07-scheduling.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Scheduling Several Processes</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">BVS1 – Betriebssysteme</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">BVS1 – Betriebssysteme</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/01-introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Executing Code to Operating Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/02-source-to-executables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">From Source to Executables: Towards Processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/03-first-process.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">First Process: Stop and Continue</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/04-memory-and-execution.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Where Our Code Runs</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/05-entering-the-os.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Entering the OS</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/06-timer-and-preemption.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Timer and Preemption</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/07-scheduling.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Scheduling Several Processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../downloads.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Downloads</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/glossary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Glossary</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#where-we-stand" id="toc-where-we-stand" class="nav-link active" data-scroll-target="#where-we-stand"><span class="header-section-number">7.1</span> Where we stand</a>
+  <ul class="collapse">
+  <li><a href="#the-open-question-of-lecture-6" id="toc-the-open-question-of-lecture-6" class="nav-link" data-scroll-target="#the-open-question-of-lecture-6"><span class="header-section-number">7.1.1</span> The open question of Lecture 6</a></li>
+  <li><a href="#two-spinners-neither-yields" id="toc-two-spinners-neither-yields" class="nav-link" data-scroll-target="#two-spinners-neither-yields"><span class="header-section-number">7.1.2</span> Two spinners, neither yields</a></li>
+  <li><a href="#which-frame-does-the-handler-return" id="toc-which-frame-does-the-handler-return" class="nav-link" data-scroll-target="#which-frame-does-the-handler-return"><span class="header-section-number">7.1.3</span> Which frame does the handler return?</a></li>
+  </ul></li>
+  <li><a href="#the-process-table" id="toc-the-process-table" class="nav-link" data-scroll-target="#the-process-table"><span class="header-section-number">7.2</span> The process table</a>
+  <ul class="collapse">
+  <li><a href="#a-process-that-does-not-run-is-a-saved-frame" id="toc-a-process-that-does-not-run-is-a-saved-frame" class="nav-link" data-scroll-target="#a-process-that-does-not-run-is-a-saved-frame"><span class="header-section-number">7.2.1</span> A process that does not run is a saved frame</a></li>
+  <li><a href="#what-the-os-knows-about-each-process" id="toc-what-the-os-knows-about-each-process" class="nav-link" data-scroll-target="#what-the-os-knows-about-each-process"><span class="header-section-number">7.2.2</span> What the OS knows about each process</a></li>
+  <li><a href="#the-process-table-and-the-current-process" id="toc-the-process-table-and-the-current-process" class="nav-link" data-scroll-target="#the-process-table-and-the-current-process"><span class="header-section-number">7.2.3</span> The process table and the current process</a></li>
+  <li><a href="#process_create-enters-it-does-not-run" id="toc-process_create-enters-it-does-not-run" class="nav-link" data-scroll-target="#process_create-enters-it-does-not-run"><span class="header-section-number">7.2.4</span> <code>process_create()</code> enters, it does not run</a></li>
+  </ul></li>
+  <li><a href="#states-and-transitions-per-event" id="toc-states-and-transitions-per-event" class="nav-link" data-scroll-target="#states-and-transitions-per-event"><span class="header-section-number">7.3</span> States and transitions per event</a>
+  <ul class="collapse">
+  <li><a href="#three-states-which-frames-may-be-returned" id="toc-three-states-which-frames-may-be-returned" class="nav-link" data-scroll-target="#three-states-which-frames-may-be-returned"><span class="header-section-number">7.3.1</span> Three states: which frames may be returned?</a></li>
+  <li><a href="#one-transition-per-event" id="toc-one-transition-per-event" class="nav-link" data-scroll-target="#one-transition-per-event"><span class="header-section-number">7.3.2</span> One transition per event</a></li>
+  <li><a href="#the-states-as-a-diagram" id="toc-the-states-as-a-diagram" class="nav-link" data-scroll-target="#the-states-as-a-diagram"><span class="header-section-number">7.3.3</span> The states as a diagram</a></li>
+  <li><a href="#where-the-transitions-happen-in-the-handler" id="toc-where-the-transitions-happen-in-the-handler" class="nav-link" data-scroll-target="#where-the-transitions-happen-in-the-handler"><span class="header-section-number">7.3.4</span> Where the transitions happen in the handler</a></li>
+  <li><a href="#never-return-a-finished-frame" id="toc-never-return-a-finished-frame" class="nav-link" data-scroll-target="#never-return-a-finished-frame"><span class="header-section-number">7.3.5</span> Never return a <code>FINISHED</code> frame</a></li>
+  </ul></li>
+  <li><a href="#choosing-the-next-frame-round-robin" id="toc-choosing-the-next-frame-round-robin" class="nav-link" data-scroll-target="#choosing-the-next-frame-round-robin"><span class="header-section-number">7.4</span> Choosing the next frame: round robin</a>
+  <ul class="collapse">
+  <li><a href="#scheduling-choosing-the-frame-to-return" id="toc-scheduling-choosing-the-frame-to-return" class="nav-link" data-scroll-target="#scheduling-choosing-the-frame-to-return"><span class="header-section-number">7.4.1</span> Scheduling: choosing the frame to return</a></li>
+  <li><a href="#round-robin-the-next-ready-process-after-the-current-one" id="toc-round-robin-the-next-ready-process-after-the-current-one" class="nav-link" data-scroll-target="#round-robin-the-next-ready-process-after-the-current-one"><span class="header-section-number">7.4.2</span> Round robin: the next <code>READY</code> process after the current one</a></li>
+  <li><a href="#the-scheduling-decision-as-one-c-function" id="toc-the-scheduling-decision-as-one-c-function" class="nav-link" data-scroll-target="#the-scheduling-decision-as-one-c-function"><span class="header-section-number">7.4.3</span> The scheduling decision as one C function</a></li>
+  </ul></li>
+  <li><a href="#when-nobody-is-ready-the-idle-process" id="toc-when-nobody-is-ready-the-idle-process" class="nav-link" data-scroll-target="#when-nobody-is-ready-the-idle-process"><span class="header-section-number">7.5</span> When nobody is <code>READY</code>: the idle process</a>
+  <ul class="collapse">
+  <li><a href="#which-frame-after-the-last-exit" id="toc-which-frame-after-the-last-exit" class="nav-link" data-scroll-target="#which-frame-after-the-last-exit"><span class="header-section-number">7.5.1</span> Which frame after the last exit?</a></li>
+  <li><a href="#the-idle-process-a-frame-that-waits" id="toc-the-idle-process-a-frame-that-waits" class="nav-link" data-scroll-target="#the-idle-process-a-frame-that-waits"><span class="header-section-number">7.5.2</span> The idle process: a frame that waits</a></li>
+  <li><a href="#the-whole-run-who-runs-who-decides" id="toc-the-whole-run-who-runs-who-decides" class="nav-link" data-scroll-target="#the-whole-run-who-runs-who-decides"><span class="header-section-number">7.5.3</span> The whole run: who runs, who decides</a></li>
+  </ul></li>
+  <li><a href="#outlook-scheduling-is-more-than-taking-turns" id="toc-outlook-scheduling-is-more-than-taking-turns" class="nav-link" data-scroll-target="#outlook-scheduling-is-more-than-taking-turns"><span class="header-section-number">7.6</span> Outlook: scheduling is more than taking turns</a>
+  <ul class="collapse">
+  <li><a href="#when-where-how" id="toc-when-where-how" class="nav-link" data-scroll-target="#when-where-how"><span class="header-section-number">7.6.1</span> When, where, how</a></li>
+  <li><a href="#schedulers-in-current-systems" id="toc-schedulers-in-current-systems" class="nav-link" data-scroll-target="#schedulers-in-current-systems"><span class="header-section-number">7.6.2</span> Schedulers in current systems</a></li>
+  <li><a href="#crossover-electrical-engineering" id="toc-crossover-electrical-engineering" class="nav-link" data-scroll-target="#crossover-electrical-engineering"><span class="header-section-number">7.6.3</span> Crossover: electrical engineering</a></li>
+  <li><a href="#crossover-mathematics" id="toc-crossover-mathematics" class="nav-link" data-scroll-target="#crossover-mathematics"><span class="header-section-number">7.6.4</span> Crossover: mathematics</a></li>
+  <li><a href="#crossover-online-optimisation" id="toc-crossover-online-optimisation" class="nav-link" data-scroll-target="#crossover-online-optimisation"><span class="header-section-number">7.6.5</span> Crossover: online optimisation</a></li>
+  </ul></li>
+  <li><a href="#our-trap-model-who-does-what-with-the-scheduler" id="toc-our-trap-model-who-does-what-with-the-scheduler" class="nav-link" data-scroll-target="#our-trap-model-who-does-what-with-the-scheduler"><span class="header-section-number">7.7</span> Our trap model: who does what, with the scheduler</a></li>
+  <li><a href="#key-ideas" id="toc-key-ideas" class="nav-link" data-scroll-target="#key-ideas"><span class="header-section-number">7.8</span> Key ideas</a></li>
+  <li><a href="#related-exercise-and-checkpoint" id="toc-related-exercise-and-checkpoint" class="nav-link" data-scroll-target="#related-exercise-and-checkpoint">Related Exercise and Checkpoint</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Scheduling Several Processes</span></h1>
+<p class="subtitle lead">Winter Semester 2026/2027</p>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Stavros Kousidis </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            ICCT
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Lecture 6 gave the OS control at every tick, whatever the process does. With one process, the handler had only one frame to return. This chapter adds a second process and asks again: <strong>must the handler return the same frame?</strong> It does not. Returning a different frame is all that scheduling is, and the trap path of Lectures 5 and 6 stays exactly as it was. What the OS needs in addition is a record of its processes, a state for each of them, a rule for the choice, and an answer for the moment when no process may run.</p>
+<p>Our running example is the spinner of Lecture 6, created twice. Neither process ever yields, so every switch you will see is a decision of the handler at a tick. In Exercise 6 you write that decision yourself; with Checkpoint 2 you write the whole OS around it.</p>
+<section id="where-we-stand" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="where-we-stand"><span class="header-section-number">7.1</span> Where we stand</h2>
+<section id="the-open-question-of-lecture-6" class="level3" data-number="7.1.1">
+<h3 data-number="7.1.1" class="anchored" data-anchor-id="the-open-question-of-lecture-6"><span class="header-section-number">7.1.1</span> The open question of Lecture 6</h3>
+<p>Lecture 6 ended with this picture of one process and a timer:</p>
+<pre class="text"><code>              OS             CPU               Process
+                          +--------+
+os_run()     | arm, MTIE  |        |
+os_start()   +-----------&gt;| return |-----------&gt;| (start)
+                          |        |            | loop ...
+trap_entry   |&lt;-----------|  trap  |&lt;-----------+ timer
+             | save frame |        |
+trap_handler | re-arm     |        |
+os_start()   +-----------&gt;| return |-----------&gt;| (resume)</code></pre>
+<p><code>os_run()</code> arms the timer and enables it, <code>os_start()</code> returns into the process, the timer forces a trap, <code>trap_entry</code> saves the process’s registers into its frame, the handler re-arms the timer, and <code>os_start()</code> restores the same frame. The OS has control at every tick. Must it give the CPU back to the same process? With one process the question has only one answer.</p>
+</section>
+<section id="two-spinners-neither-yields" class="level3" data-number="7.1.2">
+<h3 data-number="7.1.2" class="anchored" data-anchor-id="two-spinners-neither-yields"><span class="header-section-number">7.1.2</span> Two spinners, neither yields</h3>
+<p><code>main()</code> now creates two processes. Both run the spinner of Exercise 5: count to 1,000,000, print the counter, exit with status 7. They differ only in the name they print.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>process_create<span class="op">(&amp;</span>p1<span class="op">,</span> spinner_a<span class="op">);</span>   <span class="co">/* prepared, not run */</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>process_create<span class="op">(&amp;</span>p2<span class="op">,</span> spinner_b<span class="op">);</span>   <span class="co">/* prepared, not run */</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>os_run<span class="op">();</span>                         <span class="co">/* starts spinner A */</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Nothing runs between the two <code>process_create()</code> calls: each call only prepares a frame. <code>os_run()</code> then starts the first process of the table, spinner A. The beginning of the recorded run, in our build (GCC 13.2, QEMU 8.2, <code>-icount shift=4,sleep=off</code>; the addresses are left out):</p>
+<pre class="text"><code>os: starting 2 processes
+spinner A: start
+os: tick 1 ... in process 1
+spinner B: start
+os: tick 2 ... in process 2
+os: tick 3 ... in process 1</code></pre>
+<p>Tick 1 interrupted spinner A. The next line, <code>spinner B: start</code>, is printed by spinner B, which had never run before. So the handler did not return the frame of the interrupted process: it returned B’s prepared first frame. At tick 2 it returned A’s frame, and A continued exactly where tick 1 had stopped it, until tick 3 interrupted it again.</p>
+</section>
+<section id="which-frame-does-the-handler-return" class="level3" data-number="7.1.3">
+<h3 data-number="7.1.3" class="anchored" data-anchor-id="which-frame-does-the-handler-return"><span class="header-section-number">7.1.3</span> Which frame does the handler return?</h3>
+<pre class="text"><code>Lecture 6: timer -&gt; CPU -&gt; OS -&gt; the same frame    (one process)
+Lecture 7: timer -&gt; CPU -&gt; OS -&gt; which frame?      (several)</code></pre>
+<p>There is no new trap mechanism in this chapter. The trap path, the trap frame and the timer branch are those of Lectures 5 and 6. Everything new happens in the C code of <code>trap_handler()</code>, between the save and the restore: how the OS chooses the frame it returns, and what it needs to know for that. With this chapter the mechanism of Checkpoint 2 is complete.</p>
+</section>
+</section>
+<section id="the-process-table" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="the-process-table"><span class="header-section-number">7.2</span> The process table</h2>
+<section id="a-process-that-does-not-run-is-a-saved-frame" class="level3" data-number="7.2.1">
+<h3 data-number="7.2.1" class="anchored" data-anchor-id="a-process-that-does-not-run-is-a-saved-frame"><span class="header-section-number">7.2.1</span> A process that does not run is a saved frame</h3>
+<p>After tick 1, spinner B runs and spinner A waits. Where is A?</p>
+<pre class="text"><code>registers (CPU)    spinner B's state, live
+p1.frame           spinner A's state, saved at tick 1
+p2.frame           out of date while B runs</code></pre>
+<p>Every process owns one trap frame, a field of its <code>struct process</code> (Lecture 5). While a process runs, its state is in the CPU registers, and its frame holds the state of its last trap. While it does not run, its frame is all there is of it, together with its stack in memory. In particular, A’s <code>pc</code> is in <code>p1.frame.pc</code>: the trap <code>pc</code> of tick 1, an instruction of A’s counting loop that has not executed yet. The timer branch adds nothing to it (Lecture 6), so A executes that instruction first when it continues.</p>
+<p>At tick 2, <code>trap_entry</code> saves B into <code>p2.frame</code>, and the handler returns <code>&amp;p1.frame</code>. Returning another frame is therefore no new mechanism: <code>os_start()</code> restores whatever frame the handler returns. What is new is that the OS must know which frames exist and which of them it may return.</p>
+</section>
+<section id="what-the-os-knows-about-each-process" class="level3" data-number="7.2.2">
+<h3 data-number="7.2.2" class="anchored" data-anchor-id="what-the-os-knows-about-each-process"><span class="header-section-number">7.2.2</span> What the OS knows about each process</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> process <span class="op">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    process_entry_t entry<span class="op">;</span>       <span class="co">/* where it starts    */</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint8_t</span> stack<span class="op">[</span>STACK_SIZE<span class="op">];</span>   <span class="co">/* its own stack      */</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">struct</span> trap_frame frame<span class="op">;</span>     <span class="co">/* how it continues   */</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">enum</span> process_state state<span class="op">;</span>    <span class="co">/* may it continue?   */</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> exit_status<span class="op">;</span>             <span class="co">/* how it ended       */</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This is the <code>process.h</code> of Exercises 4 to 6: the bricks of Lecture 3, with the trap frame of Lecture 5 in place of the CP1 context. Each field answers one question of the OS: <code>entry</code> at the first start, <code>stack</code> for the process’s own function calls, <code>frame</code> for the return into it, <code>state</code> for the decision, and <code>exit_status</code> after the end. Nothing in the object is new. New is that the OS keeps several of them, and that it consults <code>state</code> to choose.</p>
+</section>
+<section id="the-process-table-and-the-current-process" class="level3" data-number="7.2.3">
+<h3 data-number="7.2.3" class="anchored" data-anchor-id="the-process-table-and-the-current-process"><span class="header-section-number">7.2.3</span> The process table and the current process</h3>
+<p>The <strong>process table</strong> is the OS’s record of all processes it manages. In the reference implementation it is an array of pointers, together with two more pieces of OS state:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">struct</span> process <span class="op">*</span>process_table<span class="op">[</span>MAX_PROCESSES<span class="op">];</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">unsigned</span> <span class="dt">int</span> process_count<span class="op">;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">struct</span> process <span class="op">*</span>current_process<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<pre class="text"><code>process_table[0] -&gt; p1   spinner A   "process 1"
+process_table[1] -&gt; p2   spinner B   "process 2"
+current_process  -&gt; the one whose frame was returned last</code></pre>
+<p>The table holds pointers: the <code>struct process</code> objects live where <code>main()</code> declared them, as <code>static</code> objects (Lecture 5, “Why <code>p</code> must become static”), and the OS records where they are. <code>process_create()</code> appends to the table, and the position in the table, counted from 1, is the number in every <code>os:</code> line. <code>current_process</code> is the process the CPU executes when the next trap comes; the handler needs it to know whose frame trapped and whose state to update. Real systems allocate their entries dynamically and keep them in lists or trees. For Checkpoint 2, a small fixed array filled at start-up is enough.</p>
+</section>
+<section id="process_create-enters-it-does-not-run" class="level3" data-number="7.2.4">
+<h3 data-number="7.2.4" class="anchored" data-anchor-id="process_create-enters-it-does-not-run"><span class="header-section-number">7.2.4</span> <code>process_create()</code> enters, it does not run</h3>
+<pre class="text"><code>process_create(&amp;p, entry)
+    p.frame.pc      = process_start
+    p.frame.regs[2] = stack top          (sp)
+    p.state         = READY
+    process_table[process_count++] = &amp;p</code></pre>
+<p>This is Lecture 5’s “First entry: prepare a frame” plus one line, the table entry. After <code>main()</code>’s two calls there are two prepared frames, both <code>READY</code>, and nothing runs. <code>os_run()</code> chooses the first process, marks it <code>RUNNING</code> and calls <code>os_start()</code> with its frame, which restores it and executes <code>mret</code>. As in Lecture 5, the first start of a process is a return into a prepared frame. <code>os_run()</code> is the only place where a choice is made without a trap; from then on, every choice happens inside <code>trap_handler()</code>.</p>
+</section>
+</section>
+<section id="states-and-transitions-per-event" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="states-and-transitions-per-event"><span class="header-section-number">7.3</span> States and transitions per event</h2>
+<section id="three-states-which-frames-may-be-returned" class="level3" data-number="7.3.1">
+<h3 data-number="7.3.1" class="anchored" data-anchor-id="three-states-which-frames-may-be-returned"><span class="header-section-number">7.3.1</span> Three states: which frames may be returned?</h3>
+<p>The lifecycle states of Lecture 3 now decide which frames the handler may return:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 45%">
+<col style="width: 39%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>State</th>
+<th>Meaning</th>
+<th>Its frame</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>READY</code></td>
+<td>may run, waits for the CPU</td>
+<td>saved; may be returned</td>
+</tr>
+<tr class="even">
+<td><code>RUNNING</code></td>
+<td>executes on the CPU now</td>
+<td>out of date; the registers hold it</td>
+</tr>
+<tr class="odd">
+<td><code>FINISHED</code></td>
+<td>has exited or faulted</td>
+<td>must never be returned</td>
+</tr>
+</tbody>
+</table>
+<p>Exactly one execution is <code>RUNNING</code>: the one whose frame was returned last. With one process, the state was bookkeeping. With several, it is the input of the decision.</p>
+</section>
+<section id="one-transition-per-event" class="level3" data-number="7.3.2">
+<h3 data-number="7.3.2" class="anchored" data-anchor-id="one-transition-per-event"><span class="header-section-number">7.3.2</span> One transition per event</h3>
+<p>Every entry into the OS after start-up is a trap, and every trap is one of three events. Each event changes the state of the current process exactly once:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 55%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Event</th>
+<th>Cause (<code>mcause</code>)</th>
+<th>The current process</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>tick</td>
+<td>timer interrupt</td>
+<td><code>RUNNING</code> -&gt; <code>READY</code></td>
+</tr>
+<tr class="even">
+<td>exit</td>
+<td>system call: <code>ecall</code>, number <code>SYS_EXIT</code> in <code>a7</code></td>
+<td><code>RUNNING</code> -&gt; <code>FINISHED</code></td>
+</tr>
+<tr class="odd">
+<td>fault</td>
+<td>other, e.g.&nbsp;illegal instruction</td>
+<td><code>RUNNING</code> -&gt; <code>FINISHED</code></td>
+</tr>
+</tbody>
+</table>
+<p>Then, in every case, the OS makes its <strong>choice</strong>: one <code>READY</code> process becomes <code>RUNNING</code>. Every trap ends one turn and starts the next.</p>
+<p>Exit is a system call, as in Lecture 5: <code>process_exit(status)</code> executes <code>ecall</code> with the number <code>SYS_EXIT</code> in <code>a7</code> and the status in <code>a0</code>. The CPU traps with <code>mcause</code> 11, which says only that an <code>ecall</code> happened; the handler reads <code>a7</code> from the saved frame to find out which system call it was. Exit and fault have the same effect on the state and differ in the exit status. A tick is the only event that leaves the process <code>READY</code>: it may continue later.</p>
+<p>There is no <code>yield</code> in Exercise 6 and Checkpoint 2. Lecture 6 moved from the cooperative to the preemptive case: a process now leaves the CPU when it exits or faults, or when the timer takes the CPU away. A yield would be a <code>READY</code> transition like the tick, with the <code>+4</code> of every <code>ecall</code> on the trap <code>pc</code>. There is also no transition out of <code>FINISHED</code>, and no state for a process that waits for something; such a state is not part of Checkpoint 2.</p>
+</section>
+<section id="the-states-as-a-diagram" class="level3" data-number="7.3.3">
+<h3 data-number="7.3.3" class="anchored" data-anchor-id="the-states-as-a-diagram"><span class="header-section-number">7.3.3</span> The states as a diagram</h3>
+<pre class="text"><code>process_create()          chosen
+    --&gt;  +-------+  ----------------&gt;  +---------+
+         | READY |                     | RUNNING |
+         +-------+  &lt;----------------  +---------+
+                           tick             |  exit, fault
+                                            v
+                                       +----------+
+                                       | FINISHED |
+                                       +----------+</code></pre>
+<p>Only the handler and <code>os_run()</code> move a process from <code>READY</code> to <code>RUNNING</code>. Two arrows cannot be caused by the process itself: the tick, caused by the timer, and “chosen”, decided by the OS. The process causes its exit on purpose and a fault by mistake. Since Lecture 6, no process stays <code>RUNNING</code> for longer than one time slice.</p>
+</section>
+<section id="where-the-transitions-happen-in-the-handler" class="level3" data-number="7.3.4">
+<h3 data-number="7.3.4" class="anchored" data-anchor-id="where-the-transitions-happen-in-the-handler"><span class="header-section-number">7.3.4</span> Where the transitions happen in the handler</h3>
+<p>Lectures 5 and 6 ended the branches of <code>trap_handler()</code> with <code>return reschedule();</code> (timer) and <code>return finish_current(...);</code> (exit, unexpected trap). Their bodies are the transitions of the table above:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">struct</span> trap_frame <span class="op">*</span>reschedule<span class="op">(</span><span class="dt">void</span><span class="op">)</span>   <span class="co">/* tick */</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    current_process<span class="op">-&gt;</span>state <span class="op">=</span> READY<span class="op">;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> next_frame<span class="op">();</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">struct</span> trap_frame <span class="op">*</span>finish_current<span class="op">(</span><span class="dt">int</span> status<span class="op">)</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="op">{</span>                                            <span class="co">/* exit, fault */</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    current_process<span class="op">-&gt;</span>exit_status <span class="op">=</span> status<span class="op">;</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    current_process<span class="op">-&gt;</span>state <span class="op">=</span> FINISHED<span class="op">;</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> next_frame<span class="op">();</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The first part of each helper is the event’s transition of the current process. <code>next_frame()</code> is the choice: it asks the scheduling decision, <code>schedule()</code>, which process runs next, marks that process <code>RUNNING</code>, makes it the current process and returns its frame. <code>next_frame()</code> is a name for this text; the reference writes the same steps as <code>switch_to(choose_next())</code>. At Checkpoint 2 you write these functions yourself.</p>
+</section>
+<section id="never-return-a-finished-frame" class="level3" data-number="7.3.5">
+<h3 data-number="7.3.5" class="anchored" data-anchor-id="never-return-a-finished-frame"><span class="header-section-number">7.3.5</span> Never return a <code>FINISHED</code> frame</h3>
+<p>After spinner A’s exit, its frame still looks perfectly restorable:</p>
+<pre class="text"><code>p1.frame.pc  -&gt; the instruction after the exit ecall
+p1.state     =  FINISHED</code></pre>
+<p>The handler added 4 at the exit <code>ecall</code>, as for every <code>ecall</code>, so <code>os_start()</code> would restore this frame without complaint. Returning it would give the CPU back to a process that has ended. Neither the CPU nor the provided assembly knows about states; only the OS’s C code does, and that is why the state exists. The Exercise 6 library checks every choice and halts, for example with:</p>
+<pre class="text"><code>os: schedule() returned process 1 in state FINISHED, halting</code></pre>
+</section>
+</section>
+<section id="choosing-the-next-frame-round-robin" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="choosing-the-next-frame-round-robin"><span class="header-section-number">7.4</span> Choosing the next frame: round robin</h2>
+<section id="scheduling-choosing-the-frame-to-return" class="level3" data-number="7.4.1">
+<h3 data-number="7.4.1" class="anchored" data-anchor-id="scheduling-choosing-the-frame-to-return"><span class="header-section-number">7.4.1</span> Scheduling: choosing the frame to return</h3>
+<p>Lecture 6 separated interrupt handling from the scheduling decision. With several processes, the state transition becomes a step of its own:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 27%">
+<col style="width: 45%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Step</th>
+<th>Who</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>interrupt handling</td>
+<td>CPU, <code>trap_entry</code></td>
+<td>the OS gets control</td>
+</tr>
+<tr class="even">
+<td>state transition</td>
+<td><code>trap_handler()</code></td>
+<td>the event changes the current state</td>
+</tr>
+<tr class="odd">
+<td>scheduling decision</td>
+<td><code>schedule()</code></td>
+<td>a <code>READY</code> process is chosen</td>
+</tr>
+<tr class="even">
+<td>return</td>
+<td><code>os_start()</code>, <code>mret</code></td>
+<td>its frame continues</td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>scheduler</strong> is the part of the OS that makes the scheduling decision. In our OS it is one function, called at the end of every trap and once in <code>os_run()</code>. In Lecture 6 it had one candidate; now it has several, and the rule is ours to choose. The mechanism does not depend on the rule: any function that returns a <code>READY</code> process gives an OS that never restores a <code>FINISHED</code> frame. Which rule is a good one is a separate question.</p>
+</section>
+<section id="round-robin-the-next-ready-process-after-the-current-one" class="level3" data-number="7.4.2">
+<h3 data-number="7.4.2" class="anchored" data-anchor-id="round-robin-the-next-ready-process-after-the-current-one"><span class="header-section-number">7.4.2</span> Round robin: the next <code>READY</code> process after the current one</h3>
+<pre class="text"><code>table:    [ p1 ]  [ p2 ]  [ p3 ]  [ p4 ]
+                    ^
+                 current
+search:             p3 -&gt; p4 -&gt; p1 -&gt; p2</code></pre>
+<p><strong>Round robin</strong>: search the process table in order, starting <strong>after</strong> the current process and wrapping around at the end; the first <code>READY</code> process runs. Every <code>READY</code> process gets its turn in table order, like the players at a table. The current process comes last in the search, so it is chosen again only if no other process is <code>READY</code>. If there is no current process of the table, at the first start or after the idle process ran, the search starts at the first entry. If no process is <code>READY</code> at all, nobody from the table runs.</p>
+<p>With the picture: if p2 is current, p3 and p4 are <code>FINISHED</code> and p1 is <code>READY</code>, then p1 runs. If only p2 is <code>READY</code>, p2 runs again.</p>
+<p>Why start after the current process and not at the start of the table? Exercise 6 answers this question from a run.</p>
+</section>
+<section id="the-scheduling-decision-as-one-c-function" class="level3" data-number="7.4.3">
+<h3 data-number="7.4.3" class="anchored" data-anchor-id="the-scheduling-decision-as-one-c-function"><span class="header-section-number">7.4.3</span> The scheduling decision as one C function</h3>
+<p>In Exercise 6 the decision is a C function of its own, declared in the provided <code>scheduler.h</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> process <span class="op">*</span>schedule<span class="op">(</span><span class="kw">struct</span> process <span class="op">*</span><span class="dt">const</span> table<span class="op">[],</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>                         <span class="dt">unsigned</span> <span class="dt">int</span> count<span class="op">,</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                         <span class="kw">struct</span> process <span class="op">*</span>current<span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ul>
+<li><code>table[0]</code> to <code>table[count - 1]</code> are the processes in creation order;</li>
+<li><code>current</code> is the process that just ran, already <code>READY</code> (tick) or <code>FINISHED</code> (exit, fault), or <code>NULL</code> if no process of the table ran: at the first start and after the idle process;</li>
+<li>it returns a <code>READY</code> process of the table, or <code>NULL</code> if nobody is <code>READY</code>.</li>
+</ul>
+<p><code>schedule()</code> changes no state. It only answers the question “who runs next?”. The transitions, the re-arm of the timer and the frames belong to the OS around it: in Exercise 6 to the provided library, at Checkpoint 2 to your own code. That split keeps the decision testable on its own, and the same function works in both.</p>
+</section>
+</section>
+<section id="when-nobody-is-ready-the-idle-process" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="when-nobody-is-ready-the-idle-process"><span class="header-section-number">7.5</span> When nobody is <code>READY</code>: the idle process</h2>
+<section id="which-frame-after-the-last-exit" class="level3" data-number="7.5.1">
+<h3 data-number="7.5.1" class="anchored" data-anchor-id="which-frame-after-the-last-exit"><span class="header-section-number">7.5.1</span> Which frame after the last exit?</h3>
+<p>After <code>os: process 2 exited 7</code>, both entries of the table are <code>FINISHED</code>. The timer still fires every 10 ms, and the handler must return a frame, because <code>os_start()</code> restores one and <code>mret</code> continues it. The question arises already at the exit itself: <code>finish_current()</code> for the last process has to return a frame. Four answers come to mind, and none of them works:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 42%">
+<col style="width: 57%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Proposal</th>
+<th>Why not?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>return a <code>FINISHED</code> frame</td>
+<td>an ended execution would continue</td>
+</tr>
+<tr class="even">
+<td>wait inside the handler</td>
+<td><code>mstatus.MIE</code> = 0 there: no timer interrupt is taken</td>
+</tr>
+<tr class="odd">
+<td>halt the machine</td>
+<td>the OS would end; CP3 needs it to keep running</td>
+</tr>
+<tr class="even">
+<td>return to <code>main()</code></td>
+<td><code>main()</code> has no frame: it is never resumed (Lecture 5)</td>
+</tr>
+</tbody>
+</table>
+<p>The second row needs a closer look. The handler runs with interrupts off (Lecture 5, “On a trap: interrupts off”). A loop inside it would never be interrupted by the timer; the timer request would stay pending, and the handler would never return. Only interrupts are masked: an exception, such as an illegal instruction, would still trap inside the handler. Waiting therefore has to happen outside the handler, in an execution that runs with interrupts on.</p>
+<p>In Checkpoint 2 nothing can become <code>READY</code> again after the last exit, so halting would look the same from outside. But the OS is the program that stays in control. From CP3 on, a shell waits for input, and processes that wait for an event are the reason why the case “nobody is <code>READY</code>” matters at all.</p>
+</section>
+<section id="the-idle-process-a-frame-that-waits" class="level3" data-number="7.5.2">
+<h3 data-number="7.5.2" class="anchored" data-anchor-id="the-idle-process-a-frame-that-waits"><span class="header-section-number">7.5.2</span> The idle process: a frame that waits</h3>
+<p>The handler needs a frame that may always run and does nothing:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span> idle_entry<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span> <span class="op">{</span> __asm__ <span class="dt">volatile</span> <span class="op">(</span><span class="st">"wfi"</span><span class="op">);</span> <span class="op">}</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>wfi</code> (<strong>wait for interrupt</strong>) is a RISC-V instruction: the CPU may rest until an interrupt is pending. C has no word for it, so it is written as inline assembly. The loop goes around it because <code>wfi</code> may also return early.</p>
+<p>The <strong>idle process</strong> has its own stack and frame, prepared in <code>os_run()</code> like the first frame of any process. It is not in the process table: it is never chosen by the rule and never finishes, and the scheduler only sees real processes. When <code>schedule()</code> returns <code>NULL</code>, the OS returns the idle frame. The idle process runs with interrupts on, because <code>os_start()</code>’s <code>mret</code> turns them on as for every process, so each tick enters the handler as usual. The Exercise 6 library prints no <code>os: tick</code> line for ticks in the idle process. The idle process has been visible since Lecture 5, after the last exit; this chapter explains why it must exist.</p>
+</section>
+<section id="the-whole-run-who-runs-who-decides" class="level3" data-number="7.5.3">
+<h3 data-number="7.5.3" class="anchored" data-anchor-id="the-whole-run-who-runs-who-decides"><span class="header-section-number">7.5.3</span> The whole run: who runs, who decides</h3>
+<p>The recorded run of the two spinners, one row per trap, after a first row for the start-up:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>On the CPU</th>
+<th>Event</th>
+<th>The OS returns</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>(start-up)</td>
+<td><code>os_run()</code></td>
+<td>spinner A</td>
+<td>first <code>READY</code></td>
+</tr>
+<tr class="even">
+<td>spinner A</td>
+<td>tick 1</td>
+<td>spinner B</td>
+<td>next <code>READY</code></td>
+</tr>
+<tr class="odd">
+<td>spinner B</td>
+<td>tick 2</td>
+<td>spinner A</td>
+<td>next <code>READY</code></td>
+</tr>
+<tr class="even">
+<td>A, B, …</td>
+<td>ticks 3 to 16</td>
+<td>B, A, …</td>
+<td>next <code>READY</code></td>
+</tr>
+<tr class="odd">
+<td>spinner A</td>
+<td>exit</td>
+<td>spinner B</td>
+<td>only <code>READY</code></td>
+</tr>
+<tr class="even">
+<td>spinner B</td>
+<td>exit</td>
+<td>idle</td>
+<td>nobody <code>READY</code></td>
+</tr>
+<tr class="odd">
+<td>idle</td>
+<td>tick</td>
+<td>idle</td>
+<td>nobody <code>READY</code></td>
+</tr>
+</tbody>
+</table>
+<p>Each row is one transition, one decision and one frame. The end of the recorded output, in our build:</p>
+<pre class="text"><code>os: tick 16 at 0x800002be in process 2
+spinner A: done, counter = 1000000
+os: process 1 exited 7
+spinner B: done, counter = 1000000
+os: process 2 exited 7
+os: all processes finished
+os: 16 timer interrupts</code></pre>
+<p>Both spinners finish with exactly 1,000,000: each was interrupted eight times, and no increment was lost at any of the switches. The time slice is the period of the timer, not a budget per process: the OS re-arms the timer only in the timer branch, so after spinner A’s exit, spinner B gets only the rest of the current time slice. Whether that is fair is a question for Lecture 8.</p>
+</section>
+</section>
+<section id="outlook-scheduling-is-more-than-taking-turns" class="level2 page-columns page-full" data-number="7.6">
+<h2 data-number="7.6" class="anchored" data-anchor-id="outlook-scheduling-is-more-than-taking-turns"><span class="header-section-number">7.6</span> Outlook: scheduling is more than taking turns</h2>
+<section id="when-where-how" class="level3" data-number="7.6.1">
+<h3 data-number="7.6.1" class="anchored" data-anchor-id="when-where-how"><span class="header-section-number">7.6.1</span> When, where, how</h3>
+<p>A scheduler answers more than one question:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 44%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Question</th>
+<th>Decides</th>
+<th>In our system</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>When?</strong></td>
+<td>which process runs next, how long</td>
+<td>round robin at every tick</td>
+</tr>
+<tr class="even">
+<td><strong>Where?</strong></td>
+<td>on which core</td>
+<td>one CPU: nothing to decide</td>
+</tr>
+<tr class="odd">
+<td><strong>How?</strong></td>
+<td>at which speed, in which power state</td>
+<td>full speed; <code>wfi</code> when idle</td>
+</tr>
+</tbody>
+</table>
+<p>In this course we deal only with “when?”: our QEMU machine has one CPU, and our OS has no efficiency goal. What is “best” depends on the goal of the system: equal shares for servers and desktops, short response times for interactive programs, deadlines for control loops or audio (in <strong>real-time</strong> systems a late result is a wrong result), low <strong>energy</strong> for phones, laptops and data centres, limited temperature for passively cooled devices. The goals conflict: the fastest response costs energy, and the lowest energy costs time.</p>
+</section>
+<section id="schedulers-in-current-systems" class="level3" data-number="7.6.2">
+<h3 data-number="7.6.2" class="anchored" data-anchor-id="schedulers-in-current-systems"><span class="header-section-number">7.6.2</span> Schedulers in current systems</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 40%">
+<col style="width: 43%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>System</th>
+<th>When?</th>
+<th>Where? and How?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Linux</td>
+<td>EEVDF (since 6.6), real-time classes</td>
+<td>Energy Aware Scheduling, governors</td>
+</tr>
+<tr class="even">
+<td>Android</td>
+<td>the Linux scheduler</td>
+<td>Energy Aware Scheduling</td>
+</tr>
+<tr class="odd">
+<td>Windows 11</td>
+<td>priorities 0 to 31, round robin</td>
+<td>QoS levels (<em>Eco</em>: efficient cores)</td>
+</tr>
+<tr class="even">
+<td>macOS, iOS</td>
+<td>XNU Clutch: thread groups, QoS</td>
+<td>Edge: performance, efficiency cores</td>
+</tr>
+<tr class="odd">
+<td>FreeBSD</td>
+<td>ULE (default since 7.1)</td>
+<td>per-CPU queues, topology-aware</td>
+</tr>
+</tbody>
+</table>
+<p>Each of them combines a “when?” rule with mechanisms for “where?” and “how?”. Linux’s EEVDF selects the eligible task with the earliest virtual deadline and aims to give runnable tasks of the same priority equal CPU time; its real-time classes (<code>SCHED_FIFO</code>, <code>SCHED_RR</code>, <code>SCHED_DEADLINE</code>) serve tasks with timing requirements. Energy Aware Scheduling uses an energy model of the CPUs to place tasks on systems with cores of different capacity; frequency and idle governors choose the speed and the idle state. Windows schedules threads by priorities 0 to 31, round robin among the threads of the highest priority; its quality-of-service levels influence which cores a thread may use and how much power the processor spends. Apple’s XNU kernel schedules groups of threads with the Clutch scheduler and extends it with the Edge scheduler to clusters of performance and efficiency cores. FreeBSD’s default scheduler is ULE. These names and versions change; they are as documented in November 2026.</p>
+</section>
+<section id="crossover-electrical-engineering" class="level3" data-number="7.6.3">
+<h3 data-number="7.6.3" class="anchored" data-anchor-id="crossover-electrical-engineering"><span class="header-section-number">7.6.3</span> Crossover: electrical engineering</h3>
+<p>The <strong>power</strong> of a CMOS processor, simplified:</p>
+<p><span class="math display">\[P = \underbrace{\alpha\, C\, V^2 f}_{P_{\mathrm{dyn}}} + P_{\mathrm{static}} \qquad\qquad E = \int_0^T P(t)\,\mathrm{d}t\]</span></p>
+<p>A chip is built from transistors whose inputs, together with the wires between them, act as tiny capacitors. Whenever a signal changes from 0 to 1, such a capacitance is charged to the supply voltage <span class="math inline">\(V\)</span>; when it changes back, it is discharged. Charging a capacitance <span class="math inline">\(C\)</span> to <span class="math inline">\(V\)</span> draws the energy <span class="math inline">\(C V^2\)</span> from the supply, and all of it ends up as heat. <span class="math inline">\(C\)</span>, the <strong>switched capacitance</strong>, is the capacitance of all nodes that can switch; <span class="math inline">\(\alpha\)</span>, the <strong>switching activity</strong> between 0 and 1, is the fraction of it that actually switches per clock cycle; <span class="math inline">\(f\)</span> is the clock frequency. Together they give the dynamic power <span class="math inline">\(P_{\mathrm{dyn}}\)</span>. The static power <span class="math inline">\(P_{\mathrm{static}}\)</span>, mostly leakage, is paid as long as the core is on. The <strong>energy</strong> <span class="math inline">\(E\)</span> is the power summed over the running time <span class="math inline">\(T\)</span>.</p>
+<p>A higher <span class="math inline">\(f\)</span> needs a higher <span class="math inline">\(V\)</span>, so the power grows faster than the frequency. Lowering both is called dynamic voltage and frequency scaling (DVFS). But a lower power does not mean a lower energy: a slower core runs longer, and pays the static power all that time. Run fast and then idle in a deep sleep state (“race to idle”), or run slowly? The answer depends on the chip.</p>
+</section>
+<section id="crossover-mathematics" class="level3" data-number="7.6.4">
+<h3 data-number="7.6.4" class="anchored" data-anchor-id="crossover-mathematics"><span class="header-section-number">7.6.4</span> Crossover: mathematics</h3>
+<p>A goal of the system can be written as an <strong>objective function</strong> under <strong>constraints</strong>, for example:</p>
+<p><span class="math display">\[\min\; \Big( w_E\, E + w_W \sum_i W_i + w_R \sum_i R_i \Big)\]</span></p>
+<p><span class="math inline">\(E\)</span> is the energy, <span class="math inline">\(W_i\)</span> the <strong>waiting time</strong> of task <span class="math inline">\(i\)</span> (the time it is <code>READY</code> but not <code>RUNNING</code>) and <span class="math inline">\(R_i\)</span> its <strong>response time</strong> (the time from its arrival until it runs for the first time). The <strong>weights</strong> <span class="math inline">\(w_E\)</span>, <span class="math inline">\(w_W\)</span>, <span class="math inline">\(w_R\)</span> express the goal, and the constraints (deadlines, fairness, number of cores, temperature) decide which schedules are allowed at all. On a phone, the response time of the thread that redraws the screen after a touch counts a lot, the waiting time of a background synchronisation hardly, and energy a lot, because the battery is the limit. In an audio system, the next buffer must be complete before the sound card plays it: that deadline is a constraint, and a small response time keeps the latency low.</p>
+<p>The two crossovers work together: the hardware model gives <span class="math inline">\(E\)</span>, the goal of the system gives the weights. Linux’s Energy Model, for example, describes the power of each group of cores at each available frequency, and Energy Aware Scheduling uses it to estimate the energy of placing a task on one core or another. The objective function is a model, not an algorithm; choosing the speeds of tasks with deadlines so that the energy is minimal is a classical research problem.</p>
+</section>
+<section id="crossover-online-optimisation" class="level3 page-columns page-full" data-number="7.6.5">
+<h3 data-number="7.6.5" class="anchored" data-anchor-id="crossover-online-optimisation"><span class="header-section-number">7.6.5</span> Crossover: online optimisation</h3>
+<p>The objective above still hides most of the problem. It does not yet say in which <strong>order</strong> the tasks run, whether a task may be interrupted (<strong>preemption</strong>), whether it may move to another core (<strong>migration</strong>), or that power states <strong>change over time</strong> while the tasks run. And an operating system normally does not know when the next task will arrive or how long it will run.</p>
+<p>Scheduling is therefore an <strong>online</strong> optimisation problem: the decisions must be taken during operation, on the basis of incomplete information. An offline algorithm, which sees the whole input in advance, can serve as a benchmark: how good could a schedule have been, had the future been known? For the theoretical solution of such problems, several kinds of methods come into question:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 43%">
+<col style="width: 56%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Suited for</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>exhaustive search</td>
+<td>exact solution of very small problems</td>
+</tr>
+<tr class="even">
+<td>integer linear programming</td>
+<td>offline optimisation</td>
+</tr>
+<tr class="odd">
+<td>constraint programming</td>
+<td>complex constraints</td>
+</tr>
+<tr class="even">
+<td>dynamic programming</td>
+<td>suitable structured subproblems</td>
+</tr>
+<tr class="odd">
+<td>greedy algorithms</td>
+<td>fast local decisions</td>
+</tr>
+<tr class="even">
+<td>heuristics</td>
+<td>practical online scheduling</td>
+</tr>
+<tr class="odd">
+<td>reinforcement learning</td>
+<td>experimental adaptive scheduling</td>
+</tr>
+</tbody>
+</table>
+<p>Round robin is a heuristic in this sense: it decides at every tick from the current state alone, quickly and without any knowledge of the future. It optimises nothing explicitly; it guarantees every <code>READY</code> process its turn.</p>
+<section id="interactive-model-scheduling-as-optimisation" class="level4 page-columns page-full" data-number="7.6.5.1">
+<h4 data-number="7.6.5.1" class="anchored" data-anchor-id="interactive-model-scheduling-as-optimisation"><span class="header-section-number">7.6.5.1</span> Interactive model: scheduling as optimisation</h4>
+<div class="callout callout-style-simple callout-tip">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>The model below rates schedules of three tasks on one core with the objective above. It compares the offline optimum, an exhaustive search over every order and every frequency level with the whole input known in advance, with rules that decide online: first come, first served, greedy shortest-first, and round robin. Change the tasks, the hardware model and the weights, and watch which schedule wins. The parameters are invented to show the effects; they are not measurements of a chip or of our OS. The model loads its Python runtime from the internet when it starts, which takes a few seconds.</p>
+<p><a href="../notebooks/07-scheduling-as-optimisation.html" target="_blank" rel="noopener">Open the model in a full window</a></p>
+</div>
+</div>
+</div>
+<div class="column-page">
+<iframe src="../notebooks/07-scheduling-as-optimisation.html" title="Interactive model: scheduling as optimisation" loading="lazy" style="width: 100%; height: 1500px; border: 1px solid #dee2e6; border-radius: 4px;"></iframe>
+</div>
+</section>
+</section>
+</section>
+<section id="our-trap-model-who-does-what-with-the-scheduler" class="level2" data-number="7.7">
+<h2 data-number="7.7" class="anchored" data-anchor-id="our-trap-model-who-does-what-with-the-scheduler"><span class="header-section-number">7.7</span> Our trap model: who does what, with the scheduler</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 25%">
+<col style="width: 61%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Step</th>
+<th>Who</th>
+<th>What</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>request</td>
+<td>CLINT</td>
+<td>pending while <code>mtime &gt;= mtimecmp</code></td>
+</tr>
+<tr class="even">
+<td>trap</td>
+<td>CPU</td>
+<td>if enabled: <code>mepc</code>, <code>mcause</code>; interrupts off; <code>pc &lt;- mtvec</code></td>
+</tr>
+<tr class="odd">
+<td>save</td>
+<td><code>trap_entry</code></td>
+<td>registers and trap <code>pc</code> into the current frame</td>
+</tr>
+<tr class="even">
+<td>transition</td>
+<td><code>trap_handler()</code></td>
+<td>the event changes the current process’s state</td>
+</tr>
+<tr class="odd">
+<td>decide</td>
+<td>scheduler</td>
+<td>a <code>READY</code> process, else idle</td>
+</tr>
+<tr class="even">
+<td>restore</td>
+<td><code>os_start()</code></td>
+<td>registers and <code>mepc</code> from the chosen frame</td>
+</tr>
+<tr class="odd">
+<td>return</td>
+<td>CPU, <code>mret</code></td>
+<td><code>pc &lt;- mepc</code>; interrupts on</td>
+</tr>
+</tbody>
+</table>
+<p>Compared with Lecture 6, the “decide” row splits into the transition and the decision, and the save and restore rows name “the current frame” and “the chosen frame”. Nothing in the hardware rows changed since Lecture 6, and nothing in the assembly rows since Lecture 5. The model stays restricted: machine mode only, one interrupt source, no nested traps, no privilege separation, and no state for a process that waits for an event.</p>
+</section>
+<section id="key-ideas" class="level2" data-number="7.8">
+<h2 data-number="7.8" class="anchored" data-anchor-id="key-ideas"><span class="header-section-number">7.8</span> Key ideas</h2>
+<ul>
+<li><strong>Process table</strong>: the OS records every process it manages. A process that does not run is its saved frame.</li>
+<li><strong>States</strong>: <code>READY</code>, <code>RUNNING</code>, <code>FINISHED</code>. Every event (tick, exit, fault) changes the state of the current process once; then the choice makes one <code>READY</code> process <code>RUNNING</code>.</li>
+<li><strong>Scheduling decision</strong>: which <code>READY</code> frame the handler returns, kept apart from interrupt handling. A <code>FINISHED</code> frame is never returned.</li>
+<li><strong>Round robin</strong>: the next <code>READY</code> process after the current one, in table order, wrapping around.</li>
+<li><strong>Idle process</strong>: the frame the handler returns when nobody is <code>READY</code>; it waits with <code>wfi</code> and interrupts on.</li>
+<li>With this, the CP2 mechanism is complete: trap, save, transition, decide, restore, return.</li>
+<li>Scheduling in real systems answers “when?”, “where?” and “how?” for goals such as real time or energy; electrical engineering and mathematics supply the models. Because the future is unknown, it is an online optimisation problem, solved in practice by heuristics such as round robin.</li>
+</ul>
+</section>
+<section id="related-exercise-and-checkpoint" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="related-exercise-and-checkpoint">Related Exercise and Checkpoint</h2>
+<p><a href="../exercises/BVS1-Exercise-06-The-Scheduling-Decision-WS26-27.pdf"><strong>Exercise 6 — The Scheduling Decision</strong></a> has you write <code>schedule()</code> in C against a provided library, predict and trace the two spinners, diagnose a different scheduling rule from its output, and find out what happens when nobody is <code>READY</code>.</p>
+<p><a href="../checkpoints/BVS1-Checkpoint-02-My-OS-Controls-Several-Processes-WS26-27.pdf"><strong>Checkpoint 2 — My OS Controls Several Processes</strong></a> is released with this chapter: you write the OS around your <code>schedule()</code> in C.</p>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<ul>
+<li>Arpaci-Dusseau and Arpaci-Dusseau, <a href="https://pages.cs.wisc.edu/~remzi/OSTEP/"><em>Operating Systems: Three Easy Pieces</em></a>, chapters <em>The Abstraction: The Process</em> and <em>Scheduling: Introduction</em>.</li>
+<li>RISC-V International, <a href="https://riscv.org/specifications/ratified/"><em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em></a>: <code>wfi</code>, <code>mstatus</code>.</li>
+<li>Linux kernel documentation: <a href="https://docs.kernel.org/scheduler/sched-eevdf.html"><em>EEVDF Scheduler</em></a>, <a href="https://docs.kernel.org/scheduler/sched-energy.html"><em>Energy Aware Scheduling</em></a>.</li>
+<li>Microsoft Learn: <a href="https://learn.microsoft.com/en-us/windows/win32/procthread/scheduling-priorities"><em>Scheduling Priorities</em></a>, <a href="https://learn.microsoft.com/en-us/windows/win32/procthread/quality-of-service"><em>Quality of Service</em></a>.</li>
+<li>Apple XNU source, <code>osfmk/kern</code>: <em>sched_clutch.md</em>, <em>sched_clutch_edge.md</em>.</li>
+<li>M. K. McKusick, <em>An Overview of Scheduling in the FreeBSD Kernel</em>, EuroBSDCon 2021.</li>
+<li>F. Yao, A. Demers, S. Shenker, <em>A Scheduling Model for Reduced CPU Energy</em>, FOCS 1995.</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapters/06-timer-and-preemption.html" class="pagination-link" aria-label="Timer and Preemption">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Timer and Preemption</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../downloads.html" class="pagination-link" aria-label="Downloads">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Downloads</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Except where otherwise noted, © 2026 Stavros Kousidis.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p><a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

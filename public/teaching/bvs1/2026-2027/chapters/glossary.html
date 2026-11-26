@@ -157,8 +157,14 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../chapters/07-scheduling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Scheduling Several Processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../downloads.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Downloads</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Downloads</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -298,7 +304,7 @@ The process finishes, records a result, and returns control to the operating sys
 </dd>
 <dt>Idle process</dt>
 <dd>
-The process the OS runs when no other process is <code>READY</code>. In the reference implementation it is a loop around <code>wfi</code> (wait for interrupt); after the last process has exited, the OS returns into its frame. (Lecture 5)
+The process the OS runs when no other process is <code>READY</code>. In the reference implementation it is a loop around <code>wfi</code> (wait for interrupt); after the last process has exited, the OS returns into its frame. It is needed because the trap handler must always return a frame: a <code>FINISHED</code> frame must not continue, the handler cannot wait itself because interrupts are off inside it, and the OS must stay in control. It has its own stack and frame, runs with interrupts on, and is not in the process table. (Lecture 5; Lecture 7)
 </dd>
 <dt>Immediate</dt>
 <dd>
@@ -318,7 +324,7 @@ A name in assembly source, written as <code>name:</code>, that names the positio
 </dd>
 <dt>Lifecycle state</dt>
 <dd>
-Says whether an execution may run: <code>READY</code>, <code>RUNNING</code> or <code>FINISHED</code>. The context says how it continues. (Lecture 3)
+Says whether an execution may run: <code>READY</code>, <code>RUNNING</code> or <code>FINISHED</code>. The context says how it continues. From Lecture 7 every trap changes the state of the current process once (tick: <code>RUNNING</code> to <code>READY</code>; exit or fault: <code>RUNNING</code> to <code>FINISHED</code>), and the scheduling decision makes one <code>READY</code> process <code>RUNNING</code>. Only a <code>READY</code> frame may be returned. (Lecture 3; Lecture 7)
 </dd>
 <dt>Linker</dt>
 <dd>
@@ -392,6 +398,10 @@ An execution that the operating system can manage. In our system it combines an 
 <dd>
 The stack of one process: owned stack storage, in our system the array <code>stack</code> inside <code>struct process</code>, which <code>sp</code> selects while the process runs. “Process stack” names the role of the memory, not an ELF section: the array lies wherever the process object lies. <em>See also:</em> OS stack. (Lecture 3; Lecture 4)
 </dd>
+<dt>Process table</dt>
+<dd>
+The OS’s record of all processes it manages. In the reference implementation an array of pointers to <code>struct process</code>, filled by <code>process_create()</code> in creation order; the position, counted from 1, is the process number in the <code>os:</code> lines. Together with the current process it tells the trap handler which frames exist and whose frame trapped. <em>See also:</em> scheduler. (Lecture 7)
+</dd>
 <dt>Program counter (<code>pc</code>)</dt>
 <dd>
 Identifies the instruction to execute. It is CPU state, not memory, and not one of the general-purpose registers <code>x0</code>–<code>x31</code>. <em>See also:</em> architectural state, live <code>pc</code>. (Lecture 4)
@@ -416,9 +426,17 @@ The second half of the provided <code>trap.S</code>, from the label <code>os_sta
 <dd>
 <code>ra</code> (<code>x1</code>): a <code>call</code> stores the location to which execution returns, and <code>ret</code> jumps there. It is the continuation of a call. (Lecture 3)
 </dd>
+<dt>Round robin</dt>
+<dd>
+The scheduling rule of our OS: search the process table in order, starting after the current process and wrapping around at the end; the first <code>READY</code> process runs. The current process is chosen again only if no other process is <code>READY</code>. <em>See also:</em> scheduler. (Lecture 7)
+</dd>
 <dt>RV64</dt>
 <dd>
 The 64-bit form of RISC-V, the ISA of our target. We build for <code>rv64imac_zicsr</code>: the base integer instructions, multiplication and division, atomics and compressed instructions, plus the CSR instructions. (Lecture 1)
+</dd>
+<dt>Scheduler</dt>
+<dd>
+The part of the OS that makes the scheduling decision: which <code>READY</code> process runs next, that is, which frame the trap handler returns. It is called at the end of every trap and once in <code>os_run()</code>, and is kept apart from interrupt handling. In Exercise 6 it is the student’s <code>schedule()</code>; it returns <code>NULL</code> when no process is <code>READY</code>, and the OS then runs the idle process. <em>See also:</em> round robin, idle process, preemption. (Lecture 4; Lecture 7)
 </dd>
 <dt>Section</dt>
 <dd>
@@ -908,7 +926,7 @@ The running process voluntarily returns control to the operating system while re
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="../downloads.html" class="pagination-link" aria-label="Downloads">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Downloads</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Downloads</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
