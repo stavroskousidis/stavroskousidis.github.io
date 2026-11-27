@@ -128,7 +128,7 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chapters/02-source-to-executables.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">From Source to Executables: Towards Processes</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">From Source to Executables: Toward Processes</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -312,7 +312,7 @@ A value small enough to be encoded inside an instruction, for example in <code>l
 </dd>
 <dt>Instruction Set Architecture (ISA)</dt>
 <dd>
-The contract between software and a processor: the instructions, registers and behaviour that every implementation provides and that software may rely on. The trap rule and the CSRs belong to it. <em>See also:</em> microarchitecture, platform. (Lecture 1)
+The contract between software and a processor: the instructions, registers and behavior that every implementation provides and that software may rely on. The trap rule and the CSRs belong to it. <em>See also:</em> microarchitecture, platform. (Lecture 1)
 </dd>
 <dt>Interrupt</dt>
 <dd>
@@ -440,7 +440,7 @@ The part of the OS that makes the scheduling decision: which <code>READY</code> 
 </dd>
 <dt>Section</dt>
 <dd>
-A named part of an object file or executable that groups content of one kind; the linker places sections in memory according to the linker script. <code>.text</code> holds instructions, <code>.rodata</code> constant data, <code>.data</code> initialised data, and <code>.bss</code> zero-initialised data, which takes no space in the file. (Lecture 2)
+A named part of an object file or executable that groups content of one kind; the linker places sections in memory according to the linker script. <code>.text</code> holds instructions, <code>.rodata</code> constant data, <code>.data</code> initialized data, and <code>.bss</code> zero-initialized data, which takes no space in the file. (Lecture 2)
 </dd>
 <dt>Stack</dt>
 <dd>
@@ -456,7 +456,7 @@ Register <code>x2</code>; selects the current position in the stack in use. Whic
 </dd>
 <dt>Static storage duration</dt>
 <dd>
-The lifetime of global variables and of variables declared <code>static</code>, also inside a function. The object exists exactly once, for the whole run, independent of any stack frame and of which functions are active; it is initialised once, before the program runs. Its section depends on the initial value: <code>.bss</code> for no initialiser or zero, <code>.data</code> for a non-zero initialiser, <code>.rodata</code> for <code>const</code> data. <code>static</code> inside a function changes only where and how long the object lives; the name stays visible only inside that function. Example: <code>static struct process p;</code> in <code>main()</code> lies in <code>.bss</code> and survives every trap. <em>See also:</em> automatic storage duration. (Lecture 4; <code>static p</code> in Lecture 5)
+The lifetime of global variables and of variables declared <code>static</code>, also inside a function. The object exists exactly once, for the whole run, independent of any stack frame and of which functions are active; it is initialized once, before the program runs. Its section depends on the initial value: <code>.bss</code> for no initializer or zero, <code>.data</code> for a non-zero initializer, <code>.rodata</code> for <code>const</code> data. <code>static</code> inside a function changes only where and how long the object lives; the name stays visible only inside that function. Example: <code>static struct process p;</code> in <code>main()</code> lies in <code>.bss</code> and survives every trap. <em>See also:</em> automatic storage duration. (Lecture 4; <code>static p</code> in Lecture 5)
 </dd>
 <dt>Symbol</dt>
 <dd>

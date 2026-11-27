@@ -164,7 +164,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chapters/02-source-to-executables.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">From Source to Executables: Towards Processes</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">From Source to Executables: Toward Processes</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -441,7 +441,7 @@ addi a3,a3,1696      # a3 = 0x186a0 = 100000
 add  a5,a5,a3        # mtime + delta
 lui  a4,0x2004       # a4 = 0x02004000
 sd   a5,0(a4)        # store to mtimecmp</code></pre>
-<p>Two details of the declaration matter. <code>uint64_t</code>, from <code>stdint.h</code>, says the width exactly: the register is 64 bits by definition, so the code says so, although <code>unsigned long</code> is also 64 bits under our <code>lp64</code> ABI. <code>volatile</code> tells the compiler that every access has an effect outside the program. Without it, the compiler may assume that memory changes only when the program writes it; it could load <code>mtime</code> once and reuse the value, or drop a store to <code>mtimecmp</code> that is never read back. Both are correct optimisations for RAM, of the kind Lecture 4 met with <code>-O2</code>, which keeps values in registers, and wrong for a device. With <code>volatile</code>, every access really happens, in the order written. It does not make an access atomic and has nothing to do with disabling interrupts.</p>
+<p>Two details of the declaration matter. <code>uint64_t</code>, from <code>stdint.h</code>, says the width exactly: the register is 64 bits by definition, so the code says so, although <code>unsigned long</code> is also 64 bits under our <code>lp64</code> ABI. <code>volatile</code> tells the compiler that every access has an effect outside the program. Without it, the compiler may assume that memory changes only when the program writes it; it could load <code>mtime</code> once and reuse the value, or drop a store to <code>mtimecmp</code> that is never read back. Both are correct optimizations for RAM, of the kind Lecture 4 met with <code>-O2</code>, which keeps values in registers, and wrong for a device. With <code>volatile</code>, every access really happens, in the order written. It does not make an access atomic and has nothing to do with disabling interrupts.</p>
 <p>The parameter of <code>timer_arm()</code> counts <code>mtime</code> units. It is called <code>delta</code>, and the word “tick” is kept for something else later in this chapter.</p>
 </section>
 <section id="the-time-slice" class="level3" data-number="6.2.5">
@@ -693,7 +693,7 @@ mret           MIE &lt;- MPIE, so 1       timer may interrupt</code></pre>
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* prints "spinner: done, counter = ...", then exits */</span></span>
 <span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The spinner has nothing to do with the timer mechanism itself. It is only a process that keeps the CPU busy, and its final counter lets us check afterwards that no increment was lost. Its loop, as compiled in our build (GCC 13.2), with our comments:</p>
+<p>The spinner has nothing to do with the timer mechanism itself. It is only a process that keeps the CPU busy, and its final counter lets us check afterward that no increment was lost. Its loop, as compiled in our build (GCC 13.2), with our comments:</p>
 <pre class="text"><code>800002b4:  ld    a5,8(sp)       load counter
 800002b6:  addi  a5,a5,1        +1
 800002b8:  sd    a5,8(sp)       store counter
@@ -847,7 +847,7 @@ spinner: done,                   spinner: done,
 </section>
 <section id="reproducible-interrupts-with--icount" class="level3" data-number="6.5.5">
 <h3 data-number="6.5.5" class="anchored" data-anchor-id="reproducible-interrupts-with--icount"><span class="header-section-number">6.5.5</span> Reproducible interrupts with <code>-icount</code></h3>
-<p>Lecture 5 said that an interrupt happens between two instructions, at a place that varies from run to run. Real hardware behaves like that, and so does QEMU by default: its timer follows the time of the host, so the places where the spinner is interrupted change from run to run. That makes asynchronous behaviour hard to observe and impossible to predict exactly.</p>
+<p>Lecture 5 said that an interrupt happens between two instructions, at a place that varies from run to run. Real hardware behaves like that, and so does QEMU by default: its timer follows the time of the host, so the places where the spinner is interrupted change from run to run. That makes asynchronous behavior hard to observe and impossible to predict exactly.</p>
 <p>For the course we start QEMU with an additional flag:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ex">qemu-system-riscv64</span> ... <span class="at">-icount</span> shift=4,sleep=off</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>With <code>-icount</code>, QEMU’s virtual clock counts executed instructions instead of host time: each instruction advances virtual time by 2<sup>4</sup> ns = 16 ns. <code>mtime</code> then depends only on how many instructions ran, and two runs of the same binary are interrupted at the same instructions. A 10 ms time slice is 625,000 instructions; one <code>mtime</code> count of 100 ns is about 6 instructions. <code>sleep=off</code> is part of the flag on purpose: with plain <code>shift=4</code>, the QEMU version of our build environment still interrupted the same binary at different instructions from run to run. Without <code>-icount</code>, on a fast host, the spinner may even finish before the first timer interrupt.</p>
@@ -887,7 +887,7 @@ os: tick 3 at 0x800002b8 in process 1
 </section>
 <section id="our-trap-model-who-does-what-with-the-timer" class="level3" data-number="6.6.2">
 <h3 data-number="6.6.2" class="anchored" data-anchor-id="our-trap-model-who-does-what-with-the-timer"><span class="header-section-number">6.6.2</span> Our trap model: who does what, with the timer</h3>
-<p>Lecture 5 summarised the trap model in a table. With the timer it gains one row at the top and changes in two cells:</p>
+<p>Lecture 5 summarized the trap model in a table. With the timer it gains one row at the top and changes in two cells:</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 12%">

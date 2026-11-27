@@ -193,7 +193,7 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chapters/02-source-to-executables.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">From Source to Executables: Towards Processes</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">From Source to Executables: Toward Processes</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -298,7 +298,7 @@ window.Quarto = {
   <li><a href="#schedulers-in-current-systems" id="toc-schedulers-in-current-systems" class="nav-link" data-scroll-target="#schedulers-in-current-systems"><span class="header-section-number">7.6.2</span> Schedulers in current systems</a></li>
   <li><a href="#crossover-electrical-engineering" id="toc-crossover-electrical-engineering" class="nav-link" data-scroll-target="#crossover-electrical-engineering"><span class="header-section-number">7.6.3</span> Crossover: electrical engineering</a></li>
   <li><a href="#crossover-mathematics" id="toc-crossover-mathematics" class="nav-link" data-scroll-target="#crossover-mathematics"><span class="header-section-number">7.6.4</span> Crossover: mathematics</a></li>
-  <li><a href="#crossover-online-optimisation" id="toc-crossover-online-optimisation" class="nav-link" data-scroll-target="#crossover-online-optimisation"><span class="header-section-number">7.6.5</span> Crossover: online optimisation</a></li>
+  <li><a href="#crossover-theoretical-computer-science" id="toc-crossover-theoretical-computer-science" class="nav-link" data-scroll-target="#crossover-theoretical-computer-science"><span class="header-section-number">7.6.5</span> Crossover: theoretical computer science</a></li>
   </ul></li>
   <li><a href="#our-trap-model-who-does-what-with-the-scheduler" id="toc-our-trap-model-who-does-what-with-the-scheduler" class="nav-link" data-scroll-target="#our-trap-model-who-does-what-with-the-scheduler"><span class="header-section-number">7.7</span> Our trap model: who does what, with the scheduler</a></li>
   <li><a href="#key-ideas" id="toc-key-ideas" class="nav-link" data-scroll-target="#key-ideas"><span class="header-section-number">7.8</span> Key ideas</a></li>
@@ -777,7 +777,7 @@ os: 16 timer interrupts</code></pre>
 </tr>
 </tbody>
 </table>
-<p>In this course we deal only with “when?”: our QEMU machine has one CPU, and our OS has no efficiency goal. What is “best” depends on the goal of the system: equal shares for servers and desktops, short response times for interactive programs, deadlines for control loops or audio (in <strong>real-time</strong> systems a late result is a wrong result), low <strong>energy</strong> for phones, laptops and data centres, limited temperature for passively cooled devices. The goals conflict: the fastest response costs energy, and the lowest energy costs time.</p>
+<p>In this course we deal only with “when?”: our QEMU machine has one CPU, and our OS has no efficiency goal. What is “best” depends on the goal of the system: equal shares for servers and desktops, short response times for interactive programs, deadlines for control loops or audio (in <strong>real-time</strong> systems a late result is a wrong result), low <strong>energy</strong> for phones, laptops and data centers, limited temperature for passively cooled devices. The goals conflict: the fastest response costs energy, and the lowest energy costs time.</p>
 </section>
 <section id="schedulers-in-current-systems" class="level3" data-number="7.6.2">
 <h3 data-number="7.6.2" class="anchored" data-anchor-id="schedulers-in-current-systems"><span class="header-section-number">7.6.2</span> Schedulers in current systems</h3>
@@ -841,13 +841,14 @@ os: 16 timer interrupts</code></pre>
 <h3 data-number="7.6.4" class="anchored" data-anchor-id="crossover-mathematics"><span class="header-section-number">7.6.4</span> Crossover: mathematics</h3>
 <p>A goal of the system can be written as an <strong>objective function</strong> under <strong>constraints</strong>, for example:</p>
 <p><span class="math display">\[\min\; \Big( w_E\, E + w_W \sum_i W_i + w_R \sum_i R_i \Big)\]</span></p>
-<p><span class="math inline">\(E\)</span> is the energy, <span class="math inline">\(W_i\)</span> the <strong>waiting time</strong> of task <span class="math inline">\(i\)</span> (the time it is <code>READY</code> but not <code>RUNNING</code>) and <span class="math inline">\(R_i\)</span> its <strong>response time</strong> (the time from its arrival until it runs for the first time). The <strong>weights</strong> <span class="math inline">\(w_E\)</span>, <span class="math inline">\(w_W\)</span>, <span class="math inline">\(w_R\)</span> express the goal, and the constraints (deadlines, fairness, number of cores, temperature) decide which schedules are allowed at all. On a phone, the response time of the thread that redraws the screen after a touch counts a lot, the waiting time of a background synchronisation hardly, and energy a lot, because the battery is the limit. In an audio system, the next buffer must be complete before the sound card plays it: that deadline is a constraint, and a small response time keeps the latency low.</p>
+<p><span class="math inline">\(E\)</span> is the energy, <span class="math inline">\(W_i\)</span> the <strong>waiting time</strong> of task <span class="math inline">\(i\)</span> (the time it is <code>READY</code> but not <code>RUNNING</code>) and <span class="math inline">\(R_i\)</span> its <strong>response time</strong> (the time from its arrival until it runs for the first time). The <strong>weights</strong> <span class="math inline">\(w_E\)</span>, <span class="math inline">\(w_W\)</span>, <span class="math inline">\(w_R\)</span> express the goal, and the constraints (deadlines, fairness, number of cores, temperature) decide which schedules are allowed at all. On a phone, the response time of the thread that redraws the screen after a touch counts a lot, the waiting time of a background synchronization hardly, and energy a lot, because the battery is the limit. In an audio system, the next buffer must be complete before the sound card plays it: that deadline is a constraint, and a small response time keeps the latency low.</p>
 <p>The two crossovers work together: the hardware model gives <span class="math inline">\(E\)</span>, the goal of the system gives the weights. Linux’s Energy Model, for example, describes the power of each group of cores at each available frequency, and Energy Aware Scheduling uses it to estimate the energy of placing a task on one core or another. The objective function is a model, not an algorithm; choosing the speeds of tasks with deadlines so that the energy is minimal is a classical research problem.</p>
 </section>
-<section id="crossover-online-optimisation" class="level3 page-columns page-full" data-number="7.6.5">
-<h3 data-number="7.6.5" class="anchored" data-anchor-id="crossover-online-optimisation"><span class="header-section-number">7.6.5</span> Crossover: online optimisation</h3>
+<section id="crossover-theoretical-computer-science" class="level3 page-columns page-full" data-number="7.6.5">
+<h3 data-number="7.6.5" class="anchored" data-anchor-id="crossover-theoretical-computer-science"><span class="header-section-number">7.6.5</span> Crossover: theoretical computer science</h3>
 <p>The objective above still hides most of the problem. It does not yet say in which <strong>order</strong> the tasks run, whether a task may be interrupted (<strong>preemption</strong>), whether it may move to another core (<strong>migration</strong>), or that power states <strong>change over time</strong> while the tasks run. And an operating system normally does not know when the next task will arrive or how long it will run.</p>
-<p>Scheduling is therefore an <strong>online</strong> optimisation problem: the decisions must be taken during operation, on the basis of incomplete information. An offline algorithm, which sees the whole input in advance, can serve as a benchmark: how good could a schedule have been, had the future been known? For the theoretical solution of such problems, several kinds of methods come into question:</p>
+<p>Scheduling is therefore an <strong>online</strong> optimization problem: the decisions must be taken during operation, on the basis of incomplete information. An algorithm that must decide as its input arrives is an <strong>online algorithm</strong>; one that sees the whole input in advance is an <strong>offline algorithm</strong>. Online algorithms are a classic topic of theoretical computer science. Their quality is measured by <strong>competitive analysis</strong>: on every input, the cost of the online algorithm is compared with the cost of the best offline solution, the schedule that could have been found had the future been known. An online algorithm is <em>c</em>-competitive if its cost is never more than <em>c</em> times that optimum (up to a constant). Yao, Demers and Shenker analyzed an energy-saving scheduler that lowers the clock in exactly this way.</p>
+<p>For the theoretical solution of such problems, several kinds of methods come into question:</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 43%">
@@ -866,7 +867,7 @@ os: 16 timer interrupts</code></pre>
 </tr>
 <tr class="even">
 <td>integer linear programming</td>
-<td>offline optimisation</td>
+<td>offline optimization</td>
 </tr>
 <tr class="odd">
 <td>constraint programming</td>
@@ -890,22 +891,22 @@ os: 16 timer interrupts</code></pre>
 </tr>
 </tbody>
 </table>
-<p>Round robin is a heuristic in this sense: it decides at every tick from the current state alone, quickly and without any knowledge of the future. It optimises nothing explicitly; it guarantees every <code>READY</code> process its turn.</p>
-<section id="interactive-model-scheduling-as-optimisation" class="level4 page-columns page-full" data-number="7.6.5.1">
-<h4 data-number="7.6.5.1" class="anchored" data-anchor-id="interactive-model-scheduling-as-optimisation"><span class="header-section-number">7.6.5.1</span> Interactive model: scheduling as optimisation</h4>
+<p>Round robin is a heuristic in this sense: it decides at every tick from the current state alone, quickly and without any knowledge of the future. It optimizes nothing explicitly; it guarantees every <code>READY</code> process its turn.</p>
+<section id="interactive-model-scheduling-as-optimization" class="level4 page-columns page-full" data-number="7.6.5.1">
+<h4 data-number="7.6.5.1" class="anchored" data-anchor-id="interactive-model-scheduling-as-optimization"><span class="header-section-number">7.6.5.1</span> Interactive model: scheduling as optimization</h4>
 <div class="callout callout-style-simple callout-tip">
 <div class="callout-body d-flex">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-body-container">
-<p>The model below works through a small, hypothetical example step by step: the optimisation problem with its decision variables, one task that can run on an efficiency core or a performance core at a low or a high clock, the weighted choice between energy and time (a slider for the weight), energy minimisation under a deadline (a slider for the deadline), and how fast the solution space grows with the number of tasks. The values are invented for illustration; they are not measurements of a chip or of our OS. The model loads its Python runtime from the internet when it starts, which takes a few seconds.</p>
-<p><a href="../notebooks/07-scheduling-as-optimisation.html" target="_blank" rel="noopener">Open the model in a full window</a></p>
+<p>The model below works through a small, hypothetical example step by step: the optimization problem with its decision variables, one task that can run on an efficiency core or a performance core at a low or a high clock, the weighted choice between energy and time (a slider for the weight), energy minimization under a deadline (a slider for the deadline), and how fast the solution space grows with the number of tasks. The values are invented for illustration; they are not measurements of a chip or of our OS. The model loads its Python runtime from the internet when it starts, which takes a few seconds.</p>
+<p><a href="../notebooks/07-scheduling-as-optimization.html" target="_blank" rel="noopener">Open the model in a full window</a></p>
 </div>
 </div>
 </div>
 <div class="column-page">
-<iframe src="../notebooks/07-scheduling-as-optimisation.html" title="Interactive model: scheduling as optimisation" loading="lazy" style="width: 100%; height: 2400px; border: 1px solid #dee2e6; border-radius: 4px;"></iframe>
+<iframe src="../notebooks/07-scheduling-as-optimization.html" title="Interactive model: scheduling as optimization" loading="lazy" style="width: 100%; height: 2400px; border: 1px solid #dee2e6; border-radius: 4px;"></iframe>
 </div>
 </section>
 </section>
@@ -974,7 +975,7 @@ os: 16 timer interrupts</code></pre>
 <li><strong>Round robin</strong>: the next <code>READY</code> process after the current one, in table order, wrapping around.</li>
 <li><strong>Idle process</strong>: the frame the handler returns when nobody is <code>READY</code>; it waits with <code>wfi</code> and interrupts on.</li>
 <li>With this, the CP2 mechanism is complete: trap, save, transition, decide, restore, return.</li>
-<li>Scheduling in real systems answers “when?”, “where?” and “how?” for goals such as real time or energy; electrical engineering and mathematics supply the models. Because the future is unknown, it is an online optimisation problem, solved in practice by heuristics such as round robin.</li>
+<li>Scheduling in real systems answers “when?”, “where?” and “how?” for goals such as real time or energy; electrical engineering and mathematics supply the models. Because the future is unknown, it is an online optimization problem, a topic of theoretical computer science, solved in practice by heuristics such as round robin.</li>
 </ul>
 </section>
 <section id="related-exercise-and-checkpoint" class="level2 unnumbered">
@@ -988,6 +989,7 @@ os: 16 timer interrupts</code></pre>
 <li>Arpaci-Dusseau and Arpaci-Dusseau, <a href="https://pages.cs.wisc.edu/~remzi/OSTEP/"><em>Operating Systems: Three Easy Pieces</em></a>, chapters <em>The Abstraction: The Process</em> and <em>Scheduling: Introduction</em>.</li>
 <li>RISC-V International, <a href="https://riscv.org/specifications/ratified/"><em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em></a>: <code>wfi</code>, <code>mstatus</code>.</li>
 <li>Linux kernel documentation: <a href="https://docs.kernel.org/scheduler/sched-eevdf.html"><em>EEVDF Scheduler</em></a>, <a href="https://docs.kernel.org/scheduler/sched-energy.html"><em>Energy Aware Scheduling</em></a>.</li>
+<li>A. Borodin, R. El-Yaniv, <em>Online Computation and Competitive Analysis</em>, Cambridge University Press, 1998.</li>
 <li>Microsoft Learn: <a href="https://learn.microsoft.com/en-us/windows/win32/procthread/scheduling-priorities"><em>Scheduling Priorities</em></a>, <a href="https://learn.microsoft.com/en-us/windows/win32/procthread/quality-of-service"><em>Quality of Service</em></a>.</li>
 <li>Apple XNU source, <code>osfmk/kern</code>: <em>sched_clutch.md</em>, <em>sched_clutch_edge.md</em>.</li>
 <li>M. K. McKusick, <em>An Overview of Scheduling in the FreeBSD Kernel</em>, EuroBSDCon 2021.</li>
