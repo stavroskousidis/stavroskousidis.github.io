@@ -590,7 +590,7 @@ p1.state     =  FINISHED</code></pre>
                     ^
                  current
 search:             p3 -&gt; p4 -&gt; p1 -&gt; p2</code></pre>
-<p><strong>Round robin</strong>: search the process table in order, starting <strong>after</strong> the current process and wrapping around at the end; the first <code>READY</code> process runs. Every <code>READY</code> process gets its turn in table order, like the players at a table. The current process comes last in the search, so it is chosen again only if no other process is <code>READY</code>. If there is no current process of the table, at the first start or after the idle process ran, the search starts at the first entry. If no process is <code>READY</code> at all, nobody from the table runs.</p>
+<p><strong>Round robin</strong> has a rule and a goal. <strong>Rule:</strong> search the process table in order, starting <strong>after</strong> the current process and wrapping around at the end; the first <code>READY</code> process runs. <strong>Goal:</strong> every <code>READY</code> process gets its turn, in table order, like the players at a table, for at most one time slice per turn: after an exit, the next process gets only the rest of the current slice. The current process comes last in the search, so it is chosen again only if no other process is <code>READY</code>. If there is no current process of the table, at the first start or after the idle process ran, the search starts at the first entry. If no process is <code>READY</code> at all, nobody from the table runs.</p>
 <p>With the picture: if p2 is current, p3 and p4 are <code>FINISHED</code> and p1 is <code>READY</code>, then p1 runs. If only p2 is <code>READY</code>, p2 runs again.</p>
 <p>Why start after the current process and not at the start of the table? Exercise 6 answers this question from a run.</p>
 <section id="interactive-model-round-robin-over-time" class="level4 page-columns page-full" data-number="7.4.2.1">
@@ -796,33 +796,39 @@ os: 16 timer interrupts</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Linux</td>
-<td>EEVDF (since 6.6), real-time classes</td>
-<td>Energy Aware Scheduling, governors</td>
+<td>Windows 11</td>
+<td>round robin + priorities 0 to 31</td>
+<td>QoS levels (<em>Eco</em>: efficient cores)</td>
 </tr>
 <tr class="even">
+<td>FreeBSD</td>
+<td>ULE: round robin + priorities</td>
+<td>per-CPU queues, topology-aware</td>
+</tr>
+<tr class="odd">
+<td>macOS, iOS</td>
+<td>Clutch: earliest deadline + priorities</td>
+<td>Edge: performance, efficiency cores</td>
+</tr>
+<tr class="even">
+<td>Linux</td>
+<td>EEVDF: earliest virtual deadline</td>
+<td>Energy Aware Scheduling, governors</td>
+</tr>
+<tr class="odd">
 <td>Android</td>
 <td>the Linux scheduler</td>
 <td>Energy Aware Scheduling</td>
 </tr>
-<tr class="odd">
-<td>Windows 11</td>
-<td>priorities 0 to 31, round robin</td>
-<td>QoS levels (<em>Eco</em>: efficient cores)</td>
-</tr>
-<tr class="even">
-<td>macOS, iOS</td>
-<td>XNU Clutch: thread groups, QoS</td>
-<td>Edge: performance, efficiency cores</td>
-</tr>
-<tr class="odd">
-<td>FreeBSD</td>
-<td>ULE (default since 7.1)</td>
-<td>per-CPU queues, topology-aware</td>
-</tr>
 </tbody>
 </table>
-<p>Each of them combines a “when?” rule with mechanisms for “where?” and “how?”. Linux’s EEVDF selects the eligible task with the earliest virtual deadline and aims to give runnable tasks of the same priority equal CPU time; its real-time classes (<code>SCHED_FIFO</code>, <code>SCHED_RR</code>, <code>SCHED_DEADLINE</code>) serve tasks with timing requirements. Energy Aware Scheduling uses an energy model of the CPUs to place tasks on systems with cores of different capacity; frequency and idle governors choose the speed and the idle state. Windows schedules threads by priorities 0 to 31, round robin among the threads of the highest priority; its quality-of-service levels influence which cores a thread may use and how much power the processor spends. Apple’s XNU kernel schedules groups of threads with the Clutch scheduler and extends it with the Edge scheduler to clusters of performance and efficiency cores. FreeBSD’s default scheduler is ULE. These names and versions change; they are as documented in November 2026.</p>
+<p>Each of them combines a “when?” rule with mechanisms for “where?” and “how?”. Round robin is a building block of these rules, not the whole answer. The rows of the table run from round robin with extensions to a different rule.</p>
+<p><strong>Windows.</strong> Every thread has a priority from 0 to 31. The scheduler always runs a thread of the highest priority that is ready to run, and among the threads of that priority it gives the time slices round robin. A thread of higher priority that becomes ready takes the CPU at once, before the running thread has used up its slice. Quality-of-service levels influence which cores a thread may use and how much power the processor spends; the level <em>Eco</em> selects the most efficient frequency and the efficient cores.</p>
+<p><strong>FreeBSD.</strong> The default scheduler ULE (since FreeBSD 7.1) keeps three sets of run queues for each CPU: one for real-time and interactive threads, one for batch threads, one for threads that run only when nothing else is ready. From the priority queues it runs the threads of the best non-empty queue round robin, switching about every 10 ms; the more threads wait, the shorter the slice. Batch threads wait in a calendar queue, a circular queue whose current position moves on every 10 ms, so that threads of low priority also get their turn.</p>
+<p><strong>macOS and iOS.</strong> Apple’s XNU kernel decides with the Clutch scheduler on three levels. First it chooses a quality-of-service class, such as foreground, utility or background, by earliest deadline: each class gets a deadline from the time it became runnable and the latency the class may tolerate. Then it chooses a group of threads of that class by priority, taking turns only among groups of equal priority. Finally it chooses a thread of the group by the Mach timesharing algorithm, in which the priority of a thread sinks with the CPU time it has used. The Edge scheduler extends Clutch to clusters of performance and efficiency cores.</p>
+<p><strong>Linux and Android.</strong> Since Linux 6.6 the default scheduler is EEVDF (Earliest Eligible Virtual Deadline First). It accounts for how much CPU time each task has received compared with its fair share; the difference is the task’s <strong>lag</strong>. A task with a lag of at least 0 has not received more than its share and is eligible; among the eligible tasks, the one with the earliest virtual deadline runs. Its goal is close to the goal of round robin, stated as equal CPU time for runnable tasks of the same priority; its rule is different: the turns come from the accounting, not from a fixed search order. With equal weights and equal slices the tasks still take turns. Tasks with timing requirements use the real-time classes <code>SCHED_FIFO</code>, <code>SCHED_RR</code> and <code>SCHED_DEADLINE</code>; <code>SCHED_RR</code> is round robin with priorities. Android uses the Linux kernel and its scheduler.</p>
+<p><strong>Where and how.</strong> Energy Aware Scheduling in Linux uses an energy model of the CPUs to place tasks on systems with cores of different capacity, as in phones; the frequency governor (schedutil) chooses the speed, the idle governor (cpuidle) the idle state.</p>
+<p>These names and versions change; they are as documented in November 2026.</p>
 </section>
 <section id="crossover-electrical-engineering" class="level3" data-number="7.6.3">
 <h3 data-number="7.6.3" class="anchored" data-anchor-id="crossover-electrical-engineering"><span class="header-section-number">7.6.3</span> Crossover: electrical engineering</h3>
